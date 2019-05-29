@@ -8,6 +8,21 @@ from os.path import expandvars
 from icecube.MuonGun import load_model, StaticSurfaceInjector, Cylinder, OffsetPowerLaw
 from icecube.MuonGun.segments import GenerateBundles
 
+def make_propagators():
+	from icecube.sim_services import I3ParticleTypePropagatorServiceMap
+	from icecube.PROPOSAL import I3PropagatorServicePROPOSAL
+	from icecube.cmc import I3CascadeMCService
+	propagators = I3ParticleTypePropagatorServiceMap()
+	muprop = I3PropagatorServicePROPOSAL(type=dataclasses.I3Particle.MuMinus, cylinderHeight=1200, cylinderRadius=700)
+	cprop = I3CascadeMCService(phys_services.I3GSLRandomService(seed)) # dummy RNG
+	for pt in 'MuMinus', 'MuPlus':
+		propagators[getattr(dataclasses.I3Particle.ParticleType, pt)] = muprop
+	for pt in 'DeltaE', 'Brems', 'PairProd', 'NuclInt', 'Hadrons', 'EMinus', 'EPlus':
+		propagators[getattr(dataclasses.I3Particle.ParticleType, pt)] = cprop
+	return propagators
+
+
+
 # parse paramaters from command line
 parser = argparse.ArgumentParser(description = "Basic Simulation of Neutrino Interactions in IceCube")
 parser.add_argument('-o', '--outfile', dest = 'OUTFILE')
@@ -15,9 +30,7 @@ parser.add_argument('--gcdfile', dest = 'GCDFILE')
 parser.add_argument('--nevents', dest = "NEVENTS")
 #parser.add_argument('--minEnergy', dest = "MIN_E")
 #parser.add_argument('--maxEnergy', dest = "MAX_E")
-#parser.add_argument('--seed', dest = "SEED")
-#parser.add_argument('--procnum', dest = "PROCNUM")
-#parser.add_argument('--nproc', dest = "NPROC")
+parser.add_argument('--seed', dest = "SEED")
 args = parser.parse_args()
 
 outfile = dataio.I3File(args.OUTFILE,'w')
@@ -25,10 +38,11 @@ gcdfile = dataio.I3File(args.GCDFILE)
 nevents = int(args.NEVENTS)
 #minE = float(args.MIN_E)
 #maxE = float(args.MAX_E)
-#seed = int(args.SEED)
+seed = int(args.SEED)
 
 tray = I3Tray()
-#tray.context['I3RandomService'] = phys_services.I3SPRNGRandomService(1, 10000, 1)
+randomService = phys_services.I3SPRNGRandomService(1, 10000, 1)
+tray.context['I3RandomService'] = randomService
 
 # Use Hoerandel as a template for generating muons
 model = load_model('Hoerandel5_atmod12_SIBYLL')
@@ -42,7 +56,15 @@ spectrum = OffsetPowerLaw(2, 1*I3Units.TeV, 10*I3Units.TeV, 10*I3Units.PeV)
 # Set up the generator. This gets stored in a special frame for later reference
 generator = StaticSurfaceInjector(surface, model.flux, spectrum, model.radius)
 
-tray.AddSegment(GenerateBundles, 'MuonGenerator', Generator=generator, NEvents=nevents, GCDFile=gcdfile)
+tray.AddSegment(GenerateBundles, Generator=generator, NEvents=nevents, GCDFile=gcdfile)
+
+tray.AddModule('I3PropagatorModule', 'propagator', PropagatorServices=make_propagators(),
+    RandomService=randomService, RNGStateName="RNGState")
+
+tray.AddModule('I3Writer', 'writer',
+    Streams=list(map(icetray.I3Frame.Stream, "SQP")),
+    filename=outfile)
+
 
 tray.Add('Dump')
-tray.Execute(10)
+tray.Execute()
