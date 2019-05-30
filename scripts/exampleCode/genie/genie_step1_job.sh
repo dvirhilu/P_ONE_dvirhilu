@@ -15,7 +15,7 @@ eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 
 i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/project/6008051/hignight/mass_production_official/oscnext_scripts/step_1_genie.py
+script=/project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/step_1_genie.py
 echo "Will use script: " $script
 
 RUNNUM=$1
@@ -25,7 +25,7 @@ echo "Flavor is: " ${FLV}
 E=$3
 echo "Energy Range is: " ${E}
 
-OUTDIR=/project/6008051/hignight/mass_production_official/step1
+OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step1
 
 GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
 #Get set variables 

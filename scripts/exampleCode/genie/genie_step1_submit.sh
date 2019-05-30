@@ -1,7 +1,7 @@
 #!/bin/zsh
 #SBATCH --time=11:59:00
 #SBATCH --mem=4G
-#SBATCH --output=/home/hignight/scratch/mass_production_official/log_step1/arrayjob_%A_%a.log
+#SBATCH --output=/home/dvirhilu/scratch/sbatchLogFiles/genie_step_1/arrayjob_%A_%a.log
 #SBATCH --account=rpp-kenclark
 #SBATCH --job-name=genie_step1
 date
@@ -23,7 +23,7 @@ echo "SLURM TASK ID : " $SLURM_ARRAY_TASK_ID
 echo "All arguments: " $@ 
 sleep 2
 echo "Starting the singularity job"
-singularity exec --bind /cvmfs --bind /scratch/terliuk --bind /scratch/hignight --bind /project/6008051/terliuk --bind /project/6008051/hignight --bind /project/6033576/terliuk --bind /project/6033576/hignight --bind /home/terliuk --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/hignight//mass_production_official/oscnext_scripts/genie_step1_job.sh $@
+singularity exec --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /project/6033576/dvirhilu --bind /project/6033576/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/genie_step1_job.sh $@
 date
 
 endsecond=$(date +%s)
