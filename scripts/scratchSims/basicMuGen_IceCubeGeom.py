@@ -41,7 +41,7 @@ nevents = int(args.NEVENTS)
 seed = int(args.SEED)
 
 tray = I3Tray()
-randomService = phys_services.I3SPRNGRandomService(1, 10000, 1)
+randomService = phys_services.I3GSLRandomService(seed)
 tray.context['I3RandomService'] = randomService
 
 # Use Hoerandel as a template for generating muons
@@ -58,8 +58,8 @@ generator = StaticSurfaceInjector(surface, model.flux, spectrum, model.radius)
 
 tray.AddSegment(GenerateBundles, Generator=generator, NEvents=nevents, GCDFile=gcdfile)
 
-tray.AddModule('I3PropagatorModule', 'propagator', PropagatorServices=make_propagators(),
-    RandomService=randomService, RNGStateName="RNGState")
+#tray.AddModule('I3PropagatorModule', 'propagator', PropagatorServices=make_propagators(),
+ #   RandomService=randomService, RNGStateName="RNGState")
 
 tray.AddModule('I3Writer', 'writer',
     Streams=list(map(icetray.I3Frame.Stream, "SQP")),
