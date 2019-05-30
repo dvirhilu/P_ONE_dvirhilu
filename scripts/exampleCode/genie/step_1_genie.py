@@ -143,7 +143,7 @@ import sys
 from icecube import icetray, dataclasses, dataio, phys_services
 from icecube import genie_icetray
 
-
+print "imports complete"
 
 load("libsim-services")
 

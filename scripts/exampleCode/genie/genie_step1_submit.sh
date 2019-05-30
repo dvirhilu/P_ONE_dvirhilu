@@ -23,7 +23,7 @@ echo "SLURM TASK ID : " $SLURM_ARRAY_TASK_ID
 echo "All arguments: " $@ 
 sleep 2
 echo "Starting the singularity job"
-singularity exec --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /project/6033576/dvirhilu --bind /project/6033576/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/genie_step1_job.sh $@
+singularity exec --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/genie_step1_job.sh $@
 date
 
 endsecond=$(date +%s)
