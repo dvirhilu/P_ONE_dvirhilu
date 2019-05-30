@@ -16,7 +16,7 @@ echo ${OPENCL_VENDOR_PATH}
 
 i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/project/6008051/hignight/mass_production_official/oscnext_scripts/step_2_clsim_setCrossE.py
+script=/project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/step_2_clsim_setCrossE.py
 echo "Will use script: " $script
 
 RUNNUM=$1
@@ -67,10 +67,10 @@ echo "cross-over E      : "${CROSS_E}
 echo "DOM eff UnshadowedFraction: "${EFF}
 
 INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step1.zst
-INDIR=/project/6008051/hignight/mass_production_official/step1/
+INDIR=/project/6008051/P_ONE_dvirhilu/I3Files/generated/genie_step1
 
 OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.zst
-OUTDIR=/project/6008051/hignight/mass_production_official/step2/
+OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step2
 
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}
 echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}

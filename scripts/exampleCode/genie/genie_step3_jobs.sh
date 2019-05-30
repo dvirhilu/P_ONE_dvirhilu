@@ -12,7 +12,7 @@ echo "Filename ID : " $FILE_NR
 eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 
 i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
-script=/project/6008051/hignight/mass_production_official/oscnext_scripts/step_3_det_general_lowdt.py
+script=/project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/step_3_det_general_lowdt.py
 echo "Will use script: " $script
 
 I3_SRC=/home/hignight/work/oscNext_official/oscNext/trunk
@@ -64,11 +64,11 @@ esac
 RUNNUM=${NU}${RUNNUM}
 
 INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.zst
-INDIR=/project/6008051/hignight/mass_production_official/step2/${FLV}
+INDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step2
 
 
 OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step3.zst
-OUTDIR=/project/6008051/hignight/mass_production_official/step3/${FLV}
+OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step3
 
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}
 echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}
