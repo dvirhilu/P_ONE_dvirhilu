@@ -45,16 +45,16 @@ case ${FLV} in
         NU=12
         case ${E} in
             A)
-                NEVENTS=450000
+                NEVENTS=4500    # modified from 450000
                 ;;
             B)
-                NEVENTS=100000
+                NEVENTS=1000    # modified from 100000
                 ;;
             C)
-                NEVENTS=100000
+                NEVENTS=1000    # modified from 100000
                 ;;
             D)
-                NEVENTS=57500
+                NEVENTS=575     # modified from 57500
                 ;;
 	    *)
 		echo ${E} " is not an acceptable neutrino energy range (A B C D)"
@@ -66,16 +66,16 @@ case ${FLV} in
         NU=14
         case ${E} in
             A)
-                NEVENTS=408000
+                NEVENTS=4080    # modified from 408000
                 ;;
             B)
-                NEVENTS=440000
+                NEVENTS=4400    # modified from 440000
                 ;;
             C)
-                NEVENTS=57500
+                NEVENTS=575     # modified from 57500
                 ;;
             D)
-                NEVENTS=6700
+                NEVENTS=67      # modified from 6700
                 ;;
 	    *)
 		echo ${E} " is not an acceptable neutrino energy range (A B C D)"
@@ -87,16 +87,16 @@ case ${FLV} in
         NU=16
         case ${E} in
             A)
-                NEVENTS=300000
+                NEVENTS=3000    # modified from 300000
                 ;;
             B)
-                NEVENTS=375000
+                NEVENTS=3750    # modified from 375000
                 ;;
             C)
-                NEVENTS=200000
+                NEVENTS=2000    # modified from 200000
                 ;;
             D)
-                NEVENTS=26000
+                NEVENTS=260     # modified from 26000
                 ;;
 	    *)
 		echo ${E} " is not an acceptable neutrino energy range (A B C D)"
