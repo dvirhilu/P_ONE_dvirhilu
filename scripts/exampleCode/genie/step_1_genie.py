@@ -172,7 +172,7 @@ tray.AddModule("I3MCEventHeaderGenerator","gen_header",
 tray.AddModule("I3GENIEGenerator","genie_generator",
     RandomService = randomService, 
     GENIEPath= expandvars("$GENIE"),
-    SplineFilename = expandvars("/project/6033576/hignight/genie_2_12_8_splines/GENIE_2_12_8_Water_splines.xml"),
+    SplineFilename = expandvars("/project/6008051/hignight/genie_2_12_8_splines/GENIE_2_12_8_Water_splines.xml"),
     LHAPDFPath = expandvars("$I3_BUILD/genie-icetray/resources/PDFsets"),
     NuEnergyMin = en_range[0]*I3Units.GeV, #3, 195
     NuEnergyMax = en_range[1]*I3Units.GeV,
