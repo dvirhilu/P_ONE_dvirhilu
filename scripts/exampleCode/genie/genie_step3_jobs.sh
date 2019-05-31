@@ -63,11 +63,11 @@ esac
 
 RUNNUM=${NU}${RUNNUM}
 
-INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.zst
+INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.i3.zst
 INDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step2
 
 
-OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step3.zst
+OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step3.i3.zst
 OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step3
 
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}

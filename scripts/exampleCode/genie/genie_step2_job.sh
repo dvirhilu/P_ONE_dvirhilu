@@ -66,10 +66,10 @@ echo "Ice model         : "${ICE}
 echo "cross-over E      : "${CROSS_E}
 echo "DOM eff UnshadowedFraction: "${EFF}
 
-INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step1.zst
+INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step1.i3.zst
 INDIR=/project/6008051/P_ONE_dvirhilu/I3Files/generated/genie_step1
 
-OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.zst
+OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.i3.zst
 OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step2
 
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}

@@ -118,7 +118,7 @@ echo "Energy Range      : "${E}
 echo "Number of Events  : "${NEVENTS}
 
 
-OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step1.zst
+OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step1.i3.zst
 
 echo "OUTFILE NAME : " ${OUTNAME}
 $i3env python $script -o ${OUTDIR}/${FLV}/${OUTNAME} -l ${FILE_NR}  -r ${RUNNUM} -n ${NEVENTS} -f ${FLV} --energy-range ${E} 
