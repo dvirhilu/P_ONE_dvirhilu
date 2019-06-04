@@ -1,5 +1,5 @@
 #!/bin/zsh
-#SBATCH --time=11:59:00
+#SBATCH --time=00:30:00
 #SBATCH --mem=4G
 #SBATCH --output=/home/dvirhilu/scratch/sbatchLogFiles/genie_step_1/arrayjob_%A_%a.log
 #SBATCH --account=rpp-kenclark
