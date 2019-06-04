@@ -16,7 +16,7 @@ echo ${OPENCL_VENDOR_PATH}
 
 i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/step_2_clsim_setCrossE.py
+script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/genie/step_2_clsim_setCrossE.py
 echo "Will use script: " $script
 
 RUNNUM=$1

@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 import math
 
 # initialize files
-#geofile = dataio.I3File('~/workFolder/P_ONE_dvirhilu/I3Files/data/GeoCalibDetectorStatus_IC86.55697_corrected_V2.i3.gz')
-infile = dataio.I3File('~/workFolder/P_ONE_dvirhilu/I3Files/data/Level2_IC86.2011_corsika.010281.001664.00.i3.bz2')
-outfileC = dataio.I3File('~/workFolder/P_ONE_dvirhilu/I3Files/generated/I3CascadeFile.I3.gz')
-outfileM = dataio.I3File('~/workFolder/P_ONE_dvirhilu/I3Files/generated/I3MuonFile.I3.gz')
+geofile = dataio.I3File('/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_IC86.55697_corrected_V2.i3.gz')
+infile = dataio.I3File('/home/dvir/workFolder/I3Files/Level2_IC86.2011_corsika.010281.001664.00.i3.bz2')
+outfileC = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/I3CascadeFile.I3.gz','w')
+outfileM = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/I3MuonFile.I3.gz', 'w')
 
 # filter for cascades and output to oufileC
 for frame in infile:
@@ -27,7 +27,7 @@ infile.rewind()
 for frame in infile:
     fmask = frame["FilterMask"]
     mFilter = fmask["MuonFilter_11"]
-    if mFilte.condition_passed:
+    if mFilter.condition_passed:
         outfileM.push(frame)
 outfileM.close()
 
@@ -39,17 +39,17 @@ totPulses = []
 totCharge = []
 for frame in infile:
     offPulses = dataclasses.I3RecoPulseSeriesMap.from_frame(frame, "OfflinePulses")
-    pulseList = [pulse for omkey,pulses in frame for pulse in pulses]
+    pulseList = [pulse for omkey,pulses in offPulses for pulse in pulses]
     chargeList = [pulse.charge for pulse in pulseList]
     totCharge.append(sum(chargeList))
     totPulses.append(len(offPulses))
 
-plt.hist(totPulses, histtype = "step")
+plt.hist(totPulses, histtype = "step", bins = 1000)
 plt.xlabel("Number of DOMs That Saw a Photon in Each Event")
 plt.ylabel("Number of Occurences")
 plt.show()
 plt.figure()
-plt.hist(totCharge, histtype = "step")
+plt.hist(totCharge, histtype = "step", bins = 1000)
 plt.xlabel("Total Charge in Each Event")
 plt.ylabel("Number of Occurences")
 plt.show()
