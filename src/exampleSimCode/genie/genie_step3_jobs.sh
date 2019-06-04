@@ -80,5 +80,5 @@ GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_556
 echo "GCD: " $GCD_FILE
 
 echo "Starting the job"
-$i3env python $script -i ${INDIR}/$INNAME -g $GCD_FILE -o ${OUTDIR}/${OUTNAME} -r ${RUNNUM} -f ${FILE_NR} -e ${DOMEFF}  -l ${HOLEICE} -m ${ICEMODEL}
+$i3env python $script -i ${INDIR}/${FLV}/${INNAME} -g $GCD_FILE -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -f ${FILE_NR} -e ${DOMEFF}  -l ${HOLEICE} -m ${ICEMODEL}
 
