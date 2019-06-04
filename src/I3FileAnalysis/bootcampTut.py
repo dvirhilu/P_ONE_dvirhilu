@@ -53,3 +53,6 @@ plt.hist(totCharge, histtype = "step", bins = 1000)
 plt.xlabel("Total Charge in Each Event")
 plt.ylabel("Number of Occurences")
 plt.show()
+
+gframe = geofile.pop_frame()
+geometry = gframe["I3Geometry"]

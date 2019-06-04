@@ -20,7 +20,7 @@ sleep 2
 echo "purging modules"
 module --force purge
 echo "Starting the singularity job"
-singularity exec --bind /tmp --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/scripts/exampleCode/genie/genie_step3_jobs.sh $@
+singularity exec --bind /tmp --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/genie/genie_step3_jobs.sh $@
 print "All done"
 
 endsecond=$(date +%s)
