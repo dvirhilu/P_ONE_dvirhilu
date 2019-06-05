@@ -19,15 +19,18 @@ parser.add_argument('-z', '--zPosition', dest = 'zPosition',
                     default = 0, help = "starting z position for the geometry" )
 args = parser.parse_args()
 
-infile = dataio.I3File('/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
-outfile = dataio.I3File('/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/gcd/simpleGeometry.i3.gz')
 if args.isLocal == 't':
     infile = dataio.I3File('/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
-    outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/simpleGeometry.i3.gz')
+    outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/simpleGeometry.i3.gz', 'w')
+else:
+	infile = dataio.I3File('/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
+	outfile = dataio.I3File('/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/gcd/simpleGeometry.i3.gz', 'w')
+
+
 
 domsPerString = int(args.domsPerString)
 spacing = float(args.spacing) * I3Units.meter
-startingPosition = dataclasses.I3Position( float(args.xPosition)*I3Units.meter, args.yPosition)*I3Units.meter, args.zPosition)*I3Units.meter)
+startingPosition = dataclasses.I3Position( float(args.xPosition)*I3Units.meter, float(args.yPosition)*I3Units.meter, float(args.zPosition)*I3Units.meter)
 
 def generateOMString( stringNumber, topPos, numDoms, spacing ):
     orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)          # same orientation as icecube DOMs (dir=down)
@@ -64,22 +67,25 @@ def generateCubeGeometry( domsPerString, startingPos, spacing):
     return geomap
 
 def getDefaultdom_cal(omkeys, inputCalibration):
-    domCalibMap = dataclasses.Map_OMKey_I3DomCalibration()
-    domcalib = inputCalibration.dom_cal[omkeys[1]]
+    domCalibMap = dataclasses.Map_OMKey_I3DOMCalibration()
+    domcalib = inputCalibration.dom_cal.values()[0]
     for key in omkeys:
         domCalibMap[key] = domcalib
+	return domCalibMap
 
 def getDefaultvem_cal(omkeys, inputCalibration):
     vemCalibMap = dataclasses.Map_OMKey_I3VEMCalibration()
-    vemcalib = inputCalibration.vem_cal[omkeys[1]]
+    vemcalib = inputCalibration.vem_cal.values()[0]
     for key in omkeys:
-        domCalibMap[key] = vemcalib
+        vemCalibMap[key] = vemcalib
+	return vemCalibMap
     
 def getDefaultdom_status(omkeys, inputDetectorStatus):
     domStatusMap = dataclasses.Map_OMKey_I3DOMStatus()
-    domstatus = inputDetectorStatus.dom_status[omkeys[1]]
+    domstatus = inputDetectorStatus.dom_status.values()[0]
     for key in omkeys:
         domStatusMap[key] = domstatus
+	return domStatusMap
 
 # skip I frame
 infile.pop_frame()
@@ -106,11 +112,13 @@ calibration.end_time = geometry.end_time
 detectorStatus.end_time = geometry.end_time
 
 # set default values for calibration and detector status
-calibration.dom_cal = getDefaultdom_cal(geometry.omgeo.keys(), cframe["I3Calibration"])
-calibration.vem_cal = getDefaultvem_cal(geometry.omgeo.keys(), cframe["I3Calibration"])
-detectorStatus.daq_configuration_name = dframe["I3DetectorStatus"].daq_configuration_name
-detectorStatus.dom_status = getDefaultdom_status(geometry.omgeo.keys(), dframe["I3DetectorStatus"])
-detectorStatus.trigger_status = dframe["I3DetectorStatus"].trigger_status
+inputCal = cframe["I3Calibration"]
+inputDS = dframe["I3DetectorStatus"]
+calibration.dom_cal = getDefaultdom_cal(geometry.omgeo.keys(), inputCal)
+calibration.vem_cal = getDefaultvem_cal(geometry.omgeo.keys(), inputCal)
+detectorStatus.daq_configuration_name = inputDS.daq_configuration_name
+detectorStatus.dom_status = getDefaultdom_status(geometry.omgeo.keys(), inputDS)
+detectorStatus.trigger_status = inputDS.trigger_status
 
 # generate new SPEScalingFactor and SPEAbove
 scalingFactor = dataclasses.I3MapKeyDouble()
@@ -121,9 +129,9 @@ for key in geometry.omgeo.keys():
     above[key] = 0.65
 
 # create G,C,D frames to be pushed onto the output file
-geometryFrame = icetray.I3Frame()
-calibrationFrame = icetray.I3Frame()
-detectorStatusFrame = icetray.I3Frame()
+geometryFrame = icetray.I3Frame(icetray.I3Frame.Geometry)
+calibrationFrame = icetray.I3Frame(icetray.I3Frame.Calibration)
+detectorStatusFrame = icetray.I3Frame(icetray.I3Frame.DetectorStatus)
 
 # add keys and values to each frame
 geometryFrame["I3Geometry"] = geometry
@@ -138,8 +146,8 @@ detectorStatusFrame["I3Calibration"] = calibration
 detectorStatusFrame["I3DetectorStatus"] = detectorStatus
 detectorStatusFrame["SPEAbove"] = above
 detectorStatusFrame["SPEScalingFactor"] = scalingFactor
-detectorStatusFrame["BadDomsList"] = dataclasses.I3VectorOMKey
-detectorStatusFrame["BadDomsListSLC"] = dataclasses.I3VectorOMKey
+detectorStatusFrame["BadDomsList"] = dataclasses.I3VectorOMKey()
+detectorStatusFrame["BadDomsListSLC"] = dataclasses.I3VectorOMKey()
 
 # push frames onto output file
 outfile.push(geometryFrame)
