@@ -44,6 +44,7 @@ def generateOMString( stringNumber, topPos, numDoms, spacing ):
     for i in xrange(0, numDoms):
         omkey = OMKey(stringNumber, i, 0)
         omGeometry = dataclasses.I3OMGeo()
+        omGeometry.omtype = dataclasses.I3OMGeo.OMType.IceCube
         omGeometry.orientation = orientation
         omGeometry.area = area
         omGeometry.position = dataclasses.I3Position(x, y, z - spacing*i)
@@ -128,31 +129,26 @@ for key in geometry.omgeo.keys():
     scalingFactor[key] = 0.75
     above[key] = 0.65
 
-# create G,C,D frames to be pushed onto the output file
-geometryFrame = icetray.I3Frame(icetray.I3Frame.Geometry)
-calibrationFrame = icetray.I3Frame(icetray.I3Frame.Calibration)
-detectorStatusFrame = icetray.I3Frame(icetray.I3Frame.DetectorStatus)
-
 # add keys and values to each frame
-geometryFrame["I3Geometry"] = geometry
+gframe.Replace("I3Geometry", geometry)
 
-calibrationFrame["I3Geometry"] = geometry
-calibrationFrame["I3Calibration"] = calibration
-calibrationFrame["SPEAbove"] = above
-calibrationFrame["SPEScalingFactors"] = scalingFactor
+cframe.Replace("I3Geometry", geometry)
+cframe.Replace("I3Calibration", calibration)
+cframe.Replace("SPEAbove", above)
+cframe.Replace("SPEScalingFactors", scalingFactor)
 
-detectorStatusFrame["I3Geometry"] = geometry
-detectorStatusFrame["I3Calibration"] = calibration
-detectorStatusFrame["I3DetectorStatus"] = detectorStatus
-detectorStatusFrame["SPEAbove"] = above
-detectorStatusFrame["SPEScalingFactor"] = scalingFactor
-detectorStatusFrame["BadDomsList"] = dataclasses.I3VectorOMKey()
-detectorStatusFrame["BadDomsListSLC"] = dataclasses.I3VectorOMKey()
+dframe.Replace("I3Geometry", geometry)
+dframe.Replace("I3Calibration", calibration)
+dframe.Replace("I3DetectorStatus", detectorStatus)
+dframe.Replace("SPEAbove", above)
+dframe.Replace("SPEScalingFactors", scalingFactor)
+dframe.Replace("BadDomsList", dataclasses.I3VectorOMKey())
+dframe.Replace("BadDomsListSLC", dataclasses.I3VectorOMKey())
 
 # push frames onto output file
-outfile.push(geometryFrame)
-outfile.push(calibrationFrame)
-outfile.push(detectorStatusFrame)
+outfile.push(gframe)
+outfile.push(cframe)
+outfile.push(dframe)
 
 # close output file
 outfile.close()
