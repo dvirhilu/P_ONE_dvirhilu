@@ -23,8 +23,8 @@ parser.add_option("-g", "--gcdfile", default=os.getenv('GCDfile'),
 		  dest="GCDFILE", help="Read in GCD file")
 parser.add_option("-e","--efficiency", type="float",default=1.2, # Using efficiency > 1 as default so we can support systematics sets
                   dest="EFFICIENCY",help="DOM Efficiency ... the same as UnshadowedFraction")
-parser.add_option("-m","--icemodel", default="spice_3.2.1",
-                  dest="ICEMODEL",help="Ice model (spice_mie, spice_lea, etc)")
+#parser.add_option("-m","--icemodel", default="spice_3.2.1",
+ #                 dest="ICEMODEL",help="Ice model (spice_mie, spice_lea, etc)")
 parser.add_option("-c","--crossenergy", type="float",default=30.0,
                   dest="CROSSENERGY",help="The cross energy where the hybrid clsim approach will be used")
 parser.add_option("-t", action="store_true",  dest="GPU", default=False ,help="Run on GPUs or CPUs")
@@ -95,8 +95,8 @@ tray.AddModule('I3Reader', 'reader',
 
 tray.AddModule("I3GeometryDecomposer", "I3ModuleGeoMap")
 
-icemodel_path = expandvars("$I3_SRC/ice-models/resources/models/" + options.ICEMODEL)
-print 'Ice model ', icemodel_path
+#icemodel_path = expandvars("$I3_SRC/ice-models/resources/models/" + options.ICEMODEL)
+print 'Medium model ', "ANTARES"
 print "DOM efficiency: ", options.EFFICIENCY
 # Only the photons are made. Still have to convert them to hits!
 print "Setting cross energy: " , float(options.CROSSENERGY), "GeV"
@@ -118,7 +118,7 @@ tray.AddSegment(clsim.I3CLSimMakePhotons, 'goCLSIM',
                 PhotonSeriesName=photon_series,
                 ParallelEvents=1000, 
                 RandomService=randomService,
-                IceModelLocation=icemodel_path,
+                IceModelLocation="ANTARES",
                 #UnWeightedPhotons=True, #turn off optimizations
                 UseGeant4=True,
                 CrossoverEnergyEM=0.1,
