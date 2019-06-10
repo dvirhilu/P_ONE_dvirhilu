@@ -18,7 +18,7 @@ i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/
 I3_SRC=/home/hignight/work/oscNext_official/oscNext/trunk
 echo "Will use i3 environment: " ${i3env}
 echo "Will use I3_SRC : " ${I3_SRC}
-script=/home/terliuk/projects/rpp-dgrant/terliuk/LE_simulation_scripts/step_3_det_general_lowdt.py
+script=/projects/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/step_3_det_general_lowdt.py
 echo "Will use script: " $script
 
 OUTRUN=$1
@@ -58,10 +58,10 @@ echo "ICE MODEL      : " $ICEMODEL
 echo "DOM EFFICINECY : " $DOMEFF
 echo "HOLE ICE       : " $HOLEICE
 
-INFILENAME=MuonGun_step2_${INRUN}.${FILE_NR}.i3.bz2
-INFOLDER=/project/6008051/terliuk/simulations/muongun/step2/$INRUN/
+INFILENAME=MuonGun_step2_${INRUN}_${FILE_NR}.i3.bz2
+INFOLDER=/projects/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/muongun_step2
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
-OUTFILENAME=MuonGun_Level2_${OUTRUN}.${FILE_NR}.i3.bz2
+OUTFILENAME=MuonGun_step3_${OUTRUN}_${FILE_NR}.i3.bz2
 echo "OUTFILENAME : " $OUTFILENAME
 GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
 echo "GCD: " $GCD_FILE
