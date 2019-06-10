@@ -10,8 +10,10 @@ parser.add_argument('-l', '--islocal', dest = 'isLocal',
                     
 if args.isLocal == 't':
     infile = dataio.I3File('/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
+    outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz', 'w')
 else:
 	infile = dataio.I3File('/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
+    outfile = dataio.I3File('/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz', 'w')
 
 infile.pop_frame()
 infile.pop_frame()
@@ -23,13 +25,11 @@ i3DetectorStatus = dframe["I3DetectorStatus"]
 speabove = dframe["SPEAbove"]
 speScalingFactors = dframe["SPEScalingFactors"]
 
-dom_cal = i3Calibration.dom_cal
 vem_cal = i3Calibration.vem_cal
 dom_status = i3DetectorStatus.dom_status
 trigger_status = i3DetectorStatus.trigger_status
 
 allI3DOMCalibrations = dom_cal.values()
-allI3VEMCalibrations = vem_cal.values()
 allI3DOMStatuses = dom_status.values()
 
 # setting dom calibration (if no known input value average from data)
@@ -107,10 +107,10 @@ newDOMStatus.status_fadc = dataclasses.I3DOMStatus.OnOff.On         # allow fadc
 newDOMStatus.delta_compress = dataclasses.I3DOMStatus.OnOff.On      # allow delta compression
 newDOMStatus.dom_gain_type = dataclasses.I3DOMStatus.DOMGain.HIGH   # set gain to high
 newDOMStatus.slc_active = True                                      # activate SLC readouts
-newDOMStatus.fe_pedestal = 2130                                     # value shared across all doms in input file
+newDOMStatus.fe_pedestal = 2130         newBadDomsList = dataclasses.I3VectorOMKey()                          # value shared across all doms in input file
 
 dummyOMKey = icetray.OMKey(0,0,0)
-start_time = dataclasses.I3Time(2019, 0)
+start_time = dataclasses.I3Time(2019, 0)newBadDomsListSLC = datalcasses.I3VectorOMKey()
 end_time = dataclasses.I3Time(2039, 0)
 newI3Calibration = dataclasses.I3Calibration()
 newI3DetectorStatus = dataclasses.I3DetectorStatus()
@@ -120,3 +120,26 @@ newI3Calibration.dom_cal = dataclasses.Map_OMKey_I3DOMCalibration()
 newI3DetectorStatus.dom_status = dataclasses.Map_OMKey_I3DOMStatus()
 
 newI3Calibration.dom_cal[dummyOMKey] = newDOMCalib
+newI3Calibration.start_time = start_time
+newI3Calibration.end_time = end_time
+newI3Calibration.vem_cal = dataclasses.I3VEMCalibrationMap()
+
+newI3DetectorStatus.daq_configuration_name = "P-ONE_Estimate"
+newI3DetectorStatus.dom_status[dummyOMKey] = newDOMStatus
+newI3DetectorStatus.start_time = start_time
+newI3DetectorStatus.end_time = end_time
+newI3DetectorStatus.trigger_status = trigger_status
+
+newSPEAbove[dummyOMKey] = newAbove
+newSPEScalingFactors[dummyOMKey] = newScalingFactor
+
+frame = icetray.I3Frame(icetray.I3Frame.DetectorStatus)
+frame["I3Calibration"] = newI3Calibration
+frame["I3DetectorStatus"] = newI3DetectorStatus
+frame["SPEAbove"] = newSPEAbove
+frame["SPEScalingFactors"] = newSPEScalingFactors
+frame["BadDomsList"] = dataclasses.I3VectorOMKey()
+frame["BadDomsListSLC"] = dataclasses.I3VectorOMKey()
+
+outfile.push(frame)
+outfile.close()
