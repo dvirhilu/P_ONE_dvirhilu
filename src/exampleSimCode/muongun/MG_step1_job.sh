@@ -37,7 +37,7 @@ if [ "$RUNNR" == "139005" ]; then
     CYLINDERZ=-300.0
     CYLINDERLENGHT=500.0
     CYLINDERRADIUS=150.0
-    NUMEVENTS=100000 
+#    NUMEVENTS=100000 
 elif [ "$RUNNR" == "139006" ]; then
     echo "Found configuration for " $RUNNR
     CYLINDER=true 
@@ -49,7 +49,7 @@ elif [ "$RUNNR" == "139006" ]; then
 elif [ "$RUNNR" == "139008" ]; then
     echo "Found configuration for " $RUNNR 
     MINENERGY=50.0 
-    NUMEVENTS=860000
+#    NUMEVENTS=860000
     CYLINDER=false 
     KDE=false
 elif [ "$RUNNR" == "139010" ]; then
@@ -62,7 +62,7 @@ elif [ "$RUNNR" == "139010" ]; then
     CYLINDERZ=-350.0    
     CYLINDERRADIUS=200.0
     CYLINDERLENGHT=700.0
-    NUMEVENTS=250000
+#    NUMEVENTS=250000
 else 
     echo "No configuration for " $RUNNR "... exiting"
     exit
