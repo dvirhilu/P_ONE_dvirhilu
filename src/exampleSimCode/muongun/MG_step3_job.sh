@@ -62,7 +62,7 @@ INFILENAME=MuonGun_step2_${INRUN}_${FILE_NR}.i3.bz2
 INFOLDER=/projects/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/muongun_step2
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
 OUTFILENAME=MuonGun_step3_${OUTRUN}_${FILE_NR}.i3.bz2
-OUTFOLDER = /projects/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/muongun_step2
+OUTFOLDER=/projects/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/muongun_step2
 echo "OUTFILENAME : " $OUTFILENAME
 GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
 echo "GCD: " $GCD_FILE
