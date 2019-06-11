@@ -70,15 +70,17 @@ echo "GCD: " $GCD_FILE
 echo "Starting the job"
 $i3env python $script -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER}/${OUTFILENAME} -r ${OUTRUN} -f ${SLURM_ARRAY_TASK_ID} -e ${DOMEFF}
 
-#echo "-----*** MOVING to Level1 and Level2 ***------"
-#echo "--- Level 1---"
-#level1script=$I3_SRC/filterscripts/resources/scripts/SimulationFiltering.py
-#echo "Level1 script : " $level1script
-#echo "Level1 output : " /scratch/terliuk/sim/muongun/tmpLevel1_${OUTFILENAME}
-#$i3env $level1script -g $GCD_FILE -i /scratch/terliuk/sim/muongun/tmpStep3_$OUTFILENAME -o /scratch/terliuk/sim/muongun/tmpLevel1_${OUTFILENAME} --photonicsdir=/cvmfs/icecube.opensciencegrid.org/data/photon-tables/
+echo "-----*** MOVING to Level1 and Level2 ***------"
+echo "--- Level 1---"
+level1script=$I3_SRC/filterscripts/resources/scripts/SimulationFiltering.py
+LEV1OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/generated/level1Filter/tmpLevel1_
+echo "Level1 script : " $level1script
+echo "Level1 output : " ${LEV1OUTDIR}${OUTFILENAME}
+$i3env $level1script -g $GCD_FILE -i ${OUTFOLDER}/${OUTFILENAME} -o ${LEV1OUTDIR}${OUTFILENAME} --photonicsdir=/cvmfs/icecube.opensciencegrid.org/data/photon-tables/
 
-#echo "--- Level 2---"
-#level2script=$I3_SRC/filterscripts/resources/scripts/offlineL2/process.py
-#echo "Level2 script : " $level2script
-#$i3env $level2script -s -g $GCD_FILE -i /scratch/terliuk/sim/muongun/tmpLevel1_$OUTFILENAME -o /scratch/terliuk/sim/muongun/$OUTFILENAME --photonicsdir=/cvmfs/icecube.opensciencegrid.org/data/photon-tables/
+echo "--- Level 2---"
+level2script=$I3_SRC/filterscripts/resources/scripts/offlineL2/process.py
+echo "Level2 script : " $level2script
+LEV2OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/generated/level2Filter/level2_
+$i3env $level2script -s -g $GCD_FILE -i ${LEV1OUTDIR}${OUTFILENAME} -o ${LEV2OUTDIR}${OUTFILENAME} --photonicsdir=/cvmfs/icecube.opensciencegrid.org/data/photon-tables/
 
