@@ -58,4 +58,4 @@ echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
 echo "GCD: " $GCD_FILE
 
-$i3env python $script -t -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r ${OUTRUN} -l $SLURM_ARRAY_TASK_ID -c $CROSSENERGY
+$i3env python $script -t -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER}/${OUTFILENAME} -r ${OUTRUN} -l ${SLURM_ARRAY_TASK_ID} -c ${CROSSENERGY}
