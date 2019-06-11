@@ -37,9 +37,12 @@ trigger_status = i3DetectorStatus.trigger_status
 allI3DOMCalibrations = dom_cal.values()
 allI3DOMStatuses = dom_status.values()
 
-# setting dom calibration (if no known input value average from data)
-# some fields had doms that had nan values. Those values were ignored
-newDOMCalib = dataclasses.I3DOMCalibration()
+# setting dom calibration (if no known input value average from data).
+# some fields had doms that had nan values. Those values were ignored.
+# one of the doms was used instead of creating a new one because some
+# attributes were immutable and would have stayed nan if they were 
+# intializaed in a new object
+newDOMCalib = allI3DOMCalibrations[1000]
 
 tauparam = dataclasses.TauParam()
 tauparam.p0 = sum([domcal.tau_parameters.p0 for domcal in allI3DOMCalibrations 
@@ -79,10 +82,6 @@ newDOMCalib.atwd_gain[0] = sum([domcal.atwd_gain[0] for domcal in allI3DOMCalibr
                     if not is_nan(domcal.atwd_gain[0])])/len(allI3DOMCalibrations)
 newDOMCalib.atwd_gain[1] = sum([domcal.atwd_gain[1] for domcal in allI3DOMCalibrations 
                     if not is_nan(domcal.atwd_gain[1])])/len(allI3DOMCalibrations)
-newDOMCalib.atwd_gain[2] = sum([domcal.atwd_gain[2] for domcal in allI3DOMCalibrations 
-                    if not is_nan(domcal.atwd_gain[2])])/len(allI3DOMCalibrations)
-newDOMCalib.atwd_gain[2] = sum([domcal.atwd_gain[2] for domcal in allI3DOMCalibrations 
-                    if not is_nan(domcal.atwd_gain[2])])/len(allI3DOMCalibrations)
 newDOMCalib.atwd_gain[2] = sum([domcal.atwd_gain[2] for domcal in allI3DOMCalibrations 
                     if not is_nan(domcal.atwd_gain[2])])/len(allI3DOMCalibrations)
 
@@ -181,9 +180,9 @@ freqQuadFit2.quad_fit_c = sum([item.quad_fit_c for item in dataFreqQuadFit2
 newDOMCalib.atwd_freq_fit[0] = freqQuadFit1
 newDOMCalib.atwd_freq_fit[1] = freqQuadFit2
 
-# unable to access these fields so just copy from an arbitrary dom
-newDOMCalib.atwd_beacon_baseline = allI3DOMCalibrations[6].atwd_beacon_baseline
-newDOMCalib.atwd_bin_calib_slope = allI3DOMCalibrations[6].atwd_bin_calib_slope
+# unable to access these fields 
+# newDOMCalib.atwd_beacon_baseline = allI3DOMCalibrations[6].atwd_beacon_baseline
+# newDOMCalib.atwd_bin_calib_slope = allI3DOMCalibrations[6].atwd_bin_calib_slope
 
 # setting SPE scaling factor and above
 newScalingFactor = sum([scalingfactor for scalingfactor in speScalingFactors.values() 
