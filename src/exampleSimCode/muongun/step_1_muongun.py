@@ -1,14 +1,4 @@
-'''
-MuonGun event generation script
-Adapated from kde_filter/Example1/run_muongun_with_kde.py (Kayla Leonard, Michael Larson)
-
-Tom Stuttard
-'''
-
-#TODO   This heavily overaps with simprod-scripts/python/segments/GenerateCosmicRayMuons.py
-#TODO   (which is called from simprod-scripts/python/modules/muongun.py). Consider merging (KDE 
-#TODO   filter is the complication here)
-
+#!/usr/bin/env python
 
 #########################
 #  INTRO
@@ -293,4 +283,3 @@ tray.AddModule('I3Writer', 'writer',
 
 tray.AddModule('TrashCan', 'YesWeCan')
 tray.Execute()
-

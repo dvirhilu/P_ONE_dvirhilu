@@ -15,7 +15,7 @@ eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 
 i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/projects/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/step_1_muongun.py
+script=/home/dvirhilu/projects/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/step_1_muongun.py
 echo "Will use script: " $script
 
 RUNNR=$1
@@ -96,7 +96,7 @@ echo "CYLINDER LINE    : ""\""$INNERCYLINDERSETTINGS"\""
 
 
 OUTNAME=MuonGun_step1_${RUNNR}_${FILE_NR}.i3.bz2
-OUTDIR = /projects/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/muongun_step1
+OUTDIR=/projects/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/muongun_step1
 echo "OUTFILE NAME : " ${OUTNAME}
 $i3env python $script -o ${OUTDIR}/${OUTNAME} -g $GCD_FILE -d $RUNNR -f $SLURM_ARRAY_TASK_ID --numevents $NUMEVENTS --min-energy $MINENERGY --max-energy $MAXENERGY --power-law-index $POWERLAWINDEX --power-law-offset $POWERLAWOFFSET $INNERCYLINDERSETTINGS $KDESETTING
 
