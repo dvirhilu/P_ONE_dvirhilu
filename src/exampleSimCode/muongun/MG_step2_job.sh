@@ -24,22 +24,22 @@ OUTRUN=$1
 if [ "$OUTRUN" == "139005" ]; then
     echo "Found configuration for " $OUTRUN
     INRUN=139005
-    ICEMODEL="spice_3.2.1"
+    ICEMODEL="ANTARES"
     CROSSENERGY=200.0
 elif [ "$OUTRUN" == "139006" ]; then
     echo "Found configuration for " $OUTRUN
     INRUN=139006
-    ICEMODEL="spice_3.2.1"
+    ICEMODEL="ANTARES"
     CROSSENERGY=200.0
 elif [ "$OUTRUN" == "139008" ]; then
     echo "Found configuration for " $OUTRUN
     INRUN=139008
-    ICEMODEL="spice_3.2.1"
+    ICEMODEL="ANTARES"
     CROSSENERGY=200.0
 elif [ "$OUTRUN" == "139010" ]; then
     echo "Found configuration for " $OUTRUN
     INRUN=139010
-    ICEMODEL="spice_3.2.1"
+    ICEMODEL="ANTARES"
     CROSSENERGY=200.0
 else 
     echo "No configuration for " $OUTRUN "... exiting"
@@ -58,4 +58,4 @@ echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
 echo "GCD: " $GCD_FILE
 
-$i3env python $script -t -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r ${OUTRUN} -l $SLURM_ARRAY_TASK_ID -m $ICEMODEL -c $CROSSENERGY
+$i3env python $script -t -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r ${OUTRUN} -l $SLURM_ARRAY_TASK_ID -c $CROSSENERGY
