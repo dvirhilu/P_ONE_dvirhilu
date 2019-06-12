@@ -24,10 +24,10 @@ echo "Run number: " $RUNNR
 INNERCYLINDERSETTINGS=""
 GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
 MAXENERGY=10000.0
-MINENERGY=50.0 
+MINENERGY=1000.0 
 POWERLAWINDEX=-3.0
 POWERLAWOFFSET=150.0
-NUMEVENTS=1000 
+NUMEVENTS=1
 KDE=false
 if [ "$RUNNR" == "139005" ]; then
     echo "Found configuration for " $RUNNR
