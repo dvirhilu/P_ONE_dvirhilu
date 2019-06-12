@@ -64,14 +64,44 @@ def generateLayer(layerNum):
     x = startPos.x
     y = startPos.y
     z = startpos.z + heightSpacing*layerNum
+    # offset so that first DOMs in each string don't overlap
+    offset = 50 * I3Units.meter
     layerMap = dataclasses.I3OMGeoMap()
+    
     for i in xrange(0, stringsPerLayer):
+        # tilt every new string by an angle of dphi
         direction = dataclasses.I3Direction(np.cos(i*dphi), np.sin(i*dphi), 0)
-        stringStart = dataclasses.I3Position(x + 50*direction.x, y + 50*direction.y, z)
+        stringStart = dataclasses.I3Position(x + offset*direction.x, y + offset*direction.y, z)
         stringMap = gcdHelpers.generateOMString(stringNumber + i, stringStart, domsPerString, spacing, direction)
         layerMap.update(stringMap)
+    
     return layerMap
 
+# create new geometry object
+geometry = dataclasses.I3Geometry()
 
+# fill new geometry
+geometry.start_time = gcdHelpers.start_time
+geometry.end_time = gcdHelpers.end_time
+geometry.omgeo = dataclasses.I3OMGeoMap()
 
+for i in xrange(0,layers):
+    layerMap = generateLayer(i)
+    geometry.omgeo.update(layerMap)
+
+# generate new frames
+gframe = icetray.I3Frame(icetray.I3Frame.Geometry) 
+cframe = gcdHelpers.generateCFrame(geometry)
+dframe = gcdHelpers.generateDFrame(geometry)
+
+# add keys and values to G frame
+gframe["I3Geometry"] = geometry
+
+# push frames onto output file
+outfile.push(gframe)
+outfile.push(cframe)
+outfile.push(dframe)
+
+# close output file
+outfile.close()
     
