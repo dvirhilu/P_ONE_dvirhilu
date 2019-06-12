@@ -33,7 +33,7 @@ parser.add_argument('-o', '--outname', dest = 'outname',
                     help = "starting z position for the geometry" )
 parser.add_argument('-t', '--totalDoms', dest = 'totalDoms', 
                     default = 200, help = "total number of doms in the detector" )
-parser.add_argument('-h', '--heightSpacing', dest = 'heightSpacing', 
+parser.add_argument('-v', '--verticalSpacing', dest = 'verticalSpacing', 
                     default = 50, help = "spacing between layers of DOMs" )         
 args = parser.parse_args()
 
@@ -45,7 +45,7 @@ startPos = dataclasses.I3Position(0,0,zpos)
 phi = float(args.angle) * I3Units.deg
 layers = int(args.layers)
 totalDoms = int(args.totalDoms)
-heightSpacing = float(args.heightSpacing)
+verticalSpacing = float(args.verticalSpacing)
 
 # calculate parameters from inputs
 domsPerLayer = totalDoms/layers
@@ -55,15 +55,15 @@ dphi = phi/(stringsPerLayer-1)
 if args.outname is not None:
     outname = args.outname
 else:
-    outname = "HorizGeo_d" + str(domsPerString) +"_s" + str(spacing) + "_a" + str(angle) + "_l" + str(layers) + "_simple"
+    outname = "HorizGeo_d" + str(domsPerString) +"_s" + str(spacing) + "_a" + str(phi/I3Units.deg) + "_l" + str(layers) + "_simple.i3.gz"
 
-outfile = dataio.I3File('/home/dvirhilu/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/' + outname, 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/' + outname, 'w')
 
 def generateLayer(layerNum):
     stringNumber = layerNum*stringsPerLayer
     x = startPos.x
     y = startPos.y
-    z = startpos.z + heightSpacing*layerNum
+    z = startPos.z + verticalSpacing*layerNum
     # offset so that first DOMs in each string don't overlap
     offset = 50 * I3Units.meter
     layerMap = dataclasses.I3OMGeoMap()
