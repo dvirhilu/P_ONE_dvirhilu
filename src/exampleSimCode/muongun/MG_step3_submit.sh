@@ -1,8 +1,8 @@
 #!/bin/zsh
-#SBATCH --time=11:59:00
+#SBATCH --time=1:30:00
 #SBATCH --mem=8G
-#SBATCH --output=/scratch/terliuk/job_outputs/muongun/step3/log_mg_s3.%A_%a.log
-#SBATCH --account=rpp-dgrant
+#SBATCH --output=/home/dvirhilu/scratch/sbatchLogFiles/muongun_step3/arrayjob_%A_%a.log
+#SBATCH --account=rpp-kenclark
 #SBATCH --job-name=MG_step3
 date
 echo "Sleeping for 30+-10 seconds to avoid hammering filesystems" 
