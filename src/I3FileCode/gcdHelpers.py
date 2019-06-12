@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+'''
+a few helper functions that will be commonly used when making
+GCD files to test prototype geometries
+'''
+
 from icecube import dataio, dataclasses, icetray
 from icecube.dataclasses import I3Constants
 from icecube.icetray import OMKey, I3Units
@@ -17,7 +22,11 @@ cdframe = cdfile.pop_frame()
 def convertDepthToZ(depth):
     return I3Constants.SurfaceElev - I3Constants.OriginElev - depth
 
-
+# Creates a frame with all the needed fields in a C frame
+# @Param: 
+# geometry - the I3Geometry object inputted to the frame
+# @Return:
+# An I3Frame object to be used as the C frame
 def generateCFrame(geometry):
     # intialize frame as a C frame
     frame = icetray.I3Frame(icetray.I3Frame.Calibration)
@@ -30,7 +39,11 @@ def generateCFrame(geometry):
 
     return frame
 
-
+# Creates a frame with all the needed fields in a D frame
+# @Param: 
+# geometry - the I3Geometry object inputted to the frame
+# @Return:
+# An I3Frame object to be used as the D frame
 def generateDFrame(geometry):
     # intialize frame as a D frame
     frame = icetray.I3Frame(icetray.I3Frame.DetectorStatus)
@@ -45,3 +58,35 @@ def generateDFrame(geometry):
     frame["BadDomsListSLC"] = cdframe["BadDomsListSLC"]
 
     return frame
+
+# Generates a vertical string of DOMs. This is represented
+# by an I3OMGeoMap object, which has an OMKey object for
+# a DOM and an I3OMGeo object to represent its geometry
+# @Param: 
+# stringNumber - and integer representing the string id
+# topPos - an I3Position object with the location of the top
+#          of the string
+# numDoms - number of DOMs on the string (int)
+# spacing - vertical distance between adjacent DOMs (int)
+# @Return:
+# an I3OMGeoMap object with the DOMs on the string and their
+# geometries
+def generateOMString( stringNumber, topPos, numDoms, spacing ):
+    orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)          # same orientation as icecube DOMs (dir=down)
+    area = 0.04439999908208847*I3Units.meter2                           # same area as icecube DOMs
+    geomap = dataclasses.I3OMGeoMap()
+    x = topPos.x
+    y = topPos.y
+    z = topPos.z
+
+    # create OMKeys and I3OMGeo for DOMs on string and add them to the map
+    for i in xrange(0, numDoms):
+        omkey = OMKey(stringNumber, i, 0)
+        omGeometry = dataclasses.I3OMGeo()
+        omGeometry.omtype = dataclasses.I3OMGeo.OMType.IceCube
+        omGeometry.orientation = orientation
+        omGeometry.area = area
+        omGeometry.position = dataclasses.I3Position(x, y, z - spacing*i)
+        geomap[omkey] = omGeometry
+    
+    return geomap
