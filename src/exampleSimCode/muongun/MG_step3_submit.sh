@@ -10,6 +10,8 @@ sleep $((20 + RANDOM % 20))
 startsecond=$(date +%s)
 echo "Start second: " $startsecond 
 
+# module purge
+module --force purge
 
 eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 # generating name of the output file
@@ -18,7 +20,7 @@ echo "SLURM TASK ID : " $SLURM_ARRAY_TASK_ID
 echo "All arguments: " $@ 
 sleep 2
 echo "Starting the singularity job"
-singularity exec --bind /tmp --bind /cvmfs --bind /scratch/terliuk --bind /scratch/hignight --bind /project/6008051/terliuk --bind /project/6008051/hignight --bind /home/terliuk --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /home/terliuk/scripts/muongun_scripts/MG_step3_job.sh $@
+singularity exec --bind /tmp --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/MG_step2_job.sh $@
 print "All done"
 
 endsecond=$(date +%s)

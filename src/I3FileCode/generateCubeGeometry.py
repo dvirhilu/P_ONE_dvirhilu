@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from icecube import dataio, dataclasses, icetray
-from icecube.dataclasses import I3Constants
 from icecube.icetray import OMKey, I3Units
 import argparse
 import gcdHelpers
@@ -11,20 +10,18 @@ parser.add_argument('-d', '--domsPerString', dest = 'domsPerString',
                     default = 10, help = "number of doms in the generated string" )
 parser.add_argument('-s', '--spacing', dest = 'spacing',
                     default = 15, help = "Spacing between consecutive DOMs on a string. Spacing between strings" )
-parser.add_argument('-x', '--xPosition', dest = 'xPosition', 
-                    default = 0, help = "starting x position for the geometry" )
-parser.add_argument('-y', '--yPosition', dest = 'yPosition', 
-                    default = 0, help = "starting y position for the geometry" )
 parser.add_argument('-z', '--depth', dest = 'depth', 
-                    default = 1000, help = "starting z position for the geometry" )
+                    default = 1600, help = "starting z position for the geometry" )
 args = parser.parse_args()
 
 outfileName = "cubeGeometry_" + str(args.depth) + "_" + str(args.domsPerString) + "_" + str(args.spacing) + ".i3.gz"
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/' + outfileName, 'w')
 domsPerString = int(args.domsPerString)
 spacing = float(args.spacing) * I3Units.meter
-zpos = convertDepthToZ(args.depth)
-startingPosition = dataclasses.I3Position( float(args.xPosition)*I3Units.meter, float(args.yPosition)*I3Units.meter, zpos*I3Units.meter)
+zpos = gcdHelpers.convertDepthToZ(float(args.depth))
+xpos = -0.5*(domsPerString-1)*spacing
+ypos = -0.5*(domsPerString-1)*spacing
+startingPosition = dataclasses.I3Position(xpos, ypos, zpos*I3Units.meter)
 
 def generateCubeGeometry( domsPerString, startingPos, spacing):
     x = startingPos.x
@@ -42,15 +39,12 @@ def generateCubeGeometry( domsPerString, startingPos, spacing):
     
     return geomap
 
-# get C,D frames
-cdframe = cdfile.pop_frame()
-
 # generate new geometry object
 geometry = dataclasses.I3Geometry()
 
 # fill new geometry
-geometry.start_date = gcdHelpers.start_date
-geometry.end_date = gcdHelpers.end_date
+geometry.start_time = gcdHelpers.start_time
+geometry.end_time = gcdHelpers.end_time
 geometry.omgeo = generateCubeGeometry(domsPerString, startingPosition, spacing)
 
 # generate new frames

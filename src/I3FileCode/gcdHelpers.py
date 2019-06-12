@@ -12,8 +12,9 @@ from icecube.icetray import OMKey, I3Units
 cdfile = dataio.I3File(
     '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz')
 cdframe = cdfile.pop_frame()
-start_date = cdframe["I3Calibration"].start_date
-end_date = cdframe["I3Calibration"].end_date
+calib = cdframe["I3Calibration"]
+start_time = calib.start_time
+end_time = calib.end_time
 
 # Takes the distance from the surface and returns the z position in
 # Icecube coordinates.
