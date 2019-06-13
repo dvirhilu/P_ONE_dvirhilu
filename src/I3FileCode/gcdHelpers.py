@@ -139,8 +139,26 @@ def generateOffsetList(distTypes, length):
                 signFactor = 1
             offsetList.append(offset)
             offset += 20*signFactor
+    else:
+        offsetList = [0 for i in range(0,length)]
+        print("Warning: no offset")
     
     return offsetList
+
+
+def generateSpacingList( distTypes, basicSpacing, length, dphi):
+    spacingList[]
+    
+    for dist_type in distTypes:
+        if not isinstance(dist_type, DistortionType):
+            raise TypeError('direction must be an instance of OffsetType Enum')
+    
+    if DistortionType.LinearRSpacing in distTypes:
+        totalSpacing = 0
+        for i in xrange(0,length):
+            spacing = basicSpacing - dphi*totalSpacing
+    
+
 
 
 # an enum class to keep track of different distortion types. Distortion precedence
@@ -152,16 +170,16 @@ def generateOffsetList(distTypes, length):
 # LinearRiseFallOffset: Offset starts at 0 and increases by 20m with each string. 
 #                       If it reaches 100m, offset starts decreasing by 20m. 
 #                       When reaching 20m, starts increasing again.
-# OverRSpacing:         Spacing behaves proportional to 1/r, initially starting   
-#                       with the base spacing listed in the arguements.
-# OverRSquaredSpacing:  Spacing behaves proportional to 1/r^2, initially starting 
-#                       with the base spacing listed in the arguements.
+# LinearRSpacing:       Spacing decreases linearly with r according to the equation
+#                       spacing = baseSpacing - dphi*r where dphi is the separation
+#                       angle between strings. This is done because a larger angle of
+#                       separation should cause the DOMs to be closer on the string
+
 class DistortionType(Enum):
     SimpleOffset = "simple_offset"
     LinearResetOffset = "linear_reset_offset"
     LinearRiseFallOffset = "rise_fall_offset"
-    OverRSpacing = "1/r_spacing"
-    OverRSquaredSpacing = "1/r^2_spacing"
+    LinearRSpacing = "linear_r_spacing"
 
     def __str__(self):
         return self.value
