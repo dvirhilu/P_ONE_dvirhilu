@@ -67,8 +67,7 @@ randomService = phys_services.I3SPRNGRandomService(
 tray.AddService("I3SPRNGRandomServiceFactory","sprngrandom")(
         ("Seed",options.RUNNUMBER),
         ("StreamNum",options.FILENR),
-        ("NStreams", max_num_f# OverRSpacing: Spacing behaves proportional to 1/r, initially starting with the base spacing listed in the arguements
-les_per_dataset),
+        ("NStreams", max_num_files_per_dataset),
         ("instatefile",""),
         ("outstatefile",""),
 )

@@ -10,17 +10,18 @@ Parameters that can be modified:
 4. Number of DOMS per string (default 10)
 5. Total DOMs (default 200)
 6. spacing between layers (default 50m)
+7.
 '''
 
 from icecube import dataclasses, dataio, icetray
 from icecube.icetray import I3Units, OMKey
 import argparse
 import gcdHelpers
-from gcdHelpers import OffsetType
+from gcdHelpers import DistortionType
 import numpy as np
 
 parser = argparse.ArgumentParser(description = "Generate a geometry based on the flat, circular, horiztal P-ONE design")
-parser.add_argument('-d', '--domsPerString', dest = 'domsPerString',
+parser.add_argument('-n', '--domsPerString', dest = 'domsPerString',
                     default = 10, help = "number of doms in the generated string" )
 parser.add_argument('-s', '--spacing', dest = 'spacing',
                     default = 100, help = "Spacing between consecutive DOMs on a string" )
@@ -36,8 +37,8 @@ parser.add_argument('-t', '--totalDoms', dest = 'totalDoms',
                     default = 200, help = "total number of doms in the detector" )
 parser.add_argument('-v', '--verticalSpacing', dest = 'verticalSpacing', 
                     default = 50, help = "spacing between layers of DOMs" )
-parser.add_argument('--OffsetType', dest = 'offset_type', type = OffsetType, choices = list(OffsetType), 
-                    default = "simple", help = "spacing between layers of DOMs" )         
+parser.add_argument('d', '--DistortionType', dest = 'distType', type = DistortionType, choices = list(DistortionType), 
+                    default = ["simple_offset"], action='append', help = "allows for a list of distortions to be provided" )         
 args = parser.parse_args()
 
 # get parsed arguments
