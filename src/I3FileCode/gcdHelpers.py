@@ -8,6 +8,7 @@ GCD files to test prototype geometries
 from icecube import dataio, dataclasses, icetray
 from icecube.dataclasses import I3Constants
 from icecube.icetray import OMKey, I3Units
+from enum import Enum
 
 cdfile = dataio.I3File(
     '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz')
@@ -100,3 +101,42 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
         geomap[omkey] = omGeometry
     
     return geomap
+
+
+# Generates a list of offsets to the DOM string starting positions. Different
+# offset types are described in OffsetType enum class
+# @Param:
+# offsetType:       an enum representing the different available offset methods
+# length:           the length of the resulting list
+# @Return:
+# a list containing different offset values for the starting positions of the 
+# DOM strings
+def generateOffsetList(offsetType, length):
+    offsetList = []
+
+    if not isinstance(offsetType, OffsetType):
+        raise TypeError('direction must be an instance of OffsetType Enum')
+
+    if(offsetType == OffsetType.Simple):
+        offsetList = [50 for i in range(0,length)]
+    elif(offsetType == OffsetType.ConstantVarying):
+        offset = 0
+        for i in xrange(0,length):
+            if(offset > 100):
+                offset = 20
+            offsetList.append(offset)
+            offset += 20
+    
+    return offsetList
+
+
+# an enum class to keep track of different offset types
+# Simple:           Constant offset of 50m to prevent overlapping
+# ConstantVarying:  Offset starts at and increases by 20m with each
+#                   string. If it reaches 100m, it resets back to 20m 
+class OffsetType(Enum):
+    Simple = "simple"
+    ConstantVarying = "constant_varying"
+
+    def __str__(self):
+        return self.value

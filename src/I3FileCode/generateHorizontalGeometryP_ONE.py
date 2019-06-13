@@ -16,6 +16,7 @@ from icecube import dataclasses, dataio, icetray
 from icecube.icetray import I3Units, OMKey
 import argparse
 import gcdHelpers
+from gcdHelpers import OffsetType
 import numpy as np
 
 parser = argparse.ArgumentParser(description = "Generate a geometry based on the flat, circular, horiztal P-ONE design")
@@ -34,7 +35,9 @@ parser.add_argument('-o', '--outname', dest = 'outname',
 parser.add_argument('-t', '--totalDoms', dest = 'totalDoms', 
                     default = 200, help = "total number of doms in the detector" )
 parser.add_argument('-v', '--verticalSpacing', dest = 'verticalSpacing', 
-                    default = 50, help = "spacing between layers of DOMs" )         
+                    default = 50, help = "spacing between layers of DOMs" )
+parser.add_argument('--OffsetType', dest = 'offset_type', type = OffsetType, choices = list(OffsetType), 
+                    default = "simple", help = "spacing between layers of DOMs" )         
 args = parser.parse_args()
 
 # get parsed arguments
@@ -46,6 +49,7 @@ phi = float(args.angle) * I3Units.deg
 layers = int(args.layers)
 totalDoms = int(args.totalDoms)
 verticalSpacing = float(args.verticalSpacing)
+offset_type = args.offset_type
 
 # calculate parameters from inputs
 domsPerLayer = totalDoms/layers
@@ -55,7 +59,7 @@ dphi = phi/(stringsPerLayer-1)
 if args.outname is not None:
     outname = args.outname
 else:
-    outname = "HorizGeo_d" + str(domsPerString) +"_s" + str(spacing) + "_a" + str(phi/I3Units.deg) + "_l" + str(layers) + "_simple.i3.gz"
+    outname = "HorizGeo_d" + str(domsPerString) +"_s" + str(spacing) + "_a" + str(phi/I3Units.deg) + "_l" + str(layers) + "_" + str(offset_type) + ".i3.gz"
 
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/' + outname, 'w')
 
@@ -65,13 +69,13 @@ def generateLayer(layerNum):
     y = startPos.y
     z = startPos.z + verticalSpacing*layerNum
     # offset so that first DOMs in each string don't overlap
-    offset = 50 * I3Units.meter
+    offset = gcdHelpers.generateOffsetList(offset_type, stringsPerLayer)
     layerMap = dataclasses.I3OMGeoMap()
     
     for i in xrange(0, stringsPerLayer):
         # tilt every new string by an angle of dphi
         direction = dataclasses.I3Direction(np.cos(i*dphi), np.sin(i*dphi), 0)
-        stringStart = dataclasses.I3Position(x + offset*direction.x, y + offset*direction.y, z)
+        stringStart = dataclasses.I3Position(x + offset[i]*direction.x, y + offset[i]*direction.y, z)
         stringMap = gcdHelpers.generateOMString(stringNumber + i, stringStart, domsPerString, spacing, direction)
         layerMap.update(stringMap)
     
