@@ -143,7 +143,7 @@ tray.AddSegment(clsim.I3CLSimMakeHitsFromPhotons, "makeHitsFromPhotons",
                 RandomService=randomService,
                 DOMOversizeFactor=1.,
                 UnshadowedFraction=options.EFFICIENCY,
-                IceModelLocation = icemodel_path,
+                IceModelLocation = "ANTARES",
 #               UseHoleIceParameterization=holeice
                 HoleIceParameterization=expandvars("$I3_SRC/ice-models/resources/models/angsens/%s"%options.HOLEICE),
                 GCDFile=gcd_file
