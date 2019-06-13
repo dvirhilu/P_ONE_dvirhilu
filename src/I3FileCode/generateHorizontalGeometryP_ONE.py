@@ -10,7 +10,7 @@ Parameters that can be modified:
 4. Number of DOMS per string (default 10)
 5. Total DOMs (default 200)
 6. spacing between layers (default 50m)
-7.
+7. different distortion types (detailed in gcdHelpers, default simple_offset)
 '''
 
 from icecube import dataclasses, dataio, icetray
@@ -37,7 +37,7 @@ parser.add_argument('-t', '--totalDoms', dest = 'totalDoms',
                     default = 200, help = "total number of doms in the detector" )
 parser.add_argument('-v', '--verticalSpacing', dest = 'verticalSpacing', 
                     default = 50, help = "spacing between layers of DOMs" )
-parser.add_argument('d', '--DistortionType', dest = 'distType', type = DistortionType, choices = list(DistortionType), 
+parser.add_argument('d', '--DistortionType', dest = 'distTypes', type = DistortionType, choices = list(DistortionType), 
                     default = ["simple_offset"], action='append', help = "allows for a list of distortions to be provided" )         
 args = parser.parse_args()
 
@@ -50,7 +50,7 @@ phi = float(args.angle) * I3Units.deg
 layers = int(args.layers)
 totalDoms = int(args.totalDoms)
 verticalSpacing = float(args.verticalSpacing)
-offset_type = args.offset_type
+distTypes = args.distTypes
 
 # calculate parameters from inputs
 domsPerLayer = totalDoms/layers
@@ -60,7 +60,7 @@ dphi = phi/(stringsPerLayer-1)
 if args.outname is not None:
     outname = args.outname
 else:
-    outname = "HorizGeo_d" + str(domsPerString) +"_s" + str(spacing) + "_a" + str(phi/I3Units.deg) + "_l" + str(layers) + "_" + str(offset_type) + ".i3.gz"
+    outname = "HorizGeo_d" + str(domsPerString) +"_s" + str(spacing) + "_a" + str(phi/I3Units.deg) + "_l" + str(layers) + "_" + str(distTypes) + ".i3.gz"
 
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/' + outname, 'w')
 
@@ -70,7 +70,7 @@ def generateLayer(layerNum):
     y = startPos.y
     z = startPos.z + verticalSpacing*layerNum
     # offset so that first DOMs in each string don't overlap
-    offset = gcdHelpers.generateOffsetList(offset_type, stringsPerLayer)
+    offset = gcdHelpers.generateOffsetList(distType, stringsPerLayer)
     layerMap = dataclasses.I3OMGeoMap()
     
     for i in xrange(0, stringsPerLayer):

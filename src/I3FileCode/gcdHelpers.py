@@ -111,26 +111,41 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
 # @Return:
 # a list containing different offset values for the starting positions of the 
 # DOM strings
-def generateOffsetList(offsetType, length):
+def generateOffsetList(distTypes, length):
     offsetList = []
 
-    if not isinstance(offsetType, OffsetType):
-        raise TypeError('direction must be an instance of OffsetType Enum')
+    for dist_type in distTypes:
+        if not isinstance(dist_type, DistortionType):
+            raise TypeError('direction must be an instance of OffsetType Enum')
 
-    if(offsetType == OffsetType.Simple):
+    if DistortionType.SimpleOffset in distTypes:
         offsetList = [50 for i in range(0,length)]
-    elif(offsetType == OffsetType.ConstantVarying):
+    elif DistortionType.LinearResetOffset in distTypes:
         offset = 0
         for i in xrange(0,length):
             if(offset > 100):
                 offset = 20
             offsetList.append(offset)
             offset += 20
+    elif DistortionType.LinearRiseFallOffset in distTypes:
+        # start at center
+        offset = 0
+        # determines whether rising or falling offset
+        signFactor = 1
+        for i in xrange(0, length):
+            if(offset > 100):
+                signFactor = -1
+            if(offset < 20):
+                signFactor = 1
+            offsetList.append(offset)
+            offset += 20*signFactor
     
     return offsetList
 
 
-# an enum class to keep track of different distortion types
+# an enum class to keep track of different distortion types. Distortion precedence
+# is given by order of listing:
+
 # SimpleOffset:         Constant offset of 50m to prevent overlapping (default)
 # LinearResetOffset:    Offset starts at and increases by 20m with each string. 
 #                       If it reaches 100m, it resets back to 20m.
