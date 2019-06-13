@@ -93,7 +93,7 @@ case ${FLV} in
                 NEVENTS=3750    # modified from 375000
                 ;;
             C)
-                NEVENTS=2000    # modified from 200000
+                NEVENTS=5000    # modified from 200000
                 ;;
             D)
                 NEVENTS=260     # modified from 26000
