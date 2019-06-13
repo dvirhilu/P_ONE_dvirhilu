@@ -22,12 +22,12 @@ parser.add_option("-e","--efficiency", type="float",default=1.2,
                   dest="EFFICIENCY",help="DOM Efficiency ... the same as UnshadowedFraction")
 parser.add_option("-n","--noise", default="vuvuzela",
                   dest="NOISE",help="Noise model (vuvuzela/poisson)")
-parser.add_option("-l", "--holeice",  default = "as.flasher_p1_0.30_p2_-1",
-                  dest="HOLEICE", 
-                  help="Pick the hole ice parameterization, corresponds to a file name in $I3_SRC/ice-models/resources/models/angsens/") 
-parser.add_option("-m", "--icemodel", default = "spice_3.2.1", 
-                  dest = "ICEMODEL", type="str",
-                   help="Should be the same ice model as used for photon propagation (step2)")
+#parser.add_option("-l", "--holeice",  default = "as.flasher_p1_0.30_p2_-1",
+#                  dest="HOLEICE", 
+#                  help="Pick the hole ice parameterization, corresponds to a file name in $I3_SRC/ice-models/resources/models/angsens/") 
+#parser.add_option("-m", "--icemodel", default = "spice_3.2.1", 
+#                  dest = "ICEMODEL", type="str",
+#                   help="Should be the same ice model as used for photon propagation (step2)")
 
 # parser.add_option("-s","--scalehad", type="float", default=1.,
 #                   dest="SCALEHAD",help="Scale light from hadrons") # This is currently not used
@@ -76,22 +76,22 @@ tray = I3Tray()
 
 print 'Using RUNNR: ', options.RUNNUMBER
 print "DOM efficiency: ", options.EFFICIENCY
-print "Using hole ice: ", options.HOLEICE 
-print "Looking for ice model in ", expandvars("$I3_SRC/ice-models/resources/models/")
-if options.ICEMODEL=="" or options.ICEMODEL==None:
-    print "\033[93mNo ice model provided. The baseline efficiency can be found in cfg.txt"
-    print "of the ice model used for photon propagation. \033[0m"
-    print "\033[93m\033[1mBe very careful! \033[0m"
-    icemodel_path=None
-else:
-    icemodel_path=expandvars("$I3_SRC/ice-models/resources/models/%s"%options.ICEMODEL)
-    if os.path.isdir(icemodel_path) :
-        print "Folder with ice model found: ", icemodel_path
-    else: 
-        print "Error! No ice model with such name found in :" 
-        print expandvars("$I3_SRC/ice-models/resources/models/")
-        exit() 
-print "Ice model path: ", icemodel_path
+#print "Using hole ice: ", options.HOLEICE 
+#print "Looking for ice model in ", expandvars("$I3_SRC/ice-models/resources/models/")
+#if options.ICEMODEL=="" or options.ICEMODEL==None:
+#    print "\033[93mNo ice model provided. The baseline efficiency can be found in cfg.txt"
+#    print "of the ice model used for photon propagation. \033[0m"
+#    print "\033[93m\033[1mBe very careful! \033[0m"
+#    icemodel_path=None
+#else:
+#    icemodel_path=expandvars("$I3_SRC/ice-models/resources/models/%s"%options.ICEMODEL)
+#    if os.path.isdir(icemodel_path) :
+#        print "Folder with ice model found: ", icemodel_path
+#    else: 
+#        print "Error! No ice model with such name found in :" 
+#        print expandvars("$I3_SRC/ice-models/resources/models/")
+#        exit() 
+#print "Ice model path: ", icemodel_path
 # Random service
 from globals import max_num_files_per_dataset
 tray.AddService("I3SPRNGRandomServiceFactory","sprngrandom")(
@@ -145,7 +145,7 @@ tray.AddSegment(clsim.I3CLSimMakeHitsFromPhotons, "makeHitsFromPhotons",
                 UnshadowedFraction=options.EFFICIENCY,
                 IceModelLocation = "ANTARES",
 #               UseHoleIceParameterization=holeice
-                HoleIceParameterization=expandvars("$I3_SRC/ice-models/resources/models/angsens/%s"%options.HOLEICE),
+#                HoleIceParameterization=expandvars("$I3_SRC/ice-models/resources/models/angsens/%s"%options.HOLEICE),
                 GCDFile=gcd_file
                 )
 

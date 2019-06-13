@@ -130,13 +130,23 @@ def generateOffsetList(offsetType, length):
     return offsetList
 
 
-# an enum class to keep track of different offset types
-# Simple:           Constant offset of 50m to prevent overlapping
-# ConstantVarying:  Offset starts at and increases by 20m with each
-#                   string. If it reaches 100m, it resets back to 20m 
-class OffsetType(Enum):
-    Simple = "simple"
-    ConstantVarying = "constant_varying"
+# an enum class to keep track of different distortion types
+# SimpleOffset:         Constant offset of 50m to prevent overlapping (default)
+# LinearResetOffset:    Offset starts at and increases by 20m with each string. 
+#                       If it reaches 100m, it resets back to 20m.
+# LinearRiseFallOffset: Offset starts at 0 and increases by 20m with each string. 
+#                       If it reaches 100m, offset starts decreasing by 20m. 
+#                       When reaching 20m, starts increasing again.
+# OverRSpacing:         Spacing behaves proportional to 1/r, initially starting   
+#                       with the base spacing listed in the arguements.
+# OverRSquaredSpacing:  Spacing behaves proportional to 1/r^2, initially starting 
+#                       with the base spacing listed in the arguements.
+class DistortionType(Enum):
+    SimpleOffset = "simple_offset"
+    LinearResetOffset = "linear_reset_offset"
+    LinearRiseFallOffset = "rise_fall_offset"
+    OverRSpacing = "1/r_spacing"
+    OverRSquaredSpacing = "1/r^2_spacing"
 
     def __str__(self):
         return self.value
