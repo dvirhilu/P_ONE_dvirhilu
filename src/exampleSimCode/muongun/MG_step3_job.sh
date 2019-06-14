@@ -26,7 +26,7 @@ OUTRUN=$1
 if [ "$OUTRUN" == "139005" ]; then
     echo "Found configuration for " $OUTRUN
     INRUN=139005
-    ICEMODEL="ANTARES"
+    ICEMODEL="spice_3.2.1"
     DOMEFF=1.00
 #    HOLEICE="as.flasher_p1_0.30_p2_-1"
 elif [ "$OUTRUN" == "139006" ]; then
@@ -68,7 +68,7 @@ GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_556
 echo "GCD: " $GCD_FILE
 
 echo "Starting the job"
-$i3env python $script -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER}/${OUTFILENAME} -r ${OUTRUN} -f ${SLURM_ARRAY_TASK_ID} -e ${DOMEFF}
+$i3env python $script -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER}/${OUTFILENAME} -r ${OUTRUN} -f ${SLURM_ARRAY_TASK_ID} -e ${DOMEFF} -m $ICEMODEL
 
 echo "-----*** MOVING to Level1 and Level2 ***------"
 echo "--- Level 1---"

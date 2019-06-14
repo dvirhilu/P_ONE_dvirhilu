@@ -165,6 +165,7 @@ def generateSpacingList(spacing_type, basicSpacing, length):
     else:
         spacingList = [basicSpacing for i in range(0,length)]
     
+    print( sum(spacingList) )
     return spacingList
     
 
