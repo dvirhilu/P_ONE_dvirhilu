@@ -59,8 +59,8 @@ stringsPerLayer = domsPerLayer/domsPerString
 dphi = phi/(stringsPerLayer-1)
 
 # create name for output file
-outname = "HorizGeo_d" + str(domsPerString)
-outname += "_s" + str(basicSpacing)
+outname = "HorizGeo_n" + str(domsPerString)
+outname += "_b" + str(basicSpacing)
 outname += "_a" + str(phi/I3Units.deg)
 outname += "_l" + str(layers)
 outname += "_" + str(offset_type)
