@@ -18,7 +18,7 @@ i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/
 I3_SRC=/home/hignight/work/oscNext_official/oscNext/trunk
 echo "Will use i3 environment: " ${i3env}
 echo "Will use I3_SRC : " ${I3_SRC}
-script=/projects/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/step_3_det_general_lowdt.py
+script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/step_3_det_general_lowdt.py
 echo "Will use script: " $script
 
 OUTRUN=$1
@@ -72,14 +72,14 @@ $i3env python $script -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER
 
 echo "-----*** MOVING to Level1 and Level2 ***------"
 echo "--- Level 1---"
-level1script=$I3_SRC/filterscripts/resources/scripts/SimulationFiltering.py
+level1script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/SimulationFiltering.py
 LEV1OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/generated/level1Filter/tmpLevel1_
 echo "Level1 script : " $level1script
 echo "Level1 output : " ${LEV1OUTDIR}${OUTFILENAME}
 $i3env $level1script -g $GCD_FILE -i ${OUTFOLDER}/${OUTFILENAME} -o ${LEV1OUTDIR}${OUTFILENAME} --photonicsdir=/cvmfs/icecube.opensciencegrid.org/data/photon-tables/
 
 echo "--- Level 2---"
-level2script=$I3_SRC/filterscripts/resources/scripts/offlineL2/process.py
+level2script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/process.py
 echo "Level2 script : " $level2script
 LEV2OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/generated/level2Filter/level2_
 $i3env $level2script -s -g $GCD_FILE -i ${LEV1OUTDIR}${OUTFILENAME} -o ${LEV2OUTDIR}${OUTFILENAME} --photonicsdir=/cvmfs/icecube.opensciencegrid.org/data/photon-tables/
