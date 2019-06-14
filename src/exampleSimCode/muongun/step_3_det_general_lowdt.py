@@ -74,7 +74,7 @@ tray = I3Tray()
 
 print 'Using RUNNR: ', options.RUNNUMBER
 print "DOM efficiency: ", options.EFFICIENCY
-print "Using hole ice: ", options.HOLEICE 
+#print "Using hole ice: ", options.HOLEICE 
 print "Looking for ice model in ", expandvars("$I3_SRC/ice-models/resources/models/")
 
 if options.ICEMODEL=="" or options.ICEMODEL==None:
