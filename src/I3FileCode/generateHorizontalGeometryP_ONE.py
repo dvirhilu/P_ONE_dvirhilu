@@ -10,20 +10,20 @@ Parameters that can be modified:
 4. Number of DOMS per string (default 10)
 5. Total DOMs (default 200)
 6. spacing between layers (default 50m)
-7. different distortion types (detailed in gcdHelpers, default simple_offset)
+7. different distortion types (detailed in gcdHelpers, default simple_offset, simple_spacing)
 '''
 
 from icecube import dataclasses, dataio, icetray
 from icecube.icetray import I3Units, OMKey
 import argparse
 import gcdHelpers
-from gcdHelpers import DistortionType
+from gcdHelpers import OffsetType, SpacingType
 import numpy as np
 
 parser = argparse.ArgumentParser(description = "Generate a geometry based on the flat, circular, horiztal P-ONE design")
 parser.add_argument('-n', '--domsPerString', dest = 'domsPerString',
                     default = 10, help = "number of doms in the generated string" )
-parser.add_argument('-s', '--spacing', dest = 'spacing',
+parser.add_argument('-b', '--basicSpacing', dest = 'basicSpacing',
                     default = 100, help = "Spacing between consecutive DOMs on a string" )
 parser.add_argument('-z', '--depth', dest = 'depth', 
                     default = 2600, help = "starting z position for the geometry" )
@@ -31,36 +31,41 @@ parser.add_argument('-a', '--angle', dest = 'angle',
                     default = 90, help = "angle spanned by the detector (degrees)" )
 parser.add_argument('-l', '--layers', dest = 'layers', 
                     default = 1, help = "number of layers of DOMs in detector" )
-parser.add_argument('-o', '--outname', dest = 'outname', 
-                    help = "starting z position for the geometry" )
 parser.add_argument('-t', '--totalDoms', dest = 'totalDoms', 
                     default = 200, help = "total number of doms in the detector" )
 parser.add_argument('-v', '--verticalSpacing', dest = 'verticalSpacing', 
                     default = 50, help = "spacing between layers of DOMs" )
-parser.add_argument('d', '--DistortionType', dest = 'distTypes', type = DistortionType, choices = list(DistortionType), 
-                    default = ["simple_offset"], action='append', help = "allows for a list of distortions to be provided" )         
+parser.add_argument('-o', '--OffsetType', dest = 'offset_type', type = OffsetType, choices = list(OffsetType), 
+                    default = "simple_offset", help = "Offset type to starting string position" )
+parser.add_argument('-s', '--SpacingType', dest = 'spacing_type', type = SpacingType, choices = list(SpacingType), 
+                    default = "simple_spacing", help = "type of DOM spacing on strings" )                 
 args = parser.parse_args()
 
 # get parsed arguments
 domsPerString = int(args.domsPerString)
-spacing = float(args.spacing) * I3Units.meter
+basicSpacing = float(args.basicSpacing) * I3Units.meter
 zpos = gcdHelpers.convertDepthToZ(float(args.depth)) * I3Units.meter
 startPos = dataclasses.I3Position(0,0,zpos)
 phi = float(args.angle) * I3Units.deg
 layers = int(args.layers)
 totalDoms = int(args.totalDoms)
 verticalSpacing = float(args.verticalSpacing)
-distTypes = args.distTypes
+offset_type = args.offset_type
+spacing_type = args.spacing_type
 
 # calculate parameters from inputs
 domsPerLayer = totalDoms/layers
 stringsPerLayer = domsPerLayer/domsPerString 
 dphi = phi/(stringsPerLayer-1)
 
-if args.outname is not None:
-    outname = args.outname
-else:
-    outname = "HorizGeo_d" + str(domsPerString) +"_s" + str(spacing) + "_a" + str(phi/I3Units.deg) + "_l" + str(layers) + "_" + str(distTypes) + ".i3.gz"
+# create name for output file
+outname = "HorizGeo_d" + str(domsPerString)
+outname += "_s" + str(basicSpacing)
+outname += "_a" + str(phi/I3Units.deg)
+outname += "_l" + str(layers)
+outname += "_" + str(offset_type)
+outname += "_" + str(spacing_type)
+outname += ".i3.gz"
 
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/' + outname, 'w')
 
@@ -69,8 +74,10 @@ def generateLayer(layerNum):
     x = startPos.x
     y = startPos.y
     z = startPos.z + verticalSpacing*layerNum
-    # offset so that first DOMs in each string don't overlap
-    offset = gcdHelpers.generateOffsetList(distType, stringsPerLayer)
+    offset = gcdHelpers.generateOffsetList(offset_type, stringsPerLayer)
+    spacing = gcdHelpers.generateSpacingList(spacing_type, basicSpacing, domsPerString)
+    print(spacing)
+    print(offset)
     layerMap = dataclasses.I3OMGeoMap()
     
     for i in xrange(0, stringsPerLayer):

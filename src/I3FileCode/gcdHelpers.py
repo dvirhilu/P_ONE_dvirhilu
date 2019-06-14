@@ -9,6 +9,7 @@ from icecube import dataio, dataclasses, icetray
 from icecube.dataclasses import I3Constants
 from icecube.icetray import OMKey, I3Units
 from enum import Enum
+import numpy as np
 
 cdfile = dataio.I3File(
     '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz')
@@ -86,9 +87,9 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
     x = startPos.x
     y = startPos.y
     z = startPos.z
-    dx = spacing*direction.x
-    dy = spacing*direction.y
-    dz = spacing*direction.z
+    dx = [spacingVal*direction.x for spacingVal in spacing]
+    dy = [spacingVal*direction.y for spacingVal in spacing]
+    dz = [spacingVal*direction.z for spacingVal in spacing]
 
     # create OMKeys and I3OMGeo for DOMs on string and add them to the map
     for i in xrange(0, numDoms):
@@ -97,7 +98,7 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
         omGeometry.omtype = dataclasses.I3OMGeo.OMType.IceCube
         omGeometry.orientation = orientation
         omGeometry.area = area
-        omGeometry.position = dataclasses.I3Position(x + dx*i, y + dy*i, z + dz*i)
+        omGeometry.position = dataclasses.I3Position(x + dx[i]*i, y + dy[i]*i, z + dz[i]*i)
         geomap[omkey] = omGeometry
     
     return geomap
@@ -111,75 +112,91 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
 # @Return:
 # a list containing different offset values for the starting positions of the 
 # DOM strings
-def generateOffsetList(distTypes, length):
+def generateOffsetList(offset_type, length):
     offsetList = []
 
-    for dist_type in distTypes:
-        if not isinstance(dist_type, DistortionType):
-            raise TypeError('direction must be an instance of OffsetType Enum')
+    if not isinstance(offset_type, OffsetType):
+        raise TypeError('offset_type must be an instance of OffsetType Enum')
 
-    if DistortionType.SimpleOffset in distTypes:
-        offsetList = [50 for i in range(0,length)]
-    elif DistortionType.LinearResetOffset in distTypes:
+    if offset_type == OffsetType.LinearResetOffset:
         offset = 0
         for i in xrange(0,length):
             if(offset > 100):
                 offset = 20
             offsetList.append(offset)
             offset += 20
-    elif DistortionType.LinearRiseFallOffset in distTypes:
+    elif offset_type == OffsetType.LinearRiseFallOffset:
         # start at center
         offset = 0
         # determines whether rising or falling offset
         signFactor = 1
         for i in xrange(0, length):
-            if(offset > 100):
+            if(offset >= 100):
                 signFactor = -1
-            if(offset < 20):
+            if(offset <= 20):
                 signFactor = 1
             offsetList.append(offset)
             offset += 20*signFactor
     else:
-        offsetList = [0 for i in range(0,length)]
-        print("Warning: no offset")
+        offsetList = [50 for i in range(0,length)]
     
     return offsetList
 
 
-def generateSpacingList( distTypes, basicSpacing, length, dphi):
-    spacingList[]
+def generateSpacingList(spacing_type, basicSpacing, length):
+    spacingList = []
+    undistortedStringLength = basicSpacing*length
     
-    for dist_type in distTypes:
-        if not isinstance(dist_type, DistortionType):
-            raise TypeError('direction must be an instance of OffsetType Enum')
+    if not isinstance(spacing_type, SpacingType):
+        raise TypeError('spacing_type must be an instance of SpacingType Enum')
     
-    if DistortionType.LinearRSpacing in distTypes:
-        totalSpacing = 0
+    if spacing_type == SpacingType.LinearRSpacing:
+        r = 0
         for i in xrange(0,length):
-            spacing = basicSpacing - dphi*totalSpacing
+            spacing = basicSpacing * ( 1 - (r/undistortedStringLength) )
+            spacingList.append(spacing)
+            r += spacing
+    elif spacing_type == SpacingType.ExpRSpacing:
+        r = 0
+        for i in xrange(0,length):
+            spacing = basicSpacing * np.exp(-r/undistortedStringLength)
+            spacingList.append(spacing)
+            r += spacing
+    else:
+        spacingList = [basicSpacing for i in range(0,length)]
+    
+    return spacingList
     
 
 
 
-# an enum class to keep track of different distortion types. Distortion precedence
-# is given by order of listing:
-
-# SimpleOffset:         Constant offset of 50m to prevent overlapping (default)
+# an enum class to keep track of different offset types
+#
+# SimpleOffset:         offset of 50m to avoid DOMs overlapping        
 # LinearResetOffset:    Offset starts at and increases by 20m with each string. 
 #                       If it reaches 100m, it resets back to 20m.
 # LinearRiseFallOffset: Offset starts at 0 and increases by 20m with each string. 
 #                       If it reaches 100m, offset starts decreasing by 20m. 
 #                       When reaching 20m, starts increasing again.
-# LinearRSpacing:       Spacing decreases linearly with r according to the equation
-#                       spacing = baseSpacing - dphi*r where dphi is the separation
-#                       angle between strings. This is done because a larger angle of
-#                       separation should cause the DOMs to be closer on the string
-
-class DistortionType(Enum):
+class OffsetType(Enum):
     SimpleOffset = "simple_offset"
     LinearResetOffset = "linear_reset_offset"
     LinearRiseFallOffset = "rise_fall_offset"
+
+    def __str__(self):
+        return self.value
+
+# an enum class to keep track of different spacing types
+#
+# SimpleSpacing:        uniform spacing determined by the basicSpacing parameter
+# LinearRSpacing:       Spacing decreases linearly with r according to the equation
+#                       spacing = basicSpacing * ( 1 - (r/totalStringLength) )
+# ExpRSpacing:          Spacing decreases exponentially with r according to the euqatiion
+#                       spacing = basicSpacing * np.exp(-r/undistortedStringLength)
+class SpacingType(Enum):
+    SimpleSpacing = "simple_spacing"
     LinearRSpacing = "linear_r_spacing"
+    ExpRSpacing = "exp_r_spacing"
 
     def __str__(self):
         return self.value
