@@ -75,7 +75,7 @@ OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step2
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}
 echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}
 
-GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/gcd/HorizGeo_n10_b100.0_a90.0_l1_rise_fall_offset_exp_r_spacing.i3.gz
 echo "GCD: " $GCD_FILE
 
-$i3env python $script -t -i ${INDIR}/${FLV}/${INNAME} -g ${GCD_FILE} -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -l ${FILE_NR} -c ${CROSS_E} -e ${EFF}
+$i3env python $script -t -i ${INDIR}/${FLV}/${INNAME} -g ${GCD_FILE} -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -l ${FILE_NR} -c ${CROSS_E} -e ${EFF} -m $ICEMODEL
