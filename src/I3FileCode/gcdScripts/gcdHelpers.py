@@ -103,12 +103,35 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
     
     return geomap
 
+def generateDOMLine(startStringNum, startPos, spacing, direction, vertSpacing, stringsPerLine):
+    orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)          # same orientation as icecube DOMs (dir=down)
+    area = 0.04439999908208847*I3Units.meter2                           # same area as icecube DOMs
+    lineMap = dataclasses.I3OMGeoMap()
+    x = startPos.x
+    y = startPos.y
+    z = startPos.z
+    dx = [spacingVal*direction.x for spacingVal in spacing]
+    dy = [spacingVal*direction.y for spacingVal in spacing]
+    dz = [spacingVal*direction.z for spacingVal in spacing]
+    
+    for i in xrange(0, stringsPerLine):
+        stringNum = startStringNum + i
+        stringPos = dataclasses.I3Position(x + dx[i]*i, y + dy[i]*i, z + dz[i]*i)
+        stringDirection = dataclasses.I3Direction(0, 0, 1)
+        stringMap = generateOMString( stringNum, stringPos, domsPerString, vertSpacing, stringDirection)
+        lineMap.update(stringMap)
+    
+    return lineMap
+
+
+
 
 # Generates a list of offsets to the DOM string starting positions. Different
 # offset types are described in OffsetType enum class
 # @Param:
-# offsetType:       an enum representing the different available offset methods
-# length:           the length of the resulting list
+# offset_type:       an enum indicating which offset method is chosen
+# length:           the length of the resulting list. Should be equal to number 
+#                   of strings in the layer
 # @Return:
 # a list containing different offset values for the starting positions of the 
 # DOM strings
@@ -142,7 +165,15 @@ def generateOffsetList(offset_type, length):
     
     return offsetList
 
-
+# Generates a list detailing the spacings between DOMs along a string. Different
+# spacing types are described in SpacingType enum class
+# @Param:
+# spacing_type:     an enum indicating which spacing method was chosen
+# basicSpacing:     the spacing between the first two DOMs
+# length:           the length of the resulting list. Should be equal to number 
+#                   of DOMs in the string
+# @Return:
+# a list containing different spacing values for the DOMs along the string
 def generateSpacingList(spacing_type, basicSpacing, length):
     spacingList = []
     undistortedStringLength = basicSpacing*length
