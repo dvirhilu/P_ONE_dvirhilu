@@ -103,7 +103,7 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
     
     return geomap
 
-def generateDOMLine(startStringNum, startPos, spacing, direction, vertSpacing, stringsPerLine):
+def generateDOMLine(startStringNum, startPos, spacing, direction, vertSpacing, stringsPerLine, layers):
     orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)          # same orientation as icecube DOMs (dir=down)
     area = 0.04439999908208847*I3Units.meter2                           # same area as icecube DOMs
     lineMap = dataclasses.I3OMGeoMap()
@@ -113,12 +113,13 @@ def generateDOMLine(startStringNum, startPos, spacing, direction, vertSpacing, s
     dx = [spacingVal*direction.x for spacingVal in spacing]
     dy = [spacingVal*direction.y for spacingVal in spacing]
     dz = [spacingVal*direction.z for spacingVal in spacing]
+    stringSpacing = [vertSpacing for i in range(0,layers)]
     
     for i in xrange(0, stringsPerLine):
         stringNum = startStringNum + i
         stringPos = dataclasses.I3Position(x + dx[i]*i, y + dy[i]*i, z + dz[i]*i)
         stringDirection = dataclasses.I3Direction(0, 0, 1)
-        stringMap = generateOMString( stringNum, stringPos, domsPerString, vertSpacing, stringDirection)
+        stringMap = generateOMString( stringNum, stringPos, layers, stringSpacing, stringDirection)
         lineMap.update(stringMap)
     
     return lineMap

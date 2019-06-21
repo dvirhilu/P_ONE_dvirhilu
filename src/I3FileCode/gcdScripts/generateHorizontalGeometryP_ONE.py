@@ -51,15 +51,16 @@ offset_type = args.offset_type
 spacing_type = args.spacing_type
 
 # calculate parameters from inputs
-linesPerLayer = np.ceil( (180-dphi) / (2*dphi) ) + 1    # calculates how many horizontal strings are needed to avoid redundancy
-totalDOMs = linesPerLayer * layers                      
-dphi = 2 * angularAcceptance                            # to avoid overlap angular spacing needs to be 2*angularAcceptance 
+dphi = 2 * angularAcceptance                                # to avoid overlap angular spacing needs to be 2*angularAcceptance 
+linesPerLayer = int(np.ceil( 180*I3Units.deg / dphi ))     # calculates how many horizontal strings are needed to avoid redundancy
+totalDOMs = linesPerLayer * layers
 
+print(dphi/I3Units.deg, angularAcceptance/I3Units.deg, linesPerLayer, (linesPerLayer-1)*dphi/I3Units.deg)
 
 # create name for output file
 outname = "CorrHorizGeo_n" + str(domsPerLine)
 outname += "_b" + str(basicSpacing)
-outname += "_a" + str(dphi/I3Units.deg)
+outname += "_a" + str(angularAcceptance/I3Units.deg)
 outname += "_l" + str(layers)
 outname += "_" + str(offset_type)
 outname += "_" + str(spacing_type)
@@ -82,9 +83,9 @@ spacing = gcdHelpers.generateSpacingList(spacing_type, basicSpacing, domsPerLine
 # loop to create DOM lines
 for i in xrange(0, linesPerLayer):
     direction = dataclasses.I3Direction(np.cos(i*dphi), np.sin(i*dphi), 0)
-    lineStart = dataclasses.I3Position(x + offset[i]*direction.x, y + offset[i]*direction.y, z)
+    lineStart = dataclasses.I3Position(xpos + offset[i]*direction.x, ypos + offset[i]*direction.y, zpos)
     startingStringNum = 1 + i*domsPerLine
-    lineMap = generateDOMLine(startStringNum, lineStart, spacing, direction, verticalSpacing, domsPerLine)
+    lineMap = gcdHelpers.generateDOMLine(startingStringNum, lineStart, spacing, direction, verticalSpacing, domsPerLine, layers)
     geometry.omgeo.update(lineMap)
 
 
