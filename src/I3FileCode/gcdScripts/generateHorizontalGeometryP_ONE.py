@@ -21,9 +21,9 @@ import numpy as np
 
 parser = argparse.ArgumentParser(description = "Generate a geometry based on the flat, circular, horiztal P-ONE design")
 parser.add_argument('-n', '--domsPerLine', dest = 'domsPerLine',
-                    default = 10, help = "number of vertical strings in a generated DOM line" )
+                    default = 15, help = "number of vertical strings in a generated DOM line" )
 parser.add_argument('-b', '--basicSpacing', dest = 'basicSpacing',
-                    default = 150, help = "Spacing between consecutive vertical strings on a DOM line" )
+                    default = 100, help = "Spacing between consecutive vertical strings on a DOM line" )
 parser.add_argument('-z', '--depth', dest = 'depth', 
                     default = 2600, help = "starting z position for the geometry" )
 parser.add_argument('-a', '--angularAcceptance', dest = 'angularAcceptance', 
@@ -66,7 +66,7 @@ outname += "_" + str(offset_type)
 outname += "_" + str(spacing_type)
 outname += ".i3.gz"
 
-outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/' + outname, 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/corHorizgeo/' + outname, 'w')
 
 # create new geometry object
 geometry = dataclasses.I3Geometry()

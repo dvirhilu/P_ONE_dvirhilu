@@ -12,7 +12,7 @@ from enum import Enum
 import numpy as np
 
 cdfile = dataio.I3File(
-    '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz')
+    '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/cal_DS_Files/Calib_and_DetStat_File.i3.gz')
 cdframe = cdfile.pop_frame()
 calib = cdframe["I3Calibration"]
 start_time = calib.start_time
@@ -73,10 +73,9 @@ def generateDFrame(geometry):
 # startPos:     an I3Position object with the location 
 #               of the top of the string
 # numDoms:      number of DOMs on the string
-# spacing:      vertical distance between adjacent DOMs
+# spacing:      array detailing DOM spacing on string
 # direction:    an I3Direction object representing the 
-#               direction of the line of the string, 
-#               facing away from 
+#               direction of the line of the string
 # @Return:
 # an I3OMGeoMap object with the DOMs on the string and their
 # geometries
@@ -103,7 +102,25 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
     
     return geomap
 
-def generateDOMLine(startStringNum, startPos, spacing, direction, vertSpacing, stringsPerLine, layers):
+# Generates a line of DOMs with vertical strings. This was
+# necessary due to complications caused by clsim's xy divisions.
+# The simulation divides the grid into x-y cells, but this
+# is only compatible with verticle strings since it tries to 
+# divide it such that only one string fits in an x-y cell.
+# @Param:
+# stringNum:    an integer representing the id of the first
+#               string in the DOM line
+# startPos:     an I3Position object with the location of
+#               the start of the DOM line
+# spacing:      array detailing DOM spacing on line
+# direction:    an I3Direction object representing the 
+#               direction of the line
+# vertSpacing:  integer representing the distance between layers
+# numStrings:   number of strings per DOM line
+# layers:       number of DOMs in each string in the DOM line
+# @Return:
+# an I3GeoMap objects with the geometries of DOMs in the line
+def generateDOMLine(stringNum, startPos, spacing, direction, vertSpacing, numStrings, layers):
     orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)          # same orientation as icecube DOMs (dir=down)
     area = 0.04439999908208847*I3Units.meter2                           # same area as icecube DOMs
     lineMap = dataclasses.I3OMGeoMap()
@@ -115,11 +132,11 @@ def generateDOMLine(startStringNum, startPos, spacing, direction, vertSpacing, s
     dz = [spacingVal*direction.z for spacingVal in spacing]
     stringSpacing = [vertSpacing for i in range(0,layers)]
     
-    for i in xrange(0, stringsPerLine):
-        stringNum = startStringNum + i
+    for i in xrange(0, numStrings):
+        currentNum = stringNum + i
         stringPos = dataclasses.I3Position(x + dx[i]*i, y + dy[i]*i, z + dz[i]*i)
         stringDirection = dataclasses.I3Direction(0, 0, 1)
-        stringMap = generateOMString( stringNum, stringPos, layers, stringSpacing, stringDirection)
+        stringMap = generateOMString( currentNum, stringPos, layers, stringSpacing, stringDirection)
         lineMap.update(stringMap)
     
     return lineMap
@@ -130,9 +147,9 @@ def generateDOMLine(startStringNum, startPos, spacing, direction, vertSpacing, s
 # Generates a list of offsets to the DOM string starting positions. Different
 # offset types are described in OffsetType enum class
 # @Param:
-# offset_type:       an enum indicating which offset method is chosen
-# length:           the length of the resulting list. Should be equal to number 
-#                   of strings in the layer
+# offset_type:  an enum indicating which offset method is chosen
+# length:       the length of the resulting list. Should be equal to number 
+#               of strings in the layer
 # @Return:
 # a list containing different offset values for the starting positions of the 
 # DOM strings
