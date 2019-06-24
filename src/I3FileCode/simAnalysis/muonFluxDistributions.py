@@ -57,7 +57,7 @@ xmin = -1
 xmax = 1
 plt.hist(azimuth, range = (xmin,xmax), histtype = "step", log = True, bins = 45)
 plt.title("Muon Angular Distribution (Azimuth)")
-plt.xlabel("Azimuth (degrees)")
+plt.xlabel("cos(phi)")
 plt.show()
 
 plt.figure()
@@ -65,7 +65,14 @@ xmin = -1
 xmax = 1
 plt.hist(zenith, range = (xmin,xmax), histtype = "step", log = True, bins = 45)
 plt.title("Muon Angular Distribution (Zenith)")
-plt.xlabel("Zenith (degrees)")
+plt.xlabel("cos(theta)")
+plt.show()
+
+plt.figure()
+plt.hist2d(energy,zenith, bins = 100)
+plt.title("Distribution of Produced Muons at Various Energies and Directions")
+plt.xlabel("cos(theta)")
+plt.ylabel("Energy (GeV)")
 plt.show()
 
 outfile.close()
