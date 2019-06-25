@@ -36,26 +36,62 @@ for line in configArray:
 outfile.close()
 
 # parameters
-kappa = str(1.0) + '\t# dust absorption wavelength dependence exponent'
-
-# least squares fit to find alpha
+# least squares fit to find alpha and kappa
 coefficientMatrix = np.column_stack( (np.log(wavelengths/400.0), np.ones( len(wavelengths) )) )
-leastSquaresMatrix = np.dot(coefficientMatrix.T, coefficientMatrix)
-leastSquaresRS = np.dot(coefficientMatrix, scattering.T)
-leastSquaresSolution = np.dot( la.inv(leastSquaresMatrix), leastSquaresRS)
-print(coefficientMatrix)
-print( la.inv(leastSquaresMatrix))
-print(leastSquaresSolution)
+leastSquaresMatrix = np.matmul(coefficientMatrix.T, coefficientMatrix)
+leastSquaresRSScat = np.matmul(coefficientMatrix.T, np.log(scattering.T))
+leastSquaresRSAbs = np.matmul(coefficientMatrix.T, np.log(absorption.T))
+scatLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSScat)
+absLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSAbs)
 
-x = np.linspace(-0.1,0.2,10)
-y = [ leastSquaresSolution[0]*i + leastSquaresSolution[1] for i in x]
+# check fit works
+x = np.linspace(300,500,201)
+y = [ (np.e**scatLSS[1])*( (i/400)**scatLSS[0])  for i in x]
 plt.plot(x,y)
-plt.scatter( np.log(wavelengths/400.0), np.log(scattering/400.0) )
+plt.scatter( wavelengths, scattering )
 plt.show()
 
-# writing data: assumes all absorption falls under pure absorption
+# check fit works
+plt.figure()
+x = np.linspace(300,500,201)
+y = [ (np.e**absLSS[1])*( (i/400)**absLSS[0])  for i in x]
+plt.plot(x,y)
+plt.scatter( wavelengths, absorption )
+plt.show()
+
+alpha = str(scatLSS[0]) + '\t# scattering wavelength dependence power law exponent\n'
+kappa = str(absLSS[0]) + '\t# absorption wavelength dependence power law exponent\n'
+b_e_400 = scatLSS[1]
+a_e_400 = absLSS[1]
+
+# keep only power law portion of absorption coefficient
+A = str(0) + '\t# absorption exponential component multiple - ignored\n'
+B = str(0) + '\t# absorption exponential component exponent multiple - ignored\n'
+
+configArray = [alpha, kappa, A, B]
+
+outfile = open(outfilepath + "icemodel.par", 'w')
+
+for line in configArray:
+    outfile.write(line)
+
+outfile.close()
+
+# writing data: assumes all absorption falls under power law component
 min_depth = 1000
 max_depth = 2800
 spacing = 10
-num_elements = ((max_depth - min_depth) / spacing) + 1
+num_elements = int(((max_depth - min_depth) / spacing)) + 1
 depth = np.linspace(1000,2800,num_elements)
+b_e = [b_e_400 for i in xrange(num_elements)]
+a_e = [a_e_400 for i in xrange(num_elements)]
+# assume no temperature difference
+dT = [0 for i in xrange(num_elements)]
+
+outfile = open(outfilepath + "icemodel.dat", 'w')
+
+for i in xrange(num_elements):
+    line = str(depth[i]) + " " + str(b_e[i]) + " " + str(a_e[i]) + " " + str(dT[i]) + '\n'
+    outfile.write(line)
+
+outfile.close()
