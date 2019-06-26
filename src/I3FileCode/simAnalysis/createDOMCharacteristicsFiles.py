@@ -17,6 +17,7 @@ def GetIceCubeDOMAngularSensitivity(holeIce=expandvars("$I3_BUILD/ice-models/res
     """
     
     coefficients = numpy.loadtxt(holeIce)[1:].tolist()
+    print(coefficients)
     
     return I3CLSimFunctionPolynomial(coefficients)
 
@@ -103,7 +104,7 @@ def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQ
 
     return domEfficiency
 
-filePath = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/'
+filePath = '/project/6008051/dvirhilu/P_ONE_dvirhilu/DOMCharacteristics/'
 filenameAE = 'icecubeAngularEfficiency.dat'
 filenameDE = 'icecubeDOMEfficiency.dat'
 
