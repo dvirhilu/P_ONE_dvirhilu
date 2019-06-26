@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-from icecube import icetray, dataclasses
-from icecube.clsim import I3CLSimFunctionPolynomial, I3CLSimFunctionFromTable
+from icecube import dataclasses
+from icecube.icetray import I3Units
 
-from I3Tray import I3Units
-
-import numpy, math
+import numpy as np
 from os.path import expandvars
 
 # taken from clsim/python/GetIceCubeDOMAngularSensitivity
@@ -16,10 +14,9 @@ def GetIceCubeDOMAngularSensitivity(holeIce=expandvars("$I3_BUILD/ice-models/res
     (for IceCube, straight down).
     """
     
-    coefficients = numpy.loadtxt(holeIce)[1:].tolist()
-    print(coefficients)
-    
-    return I3CLSimFunctionPolynomial(coefficients)
+    coefficients = np.loadtxt(holeIce)[1:].tolist()
+   
+    return coefficients
 
 # taken from clsim/python/GetIceCubeDOMAcceptance
 def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQE=False):
@@ -92,27 +89,37 @@ def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQ
     0.0001782310,
     0.0001144300,
     0.0000509155]
-    dom2007a_eff_area = numpy.array(dom2007a_eff_area)*I3Units.meter2 # apply units (this is an effective area)
-    domArea = math.pi*domRadius**2.
+    dom2007a_eff_area = np.array(dom2007a_eff_area)*I3Units.meter2 # apply units (this is an effective area)
+    domArea = np.pi*domRadius**2.
     dom2007a_efficiency = efficiency*(dom2007a_eff_area/domArea)
     
     if highQE:
-        wv, rde = numpy.loadtxt(expandvars('$I3_BUILD/ice-models/resources/models/wavelength/wv.rde')).T
-        dom2007a_efficiency *= numpy.interp(260 + 10*numpy.arange(len(dom2007a_efficiency)), wv, rde)
+        wv, rde = np.loadtxt(expandvars('$I3_BUILD/ice-models/resources/models/wavelength/wv.rde')).T
+        dom2007a_efficiency *= np.interp(260 + 10*np.arange(len(dom2007a_efficiency)), wv, rde)
 
-    domEfficiency = I3CLSimFunctionFromTable(260.*I3Units.nanometer, 10.*I3Units.nanometer, dom2007a_efficiency)
+    return  260.*I3Units.nanometer, 10.*I3Units.nanometer, dom2007a_efficiency
 
-    return domEfficiency
-
-filePath = '/project/6008051/dvirhilu/P_ONE_dvirhilu/DOMCharacteristics/'
-filenameAE = 'icecubeAngularEfficiency.dat'
+filePath = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/'
+filenameAA = 'icecubeAngularAcceptance.dat'
 filenameDE = 'icecubeDOMEfficiency.dat'
 
-aeFile = open(filePath + filenameAE, 'w')
+aaFile = open(filePath + filenameAA, 'w')
 deFile = open(filePath + filenameDE, 'w')
 
-angularEfficiency = GetIceCubeDOMAngularSensitivity()
-domEfficiency = GetIceCubeDOMAcceptance()
+angularAcceptance = GetIceCubeDOMAngularSensitivity()
+startWavelength, steps, effValues = GetIceCubeDOMAcceptance()
 
-print(angularEfficiency)
-print(domEfficiency)
+aaFile.write("# This file contains polynomial coefficients for DOM angular Acceptance\n")
+for i in range(len(angularAcceptance)):
+    line = str(angularAcceptance[i]) + '\n'
+    aaFile.write(line)
+
+aaFile.close()
+
+deFile.write("# This file contains input output values for the DOM efficiency distribution (eff vs. wavelength)\n")
+for i in range(len(effValues)):
+    wavelength = startWavelength + i*steps
+    line = str(wavelength) + " " + str(effValues[i]) + "\n"
+    deFile.write(line)
+
+deFile.close()
