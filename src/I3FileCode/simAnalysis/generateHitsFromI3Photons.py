@@ -1,13 +1,33 @@
 #!/usr/bin/env python
 
 from icecube import dataio, dataclasses, simclasses
-from icecube.icetray import I3Units, OMKey
+from icecube.icetray import I3Units, OMKey, I3Frame
+from icecube.dataclasses import ModuleKey
 import numpy as np
 import matplotlib.pyplot as plt
 from os.path import expandvars
+import argparse
 
+parser = argparse.ArgumentParser(description = "Takes I3Photons from step2 of the simulations and generates DOM hits")
+parser.add_argument('-n', '--runNum', dest = 'runNum', help = "number assigned to this specific run" )
+parser.add_argument('-m', '--isMuonGun',dest = 'isMuonGun', action='store_true', help="is this a simulation done with muongun or genie")
+args = parser.parse_args()
+
+if args.isMuonGun:
+    outname = 'MuonGun_customGenHits_' + str(args.runNum) + '.i3.gz'
+else:
+    outname = 'Genie_customGenHits_' + str(args.runNum) + '.i3.gz'
 
 infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step2/MuonGun_step2_139005_000000.i3.bz2')
+geofile = dataio.I3File('/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
+outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/customGenHitsMuongun/' + outname, 'w')
+
+# taken from 
+
+# get geometry
+gframe = geofile.pop_frame(I3Frame.Geometry)
+geometry = gframe["I3Geometry"]
+geoMap = geometry.omgeo
 
 # get all Q frames
 qframes = []
@@ -22,6 +42,88 @@ filenameAngAcc = 'icecubeAngularAcceptance.dat'
 domEff = np.loadtxt(inFolder + filenameDomEff, unpack = True)
 angAcc = np.loadtxt(inFolder + filenameAngAcc)
 
+def getAngularAcceptanceValue(cos_theta):
+    sumVal = 0
+    for i in range(len(angAcc)):
+        sumVal += cos_theta**i * angAcc[i]
+    
+    return sumVal
+
+def getDOMAcceptanceValue(wavelength):
+    # spacing might not be even just search through
+    wlens = domEff[0]
+    values = domEff[1]
+
+    if(wavelength < wlens[0]):
+        raise RuntimeWarning("wavelength too low, using lowest wavelength in range")
+        return values[0]
+    elif(wavelength > wlens[len(wlens) - 1]):
+        raise RuntimeWarning("wavelength too high, using highest wavelength in range")
+        return values[len(wlens) - 1]
+    else:
+        index = 0
+        for i in range(len(wlens)):
+            if( wavelength > wlens[i]):
+                index = i
+                break
+        fraction = (wavelength - wlens[index])/(wlens[index+1] - wlens[index])
+        return values[index] + (values[index+1]-values[index])*fraction
+
+def getSurvivalProbability(photon, omkey):
+    domGeo = geoMap[omkey]
+    domDirection = domGeo.direction
+    photonDirection = photon.dir
+    dotProduct = photonDirection.x*domDirection.x + photonDirection.y*domDirection.y + photonDirection.z*domDirection.z
+    # photon coming in, direction coming out. Sign on dot product should be flipped
+    # directions are unit vectors already so cos_theta = -dotProduct (due to sign flip)
+    probAngAcc = getAngularAcceptanceValue(-dotProduct)
+
+    probDOMAcc = getDOMAcceptanceValue(photon.wavelength)
+
+    return probAngAcc*probDOMAcc*photon.weight     
+
+def survived(photon,omkey):
+    probability = getSurvivalProbability(photon, omkey)
+    randomNumber = np.random.uniform()
+
+    if(probability > randomNumber):
+        return True
+
+    return False
+
+def generateMCPEList(photons, modkey):
+    omkey = OMKey(modkey.string, modkey.om, 0)
+    mcpeList = simclasses.I3MCPESeries()
+    for photon in photons:
+        if survived(photon,omkey):
+            mcpe = simclasses.I3MCPE()
+            #mcpe.id = dataclasses.I3ParticleID(photon.particleMajorID, photon.particleMinorID)
+            mcpe.npe = 1
+            mcpe.time = photon.time #TODO: change to corrected time
+            mcpeList.append(mcpe)
+    
+    return mcpeList
+
+
+# TODO: def getCorrectedTime(photon, omkey):
+
+for frame in qframes:
+    photonDOMMap = frame["I3Photons"]
+    mcpeMap = simclasses.I3MCPESeriesMap()
+    for modkey in photonDOMMap.keys():
+        mcpeList = generateMCPEList(photonDOMMap[modkey], modkey)
+        omkey = OMKey(modkey.string, modkey.om, 0)
+        mcpeMap[omkey] = mcpeList
+    frame["MCPESeriesMap"] = mcpeMap
+    outfile.push(frame)
+
+
+outfile.close()
+
+            
+
+
+'''
 # plot distributions
 cos_theta = np.linspace(-1,1,100)
 probAcc = np.array([])
@@ -46,3 +148,4 @@ plt.title("DOM Efficiency vs. Wavelength")
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("Efficiency")
 plt.show()
+'''
