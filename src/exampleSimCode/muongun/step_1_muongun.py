@@ -38,6 +38,11 @@ parser.add_argument("--inner-cylinder-y", type=float, default=-34.88, help="Inne
 parser.add_argument("--inner-cylinder-z", type=float, default=-300, help="Inner target cylinder origin z [m]")
 parser.add_argument("--inner-cylinder-radius", type=float, default=150., help="Inner target cylinder radius [m]")
 parser.add_argument("--inner-cylinder-length", type=float, default=500., help="Inner target cylinder length [m]")
+parser.add_argument("--outer-cylinder-x", type=float, default=0., help="Outer target cylinder origin x [m]")
+parser.add_argument("--outer-cylinder-y", type=float, default=0., help="Outer target cylinder origin y [m]")
+parser.add_argument("--outer-cylinder-z", type=float, default=-700., help="Outer target cylinder origin z [m]")
+parser.add_argument("--outer-cylinder-radius", type=float, default=1600., help="Outer target cylinder radius [m]")
+parser.add_argument("--outer-cylinder-length", type=float, default=300., help="Outer target cylinder length [m]")
 parser.add_argument('--kde', action='store_true', help="Use a KDE pre-scale to weight event generation towards events likely to survive to higher processing levels")
 args = parser.parse_args()
 
@@ -90,14 +95,14 @@ spectrum = MuonGun.OffsetPowerLaw(
 # Create an outer surface
 # This will be the generation volume
 outer_surface_center = icecube.dataclasses.I3Position(
-    0.,
-    0.,
-    0.,
+    args.outer_cylinder_x,
+    args.outer_cylinder_y,
+    args.outer_cylinder_z,
 ) * icecube.icetray.I3Units.m 
 
 outer_surface = icecube.MuonGun.Cylinder(
-    length=1600. * icecube.icetray.I3Units.m,
-    radius=800. * icecube.icetray.I3Units.m,
+    length=args.outer_cylinder_length * icecube.icetray.I3Units.m,
+    radius=args.outer_cylinder_radius * icecube.icetray.I3Units.m,
     center=outer_surface_center,
 )
 

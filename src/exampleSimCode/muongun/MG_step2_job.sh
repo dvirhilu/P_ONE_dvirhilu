@@ -19,43 +19,41 @@ echo "Will use i3 environment: " ${i3env}
 script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/muongun/step_2_clsim_setCrossE.py
 echo "Will use script: " $script
 
-OUTRUN=$1
+RUNTYPE=$1
+MEDIUMNAME=$2
 
-if [ "$OUTRUN" == "139005" ]; then
-    echo "Found configuration for " $OUTRUN
-    INRUN=139005
-    ICEMODEL="spice_3.2.1"
-    CROSSENERGY=200.0
-elif [ "$OUTRUN" == "139006" ]; then
-    echo "Found configuration for " $OUTRUN
-    INRUN=139006
-    ICEMODEL="ANTARES"
-    CROSSENERGY=200.0
-elif [ "$OUTRUN" == "139008" ]; then
-    echo "Found configuration for " $OUTRUN
-    INRUN=139008
-    ICEMODEL="ANTARES"
-    CROSSENERGY=200.0
-elif [ "$OUTRUN" == "139010" ]; then
-    echo "Found configuration for " $OUTRUN
-    INRUN=139010
-    ICEMODEL="ANTARES"
-    CROSSENERGY=200.0
+if [ "$RUNTYPE" == "testString" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=$3
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testString/${GCDNAME}.i3.gz
+elif [ "$RUNTYPE" == "HorizGeo" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=$3
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testString/${GCDNAME}.i3.gz
+elif [ "$RUNTYPE" == "IceCube" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+    echo "Using IceCube GCD"
 else 
-    echo "No configuration for " $OUTRUN "... exiting"
+    echo "No configuration for " $RUNTYPE "... exiting"
     exit
 fi
+
+MEDIUMMODEL=/project/6008051/dvirhilu/P_ONE_dvirhilu/propagationMediumModels/${MEDIUMMODEL}
+CROSSENERGY=200.0
 echo "INRUN       : " $INRUN
-echo "ICEMODEL    : " $ICEMODEL
+echo "MEDIUMMODEL    : " $MEDIUMMODEL
 echo "CROSSENERGY : " $CROSSENERGY
-INFILENAME=MuonGun_step1_${INRUN}_${FILE_NR}.i3.bz2
+INFILENAME=MuonGun_step1_${RUNTYPE}_${FILE_NR}.i3.bz2
 INFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/muongun/muongun_step1
 
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
-OUTFILENAME=MuonGun_step2_${OUTRUN}_${FILE_NR}.i3.bz2
+OUTFILENAME=MuonGun_step2_${RUNTYPE}_${FILE_NR}.i3.bz2
 OUTFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/muongun/muongun_step2
 echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
 echo "GCD: " $GCD_FILE
 
-$i3env python $script -t -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER}/${OUTFILENAME} -r ${OUTRUN} -l ${SLURM_ARRAY_TASK_ID} -c ${CROSSENERGY} -m $ICEMODEL
+$i3env python $script -t -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER}/${OUTFILENAME} -r ${RUNTYPE} -l ${SLURM_ARRAY_TASK_ID} -c ${CROSSENERGY} -m $MEDIUMMODEL
