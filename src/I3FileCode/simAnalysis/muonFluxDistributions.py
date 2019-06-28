@@ -19,6 +19,7 @@ zenith = []
 azimuth = []
 energy = []
 zdirection = []
+weight = []
 i=1
 for frame in qframes:
     # get propagated muon
@@ -28,6 +29,8 @@ for frame in qframes:
 
     # add muon energy
     energy.append(muon.energy / I3Units.GeV)
+    weighter = frame["I3MCWeightDict"]
+    weight.append(weighter["weight"])
 
     # get muon direction
     muonDirection = muon.dir
@@ -47,31 +50,31 @@ for frame in qframes:
 # plot histograms
 xmin = 500 * I3Units.GeV
 xmax = 1 * I3Units.TeV
-plt.hist(energy, range = (xmin,xmax), histtype = "step", log = True, bins = 25)
-plt.title("Muon Energy Distribution")
+plt.hist(energy, range = (xmin,xmax), histtype = "step", log = True, weights = weight, bins = 20)
+plt.title("Weighted Muon Energy Distribution")
 plt.xlabel("E(GeV)")
 plt.show()
 
 plt.figure()
 xmin = -1
 xmax = 1
-plt.hist(azimuth, range = (xmin,xmax), histtype = "step", log = True, bins = 45)
-plt.title("Muon Angular Distribution (Azimuth)")
+plt.hist(azimuth, range = (xmin,xmax), histtype = "step", log = True, weights = weight, bins = 20)
+plt.title("Weighted Muon Angular Distribution (Azimuth)")
 plt.xlabel("cos(phi)")
 plt.show()
 
 plt.figure()
 xmin = -1
 xmax = 1
-plt.hist(zenith, range = (xmin,xmax), histtype = "step", log = True, bins = 45)
-plt.title("Muon Angular Distribution (Zenith)")
-plt.xlabel("cos(theta)")
+plt.hist(zenith, range = (xmin,xmax), histtype = "step", log = True, weights = weight, bins = 20)
+plt.title("Weighted Muon Angular Distribution (Zenith)")
+plt.xlabel("Cosine of Zenith Angle")
 plt.show()
 
 plt.figure()
-plt.hist2d(energy,zenith, bins = 100)
-plt.title("Distribution of Produced Muons at Various Energies and Directions")
-plt.xlabel("cos(theta)")
+plt.hist2d(zenith, energy, weights = weight, bins = 20)
+plt.title("Weighted Distribution of Muons at Various Energies and Directions")
+plt.xlabel("Cosine of Zenith Angle")
 plt.ylabel("Energy (GeV)")
 plt.show()
 

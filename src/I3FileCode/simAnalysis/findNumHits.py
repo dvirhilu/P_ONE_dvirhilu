@@ -5,44 +5,62 @@ from icecube.icetray import I3Units, OMKey
 import matplotlib.pyplot as plt
 import numpy as np
 
-infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step3/MuonGun_step3_139005_000000.i3.bz2')
+step3infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step3/MuonGun_step3_139005_000000.i3.bz2')
+custominfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/customGenHitsMuongun/MuonGun_customGenHits_0.i3.gz')
+missingHitsFile = open("MissingHits.txt", 'w')
 
 # get all Q frames
-qframes = []
-while(infile.more()):
-    qframes.append(infile.pop_daq())
+step3qframes = []
+while(step3infile.more()):
+    step3qframes.append(step3infile.pop_daq())
 
-# create a list of number of photons detected
-eventNum = np.linspace(1, len(qframes), len(qframes))
-peCount = np.array([])
-domHits = np.array([])
-nDomsWLight = np.array([])
+customqframes = []
+while(custominfile.more()):
+    customqframes.append(custominfile.pop_daq())
 
-# fill information about hits
-for frame in qframes:
-    series_map = frame["MCPESeriesMap"]
-    nDomsWLight = np.append(nDomsWLight, len(series_map) )
-    hits = 0
-    pe = 0
+# create a dictionary of event header and frame to ensure events match up
+evtFrameMap = {}
+for frame in customqframes:
+    header = frame["I3EventHeader"]
+    evtFrameMap[header.event_id] = frame
+
+def getNumHitsInFrame(frame):
+    mcpeSeriesMap = frame["MCPESeriesMap"]
+    numHits = 0
+
+    for omkey in mcpeSeriesMap.keys():
+        hits = mcpeSeriesMap[omkey]
+        numHits += len(hits)
     
-    for omkey in series_map.keys():
-        hitArray = series_map[omkey]
-        hits += len(hitArray)
-        for hit in hitArray:
-            pe += hit.npe
-    
-    domHits = np.append(domHits, hits)
-    peCount = np.append(peCount, pe)
+    return numHits
 
-    
+step3Hits = []
+customHits = []
+event_id = []
 
+for frame in step3qframes:
+    header = frame["I3EventHeader"]
+    evt_id = header.event_id
+    if evt_id in evtFrameMap.keys():
+        event_id.append(evt_id)
+        customFrame = evtFrameMap[evt_id]
+        step3Hits.append(getNumHitsInFrame(frame))
+        customHits.append(getNumHitsInFrame(customFrame))
+    else:
+        hits = getNumHitsInFrame(frame)
+        missingHitsFile.write("Event only in step3 file: \nEventID: " + str(evt_id) + ", Number of Hits: " + str(hits) + "\n\n")
+
+
+for evt_id in evtFrameMap.keys():
+    if not evt_id in event_id:
+        hits = getNumHitsInFrame(evtFrameMap[evt_id])
+        missingHitsFile.write("Event only in custom file: \nEventID: " + str(evt_id) + ", Number of Hits: " + str(hits) + "\n\n" )
 
 # plot hit information vs. event number
-plt.hist(peCount, color = 'blue', label = 'total PE', histtype = 'step', bins = 50)
-plt.hist(domHits, color = 'green', label = 'total DOM hits', histtype = 'step', bins = 50)
-plt.hist(nDomsWLight, color = 'red', label = 'number of DOMs that were hit', histtype = 'step', bins = 50)
-plt.title("Hit Information for Each Event")
-plt.xlabel("Event Number")
-plt.ylabel("Number of Occurences")
-plt.legend(loc = 'upper right')
+plt.plot(event_id, step3Hits, 'r', label = "Number of Hits in Step 3")
+plt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
+plt.title("Number of Hits in Each Event")
+plt.xlabel("Event ID")
+plt.ylabel("Total Number of Hits")
+plt.legend()
 plt.show()
