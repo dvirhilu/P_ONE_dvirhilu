@@ -21,8 +21,8 @@ else:
 infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step2/MuonGun_step2_139005_000000.i3.bz2')
 geofile = dataio.I3File('/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/' + outname, 'w')
-
-# taken from 
+logfile = open("photonProbabilities.txt",'w')
+photonSurvivalMap = {}
 
 # get geometry
 cframe = geofile.pop_frame(I3Frame.Calibration)
@@ -73,13 +73,11 @@ def getDOMAcceptanceValue(wavelength):
         return values[index] + (values[index+1]-values[index])*fraction
 
 def getSurvivalProbability(photon, omkey):
-    #if omkey in calMap:
-    #    domcal = calMap[omkey]
-    #    relativeDOMEff = domcal.relative_dom_eff
-    #else:
-    #    relativeDOMEff = 1
-
-    relativeDOMEff = 1.35
+    if omkey in calMap:
+        domcal = calMap[omkey]
+        relativeDOMEff = domcal.relative_dom_eff
+    else:
+        relativeDOMEff = 1
 
     domGeo = geoMap[omkey]
     domDirection = domGeo.direction
@@ -96,6 +94,7 @@ def getSurvivalProbability(photon, omkey):
 def survived(photon,omkey):
     probability = getSurvivalProbability(photon, omkey)
     randomNumber = np.random.uniform()
+    photonSurvivalMap[omkey].append([probability, probability > randomNumber])
 
     if(probability > randomNumber):
         return True
@@ -104,6 +103,7 @@ def survived(photon,omkey):
 
 def generateMCPEList(photons, modkey):
     omkey = OMKey(modkey.string, modkey.om, 0)
+    photonSurvivalMap[omkey] = []
     mcpeList = simclasses.I3MCPESeries()
     for photon in photons:
         if survived(photon,omkey):
@@ -132,7 +132,15 @@ for frame in qframes:
         frame["MCPESeriesMap"] = mcpeMap
         outfile.push(frame)
 
+for omkey in photonSurvivalMap:
+    logfile.write(str(omkey) + ": ")
+    for pair in photonSurvivalMap[omkey]:
+        logfile.write(str(pair) + " ")
+    
+    logfile.write('\n\n')
 
+
+logfile.close()
 outfile.close()
 
             

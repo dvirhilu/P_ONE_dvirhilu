@@ -102,12 +102,16 @@ def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQ
 filePath = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/'
 filenameAA = 'icecubeAngularAcceptance.dat'
 filenameDE = 'icecubeDOMEfficiency.dat'
+mediumPath = '/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/'
+medium = 'spice_3.2.1'
 
 aaFile = open(filePath + filenameAA, 'w')
 deFile = open(filePath + filenameDE, 'w')
+cfg = np.loadtxt(mediumPath + medium + '/cfg.txt')
+mediumEff = cfg[1] 
 
 angularAcceptance = GetIceCubeDOMAngularSensitivity()
-startWavelength, steps, effValues = GetIceCubeDOMAcceptance()
+startWavelength, steps, effValues = GetIceCubeDOMAcceptance(efficiency = mediumEff)
 
 aaFile.write("# This file contains polynomial coefficients for DOM angular Acceptance\n")
 for i in range(len(angularAcceptance)):
