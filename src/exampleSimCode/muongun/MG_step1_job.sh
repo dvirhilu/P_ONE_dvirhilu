@@ -32,7 +32,7 @@ if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
     GCDNAME=$4
     echo "Name of GCD File Used: " $GCDNAME
-    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testString/${GCDNAME}.i3.gz
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
     INCYLINDER=true 
     INCYLINDERX=0
     INCYLINDERY=0
