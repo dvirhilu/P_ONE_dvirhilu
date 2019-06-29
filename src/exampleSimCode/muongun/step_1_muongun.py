@@ -25,7 +25,7 @@ icetray.set_log_level(icetray.logging.I3LogLevel.LOG_WARN)
 parser = ArgumentParser()
 parser.add_argument("-g", "--gcdfile", type=str, help="GCD file path (.i3{.gz} format)")
 parser.add_argument("-o", "--outfile", type=str, help="Output file path (.i3{.gz} format)")
-parser.add_argument("-d", "--dataset", type=int, help="The dataset number for this simulation")
+#parser.add_argument("-d", "--dataset", type=int, help="The dataset number for this simulation")
 parser.add_argument("-f", "--filenr", type=int, help="The file number (within the run)")
 parser.add_argument("-n", "--numevents", type=int, help="The number of events per run")
 parser.add_argument("--min-energy", type=float, help="Low energy bound for MuonGun [GeV]")
@@ -157,7 +157,7 @@ else:
 #########################
 
 # Use dataset number for seeding
-seed = args.dataset
+seed = 139005
 
 # Set up random number generator
 from globals import max_num_files_per_dataset

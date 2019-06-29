@@ -135,6 +135,6 @@ echo "OUTCYLINDER LINE    : ""\""$OUTERCYLINDERSETTINGS"\""\
 OUTNAME=MuonGun_step1_${RUNTYPE}_${FILE_NR}.i3.bz2
 OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/muongun/muongun_step1
 echo "OUTFILE NAME : " ${OUTNAME}
-$i3env python $script -o ${OUTDIR}/${OUTNAME} -g ${GCD_FILE} -d ${RUNTYPE} --f ${FILE_NR} --numevents ${NUMEVENTS} --min-energy ${MINENERGY} --max-energy ${MAXENERGY} --power-law-index ${POWERLAWINDEX} --power-law-offset ${POWERLAWOFFSET} ${INNERCYLINDERSETTINGS} ${KDESETTING} ${OUTERCYLINDERSETTINGS}
+$i3env python $script -o ${OUTDIR}/${OUTNAME} -g ${GCD_FILE} --f ${FILE_NR} --numevents ${NUMEVENTS} --min-energy ${MINENERGY} --max-energy ${MAXENERGY} --power-law-index ${POWERLAWINDEX} --power-law-offset ${POWERLAWOFFSET} ${INNERCYLINDERSETTINGS} ${KDESETTING} ${OUTERCYLINDERSETTINGS}
 
 date 
