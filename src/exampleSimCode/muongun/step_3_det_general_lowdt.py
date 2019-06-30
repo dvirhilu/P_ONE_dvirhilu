@@ -30,9 +30,9 @@ parser.add_option("-m","--icemodel", default="spice_3.2.1",
 # parser.add_option("-s","--scalehad", type="float", default=1.,
 #                   dest="SCALEHAD",help="Scale light from hadrons") # This is currently not used
 
-(options,args) = parser.parse_args()z
+(options,args) = parser.parse_args()
 if len(args) != 0:
-        crap = "Got undefined optionz
+        crap = "Got undefined options:"
         for a in args:
                 crap += a
                 crap += " "
