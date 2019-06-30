@@ -129,10 +129,11 @@ echo "MAXENERGY        : "$MAXENERGY
 echo "POWER LAW INDEX  : "$POWERLAWINDEX
 echo "NUMBER OF EVENTS : "$NUMEVENTS
 echo "POWERLAW OFFSET  : "$POWERLAWOFFSET
-echo "INCYLINDER LINE    : ""\""$INNERCYLINDERSETTINGS"\""
-echo "OUTCYLINDER LINE    : ""\""$OUTERCYLINDERSETTINGS"\""\
+echo "INCYLINDER LINE  : ""\""$INNERCYLINDERSETTINGS"\""
+echo "OUTCYLINDER LINE : ""\""$OUTERCYLINDERSETTINGS"\""\
+echo "GCD FILE         : "$GCD_FILE
 
-OUTNAME=MuonGun_step1_${RUNTYPE}_${FILE_NR}.i3.bz2
+OUTNAME=MuonGun_step1_${RUNTYPE}_${FILE_NR}.i3.gz
 OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/muongun/muongun_step1
 echo "OUTFILE NAME : " ${OUTNAME}
 $i3env python $script -o ${OUTDIR}/${OUTNAME} -g ${GCD_FILE} --f ${FILE_NR} --numevents ${NUMEVENTS} --min-energy ${MINENERGY} --max-energy ${MAXENERGY} --power-law-index ${POWERLAWINDEX} --power-law-offset ${POWERLAWOFFSET} ${INNERCYLINDERSETTINGS} ${KDESETTING} ${OUTERCYLINDERSETTINGS}
