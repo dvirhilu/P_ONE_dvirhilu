@@ -30,9 +30,9 @@ parser.add_option("-m","--icemodel", default="spice_3.2.1",
 # parser.add_option("-s","--scalehad", type="float", default=1.,
 #                   dest="SCALEHAD",help="Scale light from hadrons") # This is currently not used
 
-(options,args) = parser.parse_args()plt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
+(options,args) = parser.parse_args()z
 if len(args) != 0:
-        crap = "Got undefined optionplt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
+        crap = "Got undefined optionz
         for a in args:
                 crap += a
                 crap += " "
@@ -78,11 +78,11 @@ tray = I3Tray()
 print 'Using RUNNR: ', options.RUNNUMBER
 print "DOM efficiency: ", options.EFFICIENCY
 #print "Using hole ice: ", options.HOLEICE 
-print "Looking for ice model in ", expandvars("$I3_SRC/ice-modelsplt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
+print "Looking for ice model in ", expandvars("$I3_SRC/ice-models/resources/models/")
 
 if options.ICEMODEL=="" or options.ICEMODEL==None:
-    print "\033[93mNo ice model provided. The baseline efficiencyplt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
-    print "of the ice model used for photon propagation. \033[0m"plt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
+    print "\033[93mNo ice model provided. The baseline efficiency can be found in cfg.txt"
+    print "of the ice model used for photon propagation. \033[0m"
     print "\033[93m\033[1mBe very careful! \033[0m"
     icemodel_path=None
 else:
