@@ -18,7 +18,7 @@ parser.add_option("-f", "--filenr",type="string",default="1",
                   dest="FILENR", help="File number, stream of I3SPRNGRandomService")
 parser.add_option("-g", "--gcdfile", default=os.getenv('GCDfile'),
 		          dest="GCDFILE", help="Read in GCD file")
-parser.add_option("-e","--efficiency", type="float",default=1.2,
+parser.add_option("-e","--efficiency", type="float",default=1.0,
                   dest="EFFICIENCY",help="DOM Efficiency ... the same as UnshadowedFraction")
 parser.add_option("-n","--noise", default="vuvuzela",
                   dest="NOISE",help="Noise model (vuvuzela/poisson)")
