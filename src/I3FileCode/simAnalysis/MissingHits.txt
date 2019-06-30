@@ -5,110 +5,110 @@ Event only in step3 file:
 EventID: 529, Number of Hits: 140
 
 Event only in custom file: 
-EventID: 61, Number of Hits: 116
+EventID: 61, Number of Hits: 101
 
 Event only in custom file: 
-EventID: 156, Number of Hits: 194
+EventID: 156, Number of Hits: 139
 
 Event only in custom file: 
-EventID: 180, Number of Hits: 86
+EventID: 180, Number of Hits: 57
 
 Event only in custom file: 
-EventID: 222, Number of Hits: 58
+EventID: 222, Number of Hits: 45
 
 Event only in custom file: 
-EventID: 406, Number of Hits: 106
+EventID: 406, Number of Hits: 75
 
 Event only in custom file: 
-EventID: 442, Number of Hits: 139
+EventID: 442, Number of Hits: 106
 
 Event only in custom file: 
-EventID: 504, Number of Hits: 82
+EventID: 504, Number of Hits: 66
 
 Event only in custom file: 
-EventID: 515, Number of Hits: 80
+EventID: 515, Number of Hits: 54
 
 Event only in custom file: 
-EventID: 565, Number of Hits: 157
+EventID: 565, Number of Hits: 147
 
 Event only in custom file: 
-EventID: 611, Number of Hits: 54
+EventID: 611, Number of Hits: 41
 
 Event only in custom file: 
-EventID: 645, Number of Hits: 81
+EventID: 645, Number of Hits: 69
 
 Event only in custom file: 
-EventID: 667, Number of Hits: 91
+EventID: 667, Number of Hits: 63
 
 Event only in custom file: 
-EventID: 770, Number of Hits: 120
+EventID: 770, Number of Hits: 96
 
 Event only in custom file: 
-EventID: 779, Number of Hits: 43
+EventID: 779, Number of Hits: 26
 
 Event only in custom file: 
-EventID: 814, Number of Hits: 59
+EventID: 814, Number of Hits: 35
 
 Event only in custom file: 
-EventID: 815, Number of Hits: 68
+EventID: 815, Number of Hits: 45
 
 Event only in custom file: 
-EventID: 819, Number of Hits: 169
+EventID: 819, Number of Hits: 150
 
 Event only in custom file: 
-EventID: 966, Number of Hits: 64
+EventID: 966, Number of Hits: 39
 
 Event only in custom file: 
-EventID: 973, Number of Hits: 72
+EventID: 973, Number of Hits: 50
 
 Event only in custom file: 
-EventID: 993, Number of Hits: 118
+EventID: 993, Number of Hits: 78
 
 Event only in custom file: 
-EventID: 1000, Number of Hits: 87
+EventID: 1000, Number of Hits: 67
 
 Event only in custom file: 
-EventID: 1032, Number of Hits: 144
+EventID: 1032, Number of Hits: 117
 
 Event only in custom file: 
-EventID: 1079, Number of Hits: 36
+EventID: 1079, Number of Hits: 24
 
 Event only in custom file: 
-EventID: 1162, Number of Hits: 93
+EventID: 1162, Number of Hits: 84
 
 Event only in custom file: 
-EventID: 1334, Number of Hits: 76
+EventID: 1334, Number of Hits: 79
 
 Event only in custom file: 
-EventID: 1355, Number of Hits: 69
+EventID: 1355, Number of Hits: 44
 
 Event only in custom file: 
-EventID: 1415, Number of Hits: 51
+EventID: 1415, Number of Hits: 29
 
 Event only in custom file: 
-EventID: 1544, Number of Hits: 97
+EventID: 1544, Number of Hits: 64
 
 Event only in custom file: 
-EventID: 1586, Number of Hits: 77
+EventID: 1586, Number of Hits: 40
 
 Event only in custom file: 
-EventID: 1603, Number of Hits: 59
+EventID: 1603, Number of Hits: 39
 
 Event only in custom file: 
-EventID: 1724, Number of Hits: 92
+EventID: 1724, Number of Hits: 79
 
 Event only in custom file: 
-EventID: 1868, Number of Hits: 67
+EventID: 1868, Number of Hits: 42
 
 Event only in custom file: 
-EventID: 1895, Number of Hits: 8
+EventID: 1895, Number of Hits: 7
 
 Event only in custom file: 
-EventID: 1918, Number of Hits: 63
+EventID: 1918, Number of Hits: 45
 
 Event only in custom file: 
-EventID: 1999, Number of Hits: 108
+EventID: 1999, Number of Hits: 72
 
 Event only in custom file: 
-EventID: 2000, Number of Hits: 146
+EventID: 2000, Number of Hits: 126
 

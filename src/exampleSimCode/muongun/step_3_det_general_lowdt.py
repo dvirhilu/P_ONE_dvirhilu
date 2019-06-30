@@ -30,9 +30,9 @@ parser.add_option("-m","--icemodel", default="spice_3.2.1",
 # parser.add_option("-s","--scalehad", type="float", default=1.,
 #                   dest="SCALEHAD",help="Scale light from hadrons") # This is currently not used
 
-(options,args) = parser.parse_args()
+(options,args) = parser.parse_args()plt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
 if len(args) != 0:
-        crap = "Got undefined options:"
+        crap = "Got undefined optionplt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
         for a in args:
                 crap += a
                 crap += " "
@@ -48,6 +48,9 @@ from icecube import icetray, dataclasses, dataio, simclasses #, recclasses
 from icecube import phys_services, sim_services, DOMLauncher, DomTools, genie_icetray, clsim, trigger_sim
 
 from RemoveLatePhotons_V5 import RemoveLatePhotons
+
+icetray.logging.rotating_files('/home/dvirhilu/scratch/sbatchLogFiles/step3Logger.log')
+icetray.set_log_level(icetray.I3LogLevel.LOG_TRACE)
 
 def BasicHitFilter(frame):
     hits = 0
@@ -75,11 +78,11 @@ tray = I3Tray()
 print 'Using RUNNR: ', options.RUNNUMBER
 print "DOM efficiency: ", options.EFFICIENCY
 #print "Using hole ice: ", options.HOLEICE 
-print "Looking for ice model in ", expandvars("$I3_SRC/ice-models/resources/models/")
+print "Looking for ice model in ", expandvars("$I3_SRC/ice-modelsplt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
 
 if options.ICEMODEL=="" or options.ICEMODEL==None:
-    print "\033[93mNo ice model provided. The baseline efficiency can be found in cfg.txt"
-    print "of the ice model used for photon propagation. \033[0m"
+    print "\033[93mNo ice model provided. The baseline efficiencyplt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
+    print "of the ice model used for photon propagation. \033[0m"plt.plot(event_id, customHits, 'b', label = "Number of Hits in Custom HitGen")
     print "\033[93m\033[1mBe very careful! \033[0m"
     icemodel_path=None
 else:
