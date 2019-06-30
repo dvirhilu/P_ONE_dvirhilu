@@ -75,7 +75,7 @@ def getDOMAcceptanceValue(wavelength):
 def getSurvivalProbability(photon, omkey):
     if omkey in calMap:
         domcal = calMap[omkey]
-        relativeDOMEff = domcal.relative_dom_eff
+        relativeDOMEff = domcal.relative_dom_eff * domcal.combined_spe_charge_distribution.compensation_factor
     else:
         relativeDOMEff = 1
 
