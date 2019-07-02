@@ -80,12 +80,12 @@ OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/genie/genie_step3
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}
 echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}
 
-echo "ICE MODEL      : " $ICEMODEL
+echo "MEDIUM MODEL   : " $MEDIUM
 echo "DOM EFFICINECY : " $DOMEFF
 echo "HOLE ICE       : " $HOLEICE
 
 echo "GCD: " $GCD_FILE
 
 echo "Starting the job"
-$i3env python $script -i ${INDIR}/${FLV}/${INNAME} -g $GCD_FILE -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -f ${FILE_NR} -e ${DOMEFF} -m $ICEMODEL
+$i3env python $script -i ${INDIR}/${FLV}/${INNAME} -g $GCD_FILE -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -f ${FILE_NR} -e ${DOMEFF} -m $MEDIUM
 

@@ -25,6 +25,8 @@ FLV=$2
 echo "Flavor is: " ${FLV}
 E=$3
 echo "Energy Range is: " ${E}
+MEDIUM=$4
+echo "Medium will be: " ${MEDIUM}
 
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
@@ -70,7 +72,7 @@ RUNNUM=${NU}0000
 echo "Run Number        : "${RUNNUM}
 echo "Flavor            : "${FLV}
 echo "Energy Range      : "${E}
-echo "Ice model         : "${ICE}
+echo "medium model      : "${MEDIUM}
 echo "cross-over E      : "${CROSS_E}
 echo "DOM eff UnshadowedFraction: "${EFF}
 
@@ -85,4 +87,4 @@ echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}
 
 echo "GCD: " $GCD_FILE
 
-$i3env python $script -t -i ${INDIR}/${FLV}/${INNAME} -g ${GCD_FILE} -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -l ${FILE_NR} -c ${CROSS_E} -e ${EFF} -m $ICE
+$i3env python $script -t -i ${INDIR}/${FLV}/${INNAME} -g ${GCD_FILE} -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -l ${FILE_NR} -c ${CROSS_E} -e ${EFF} -m $MEDIUM
