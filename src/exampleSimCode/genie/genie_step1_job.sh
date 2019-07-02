@@ -18,26 +18,36 @@ echo "Will use i3 environment: " ${i3env}
 script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/genie/step_1_genie.py
 echo "Will use script: " $script
 
-RUNNUM=$1
-echo "Run number: " $RUNNUM
+RUNTYPE=$1
+echo "Run type: " $RUNTYPE
 FLV=$2
 echo "Flavor is: " ${FLV}
 E=$3
 echo "Energy Range is: " ${E}
 
-OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step1
+OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/genie/genie_step1
 
-GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
-#Get set variables 
-case ${RUNNUM} in
-    0000)
-	
-	;;
-    *)
-	echo "No configuration for " $RUNNUM "... exiting"
-	exit 1
-	;;
-esac
+if [ "$RUNTYPE" == "testString" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=TestString_n15_b100.0_v50.0_l1_simple_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
+ 
+elif [ "$RUNTYPE" == "HorizGeo" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/uncorHorizGeo/${GCDNAME}.i3.gz
+ 
+elif [ "$RUNTYPE" == "IceCube" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+    echo "Using IceCube GCD"
+    
+else 
+    echo "No configuration for " $RUNTYPE "... exiting"
+    exit
+fi
 
 #Get FLV setup
 case ${FLV} in
@@ -72,7 +82,7 @@ case ${FLV} in
                 NEVENTS=4400    # modified from 440000
                 ;;
             C)
-                NEVENTS=575     # modified from 57500
+                NEVENTS=1000     # modified from 57500
                 ;;
             D)
                 NEVENTS=67      # modified from 6700
@@ -111,14 +121,14 @@ case ${FLV} in
 
 esac
 
-RUNNUM=${NU}${RUNNUM}
+RUNNUM=${NU}0000
 echo "Run Number        : "${RUNNUM}
 echo "Flavor            : "${FLV}
 echo "Energy Range      : "${E}
 echo "Number of Events  : "${NEVENTS}
 
 
-OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step1.i3.zst
+OUTNAME=${FLV}_${E}_${FILE_NR}_step1.i3.zst
 
 echo "OUTFILE NAME : " ${OUTNAME}
 $i3env python $script -o ${OUTDIR}/${FLV}/${OUTNAME} -l ${FILE_NR}  -r ${RUNNUM} -n ${NEVENTS} -f ${FLV} --energy-range ${E} 

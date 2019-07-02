@@ -19,26 +19,34 @@ echo "Will use i3 environment: " ${i3env}
 script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/exampleSimCode/genie/step_2_clsim_setCrossE.py
 echo "Will use script: " $script
 
-RUNNUM=$1
-echo "Run number: " $RUNNUM
+RUNTYPE=$1
+echo "Run type: " $RUNTYPE
 FLV=$2
 echo "Flavor is: " ${FLV}
 E=$3
 echo "Energy Range is: " ${E}
 
-
-case ${RUNNUM} in
-    0000)
-	#all these are default values
-	ICE=spice_3.2.1
-	CROSS_E=30 
-	EFF=1.2
-	;;
-    *)
-	echo "No configuration for " $RUNNUM "... exiting"
-	exit 1
-	;;
-esac
+if [ "$RUNTYPE" == "testString" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=TestString_n15_b100.0_v50.0_l1_simple_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
+ 
+elif [ "$RUNTYPE" == "HorizGeo" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/uncorHorizGeo/${GCDNAME}.i3.gz
+ 
+elif [ "$RUNTYPE" == "IceCube" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+    echo "Using IceCube GCD"
+    
+else 
+    echo "No configuration for " $RUNTYPE "... exiting"
+    exit
+fi
 
 #Get FLV setup
 case ${FLV} in
@@ -58,7 +66,7 @@ case ${FLV} in
 
 esac
 
-RUNNUM=${NU}${RUNNUM}
+RUNNUM=${NU}0000
 echo "Run Number        : "${RUNNUM}
 echo "Flavor            : "${FLV}
 echo "Energy Range      : "${E}
@@ -66,16 +74,15 @@ echo "Ice model         : "${ICE}
 echo "cross-over E      : "${CROSS_E}
 echo "DOM eff UnshadowedFraction: "${EFF}
 
-INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step1.i3.zst
-INDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step1
+INNAME=${FLV}_${E}_${FILE_NR}_step1.i3.zst
+INDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/genie/genie_step1
 
-OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.i3.zst
-OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step2
+OUTNAME=${FLV}_${E}_${FILE_NR}_step2.i3.zst
+OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/genie/genie_step2
 
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}
 echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}
 
-GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/gcd/HorizGeo_n10_b100.0_a90.0_l1_rise_fall_offset_exp_r_spacing.i3.gz
 echo "GCD: " $GCD_FILE
 
 $i3env python $script -t -i ${INDIR}/${FLV}/${INNAME} -g ${GCD_FILE} -o ${OUTDIR}/${FLV}/${OUTNAME} -r ${RUNNUM} -l ${FILE_NR} -c ${CROSS_E} -e ${EFF} -m $ICE

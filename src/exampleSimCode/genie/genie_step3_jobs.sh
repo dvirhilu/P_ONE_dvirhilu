@@ -20,27 +20,35 @@ echo "Will use I3_SRC : " ${I3_SRC}
 echo "Will use script: " $script
 
 
-RUNNUM=$1
-echo "Run number: " $RUNNUM
+RUNTYPE=$1
+echo "Run type: " $RUNTYPE
 FLV=$2
 echo "Flavor is: " ${FLV}
 E=$3
 echo "Energy Range is: " ${E}
 
 
-case ${RUNNUM} in
-    0000)
-	#all these are default values
-	ICEMODEL=spice_3.2.1
-	CROSS_E=30 
-	DOMEFF=1.0
-	HOLEICE=as.flasher_p1_0.30_p2_-1
-	;;
-    *)
-	echo "No configuration for " $RUNNUM "... exiting"
-	exit 1
-	;;
-esac
+if [ "$RUNTYPE" == "testString" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=TestString_n15_b100.0_v50.0_l1_simple_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
+ 
+elif [ "$RUNTYPE" == "HorizGeo" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/uncorHorizGeo/${GCDNAME}.i3.gz
+ 
+elif [ "$RUNTYPE" == "IceCube" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+    echo "Using IceCube GCD"
+    
+else 
+    echo "No configuration for " $RUNTYPE "... exiting"
+    exit
+fi
 
 #Get FLV setup
 case ${FLV} in
@@ -60,14 +68,14 @@ case ${FLV} in
 
 esac
 
-RUNNUM=${NU}${RUNNUM}
+RUNNUM=${NU}0000
 
-INNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step2.i3.zst
-INDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step2
+INNAME=${FLV}_${E}_${FILE_NR}_step2.i3.zst
+INDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/genie/genie_step2
 
 
-OUTNAME=${FLV}_${E}_${RUNNUM}_${FILE_NR}_step3.i3.zst
-OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/genie_step3
+OUTNAME=${FLV}_${E}_${FILE_NR}_step3.i3.zst
+OUTDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/genie/genie_step3
 
 echo "INNAME: " ${INDIR}/${FLV}/${INNAME}
 echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}
@@ -76,7 +84,6 @@ echo "ICE MODEL      : " $ICEMODEL
 echo "DOM EFFICINECY : " $DOMEFF
 echo "HOLE ICE       : " $HOLEICE
 
-GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/gcd/HorizGeo_n10_b100.0_a90.0_l1_rise_fall_offset_exp_r_spacing.i3.gz
 echo "GCD: " $GCD_FILE
 
 echo "Starting the job"
