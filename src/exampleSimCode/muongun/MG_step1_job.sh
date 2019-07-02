@@ -48,7 +48,7 @@ elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Found configuration for " $RUNTYPE
     GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
     echo "Name of GCD File Used: " $GCDNAME
-    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testString/${GCDNAME}.i3.gz
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/uncorHorizGeo/${GCDNAME}.i3.gz
     INCYLINDER=true 
     INCYLINDERX=0
     INCYLINDERY=0
