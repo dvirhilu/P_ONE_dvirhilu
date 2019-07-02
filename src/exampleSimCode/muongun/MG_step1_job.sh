@@ -30,7 +30,7 @@ POWERLAWOFFSET=150.0
 KDE=false
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=$4
+    GCDNAME=TestString_n15_b100.0_v50.0_l1_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
     GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
     INCYLINDER=true 
@@ -41,12 +41,12 @@ if [ "$RUNTYPE" == "testString" ]; then
     INCYLINDERRADIUS=100
     OUTCYLINDERX=0
     OUTCYLINDERY=0
-    OUTCYLINDERZ=800
+    OUTCYLINDERZ=0
     OUTCYLINDERLENGTH=1600
-    OUTCYLINDERRADIUS=300
+    OUTCYLINDERRADIUS=800
 elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=$4
+    GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
     echo "Name of GCD File Used: " $GCDNAME
     GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testString/${GCDNAME}.i3.gz
     INCYLINDER=true 
