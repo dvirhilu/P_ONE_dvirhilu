@@ -26,6 +26,8 @@ FLV=$2
 echo "Flavor is: " ${FLV}
 E=$3
 echo "Energy Range is: " ${E}
+MEDIUM=$4
+echo "Medium model is: "${Medium}
 
 
 if [ "$RUNTYPE" == "testString" ]; then
@@ -69,6 +71,7 @@ case ${FLV} in
 esac
 
 RUNNUM=${NU}0000
+DOMEFF=1.0
 
 INNAME=${FLV}_${E}_${FILE_NR}_step2.i3.zst
 INDIR=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/genie/genie_step2
@@ -82,7 +85,7 @@ echo "OUTNAME: " ${OUTDIR}/${FLV}/${OUTNAME}
 
 echo "MEDIUM MODEL   : " $MEDIUM
 echo "DOM EFFICINECY : " $DOMEFF
-echo "HOLE ICE       : " $HOLEICE
+#echo "HOLE ICE       : " $HOLEICE
 
 echo "GCD: " $GCD_FILE
 

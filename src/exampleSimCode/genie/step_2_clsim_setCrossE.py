@@ -95,8 +95,8 @@ tray.AddModule('I3Reader', 'reader',
 
 tray.AddModule("I3GeometryDecomposer", "I3ModuleGeoMap")
 
-icemodel_path = expandvars("$I3_SRC/ice-models/resources/models/" + options.ICEMODEL)
-print 'Medium model ', "ANTARES"
+icemodel_path = expandvars("/project/6008051/dvirhilu/P_ONE_dvirhilu/propagationMediunModels/" + options.ICEMODEL)
+print 'Medium model ', icemodel_path
 print "DOM efficiency: ", options.EFFICIENCY
 # Only the photons are made. Still have to convert them to hits!
 print "Setting cross energy: " , float(options.CROSSENERGY), "GeV"

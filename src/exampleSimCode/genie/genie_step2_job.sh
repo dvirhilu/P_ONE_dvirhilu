@@ -68,6 +68,8 @@ case ${FLV} in
 
 esac
 
+CROSS_E=30 
+EFF=1.0
 RUNNUM=${NU}0000
 echo "Run Number        : "${RUNNUM}
 echo "Flavor            : "${FLV}
