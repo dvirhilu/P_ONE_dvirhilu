@@ -75,6 +75,21 @@ elif [ "$RUNTYPE" == "IceCube" ]; then
     OUTCYLINDERZ=0
     OUTCYLINDERLENGTH=1600
     OUTCYLINDERRADIUS=800
+elif [ "$RUNTYPE" == "cube" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz
+    echo "Using GCD: " $GCD_FILE
+    INCYLINDER=true 
+    INCYLINDERX=46.29
+    INCYLINDERY=-34.88
+    INCYLINDERZ=-300.0
+    INCYLINDERLENGTH=500.0
+    INCYLINDERRADIUS=150.0
+    OUTCYLINDERX=0
+    OUTCYLINDERY=0
+    OUTCYLINDERZ=0
+    OUTCYLINDERLENGTH=1600
+    OUTCYLINDERRADIUS=800
 else 
     echo "No configuration for " $RUNTYPE "... exiting"
     exit

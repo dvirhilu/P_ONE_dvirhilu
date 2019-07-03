@@ -110,7 +110,7 @@ deFile = open(filePath + filenameDE, 'w')
 cfg = np.loadtxt(mediumPath + medium + '/cfg.txt')
 mediumEff = cfg[1] 
 
-angularAcceptance = GetIceCubeDOMAngularSensitivity()
+angularAcceptance = GetIceCubeDOMAngularSensitivity(holeIce=expandvars("$I3_BUILD/ice-models/resources/models/angsens/as.h2-50cm"))
 startWavelength, steps, effValues = GetIceCubeDOMAcceptance(efficiency = mediumEff)
 
 aaFile.write("# This file contains polynomial coefficients for DOM angular Acceptance\n")
