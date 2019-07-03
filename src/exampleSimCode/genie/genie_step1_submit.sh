@@ -15,11 +15,11 @@ echo "This is step 1 of neutrino simulations! "
 eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 # generating name of the output file
 echo "print =========================================="
-echo "print SLURM_JOB_ID = $SLURM_JOB_ID"
-echo "print SLURM_JOB_NODELIST = $SLURM_JOB_NODELIST"
+#echo "print SLURM_JOB_ID = $SLURM_JOB_ID"
+#echo "print SLURM_JOB_NODELIST = $SLURM_JOB_NODELIST"
 echo "print =========================================="
 
-echo "SLURM TASK ID : " $SLURM_ARRAY_TASK_ID
+#echo "SLURM TASK ID : " $SLURM_ARRAY_TASK_ID
 echo "All arguments: " $@ 
 sleep 2
 echo "purging modules"

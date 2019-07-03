@@ -5,9 +5,10 @@ echo "Starting the neutrino job"
 echo "Argument line : " $@
 
 # source /home/hignight/setup_oscnext.sh
-echo "TASK ID " $SLURM_ARRAY_TASK_ID
-FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
-FILE_NR=`printf "%06d\n" $FILE_NR`
+#echo "TASK ID " $SLURM_ARRAY_TASK_ID
+#FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
+#FILE_NR=`printf "%06d\n" $FILE_NR`
+FILE_NR=900
 echo "Filename ID : " $FILE_NR
 
 echo "Starting cvmfs " 
@@ -43,7 +44,11 @@ elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
     GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
     echo "Using IceCube GCD"
-    
+
+elif [ "$RUNTYPE" == "cube" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz
+
 else 
     echo "No configuration for " $RUNTYPE "... exiting"
     exit
