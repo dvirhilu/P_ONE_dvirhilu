@@ -55,6 +55,13 @@ domEff = np.loadtxt(inFolder + filenameDomEff, unpack = True)
 angAcc = np.loadtxt(inFolder + filenameAngAcc)
 
 def getAngularAcceptanceValue(cos_theta):
+    # check if model exists
+    if angAcc.size == 0:
+        raise RuntimeError("empty angular Acceptance model")
+    # ndarrays of size 1 are not iterable
+    elif angAcc.size == 1:
+        angAcc = [angAcc]
+    
     sumVal = 0
     for i in range(len(angAcc)):
         sumVal += cos_theta**i * angAcc[i]

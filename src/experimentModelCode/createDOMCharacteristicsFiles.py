@@ -7,15 +7,22 @@ import numpy as np
 from os.path import expandvars
 
 # taken from clsim/python/GetIceCubeDOMAngularSensitivity
-def GetIceCubeDOMAngularSensitivity(holeIce=expandvars("$I3_BUILD/ice-models/resources/models/angsens/as.nominal")):
+def GetIceCubeDOMAngularSensitivity(inputModel = False, modelFile = '', isNorm = False):
     """
     The relative collection efficiency of the DOM as a polynomial in the
     cosine of the photon's impact angle with respect to the DOM orientation
     (for IceCube, straight down).
     """
+    if inputModel:
+        holeIce=expandvars(modelFile)
+        coefficients = np.loadtxt(holeIce)[1:].tolist()
+        if not isNorm:
+            coefficients = [coefficient * getNormalizationForAngAcc(coefficients) for coefficient in coefficients]
     
-    coefficients = np.loadtxt(holeIce)[1:].tolist()
-   
+    else:
+        coefficients = [1]
+        coefficients = [coefficient * getNormalizationForAngAcc(coefficients) for coefficient in coefficients]
+
     return coefficients
 
 # taken from clsim/python/GetIceCubeDOMAcceptance
@@ -99,9 +106,23 @@ def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQ
 
     return  260.*I3Units.nanometer, 10.*I3Units.nanometer, dom2007a_efficiency
 
-filePath = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/'
-filenameAA = 'icecubeAngularAcceptance.dat'
-filenameDE = 'icecubeDOMEfficiency.dat'
+def getNormalizationForAngAcc(coefficients):
+    costheta = np.linspace(-1,1,1000)
+    dx = costheta[1] - costheta[0]
+    integral = 0.0
+
+    for i in range(len(costheta)):
+        y = 0
+        for j in range(len(coefficients)):
+            y += costheta[i] ** j * coefficients[j]
+        
+        integral += y*dx
+    
+    return 1/integral
+
+filePath = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/MDOM/'
+filenameAA = 'AngularAcceptance.dat'
+filenameDE = 'DOMEfficiency.dat'
 mediumPath = '/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/'
 medium = 'spice_3.2.1'
 
@@ -110,7 +131,7 @@ deFile = open(filePath + filenameDE, 'w')
 cfg = np.loadtxt(mediumPath + medium + '/cfg.txt')
 mediumEff = cfg[1] 
 
-angularAcceptance = GetIceCubeDOMAngularSensitivity(holeIce=expandvars("$I3_BUILD/ice-models/resources/models/angsens/as.h2-50cm"))
+angularAcceptance = GetIceCubeDOMAngularSensitivity()
 startWavelength, steps, effValues = GetIceCubeDOMAcceptance(efficiency = mediumEff)
 
 aaFile.write("# This file contains polynomial coefficients for DOM angular Acceptance\n")

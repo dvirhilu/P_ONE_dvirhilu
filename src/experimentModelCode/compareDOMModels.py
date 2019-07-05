@@ -3,8 +3,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-nominalModel = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/icecubeAngularAcceptanceNominal.dat')
-compModel = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/icecubeAngularAcceptance.dat')
+nominalModel = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/IceCube/icecubeAngularAcceptanceNominal.dat')
+compModel = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/MDOM/AngularAcceptance.dat')
+
+# check if model exists
+if nominalModel.size == 0:
+    raise RuntimeError("empty nominal model")
+# ndarrays of size 1 are not iterable
+elif nominalModel.size == 1:
+    nominalModel = [nominalModel]
+
+# repeat for comparison model
+if compModel.size == 0:
+    raise RuntimeError("empty comparison model")
+elif compModel.size == 1:
+    compModel = [compModel]
 
 costheta = np.linspace(-1,1,100)
 

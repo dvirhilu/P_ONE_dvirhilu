@@ -32,5 +32,36 @@ infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/' + inPath)
 geofile = dataio.I3File(gcdPath)
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/' + outname, 'w')
 
-def getNeighbours(omkey):
+frame = infile.pop_frame(I3Frame.Geometry)
+geometry = frame["I3Geometry"]
+
+
+def getNeighbours(omkey, lcRadius):
+    neighbours = []
+    geoMap = geometry.omgeo
+    domgeo = geoMap[omkey]
+
+    for key in geoMap:
+        if key != omkey:
+            compDOMGeo = geoMap[key]
+            pos1 = domgeo.position
+            pos2 = compDOMGeo.position
+            distancesq = (pos1.x-pos2.x)**2 + (pos1.y-pos2.y)**2 + (pos1.z-pos2.z)**2 
+
+            if distancesq < lcRadius**2:
+                neighbours.append(distancesq)
+
+    if len(neighbours) == 0:
+        raise RuntimeWarning(str(omkey) + "has no neighbours. LCRadius might be too small")
+    
+    return neighbours
+
+
+qframes = []
+while infile.more():
+    qframes.append(infile.pop_daq())
+
+
+for frame in qframes:
+    mcpeMap = frame["MCPESeriesMap"]
     
