@@ -31,8 +31,7 @@ args = parser.parse_args()
 # simulation parameters
 runNum = int(args.runNum)
 numEvents = int(args.numEvents)
-outfile = dataio.I3File(args.outfile, 'w')
-seed = args.seed
+seed = int(args.seed)
 
 # neutrino physics parameters
 flavours = args.flavours.split(":")
@@ -182,11 +181,11 @@ tray.AddModule('I3PropagatorModule', 'muon_propagator',
 		InputMCTreeName="I3MCTree_NuGen",
         OutputMCTreeName="I3MCTree")	
 
-SkipKeys = ["I3MCTree_GENIE"]
+SkipKeys = ["I3MCTree_NuGen"]
 
 tray.AddModule("I3Writer","writer",
  	SkipKeys= SkipKeys,
-    Filename = options.OUTFILE)
+    Filename = args.outfile)
 
 tray.AddModule("TrashCan", "the can")
 
