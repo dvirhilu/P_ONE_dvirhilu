@@ -27,7 +27,7 @@ echo "purging modules"
 module --force purge
 
 echo "Starting the singularity job"
-singularity exec --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/src/simCode/genie/nugen_step1_job.sh $@
+singularity exec --bind /cvmfs --bind /scratch/dvirhilu --bind /scratch/hignight --bind /project/6008051/dvirhilu --bind /project/6008051/hignight --bind /home/dvirhilu --bind /home/hignight --nv /project/6008051/hignight/singularity_images/centos7.img /project/6008051/dvirhilu/P_ONE_dvirhilu/src/simCode/nugen/nugen_step1_job.sh $@
 date
 
 endsecond=$(date +%s)
