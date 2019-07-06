@@ -4,7 +4,7 @@
 
 from I3Tray import *
 from icecube import icetray, dataclasses, phys_services, sim_services, dataio,  earthmodel_service, neutrino_generator
-from icetray import I3Units
+from icecube.icetray import I3Units
 import numpy as np
 import argparse
 
@@ -19,7 +19,7 @@ parser.add_argument('-f', "--flavours", default = "NuMu:NuMuBar", help = "neutri
 parser.add_argument('-R', "--ratios", default = "1:1", help = "the ratios with which the flavours will be produced" )
 parser.add_argument('-E', "--energyLog", default = "2:8", help = "the range of the orders of magnitudes of energies in simulation. 1=GeV")
 parser.add_argument('-Z', '--zenithRange', default = "0:180", help = "the range of zenith angles spanned in generation")
-parser.add_argument("-p", "--powerLawIndex",type="float", default=1.0, help="generation power law index")
+parser.add_argument("-p", "--powerLawIndex", default=1.0, help="generation power law index")
 # generation surface parameters
 parser.add_argument('-x', '--cylinderx', help = "the x coordinate of the center of the injection cylinder")
 parser.add_argument('-y', '--cylindery', help = "the y coordinate of the center of the injection cylinder")
@@ -45,7 +45,7 @@ zenithRange = args.zenithRange.split(":")
 zenithMin = zenithRange[0]
 zenithMax = zenithRange[1]
 
-powerLawIndex = args.powerLawIndex
+powerLawIndex = float(args.powerLawIndex)
 
 # earth model parameters (has to be set even if simmode is DETECTOR?)
 earth = ["PREM_mmc"]
@@ -63,7 +63,7 @@ from globals import max_num_files_per_dataset
 randomService = phys_services.I3SPRNGRandomService(
         seed = seed, 
         nstreams = max_num_files_per_dataset,
-        streamnum = args.runNum)
+        streamnum = runNum)
 
 
 tray.AddModule("I3InfiniteSource","streams",
@@ -108,39 +108,39 @@ tray.AddService("I3NuGSteeringFactory", "steering",
 # (primary name is configuable)
 # You may use I3NuGPointSource either.
 #
-tray.AddModule("I3NuGDiffuseSource","diffusesource", 
-               SteeringName = "steering",
-               NuTypes = flavours,
-               PrimaryTypeRatio = ratios,
-               GammaIndex = powerLawIndex,
-               EnergyMinLog = logEMin,
-               EnergyMaxLog = logEMax,
-               ZenithMin = zenithMin,
-               ZenithMax = zenithMax,
-               AzimuthMin = 0,
-               AzimuthMax = 360*I3Units.deg,
-               ZenithWeightParam = 1.0,
-               AngleSamplingMode = "ANGEMU"
-              )
+#tray.AddModule("I3NuGDiffuseSource","diffusesource", 
+#               SteeringName = "steering",
+#               NuTypes = flavours,
+#               PrimaryTypeRatio = ratios,
+#               GammaIndex = powerLawIndex,
+#               EnergyMinLog = logEMin,
+#               EnergyMaxLog = logEMax,
+#               ZenithMin = zenithMin,
+#               ZenithMax = zenithMax,
+#               AzimuthMin = 0,
+#               AzimuthMax = 360*I3Units.deg,
+#               ZenithWeightParam = 1.0,
+#               AngleSamplingMode = "ANGEMU"
+#              )
 
 
-tray.AddService("I3NuGInteractionInfoDifferentialFactory", "interaction",
-                RandomService = randomService,
-                SteeringName = "steering",
-                TablesDir = "/home/dvir/workFolder/P_ONE_dvirhilu/CrossSectioModels/",
-                CrossSectionModel = "csms_differential_v1.0"
-               )
+#tray.AddService("I3NuGInteractionInfoDifferentialFactory", "interaction",
+#                RandomService = randomService,
+#                SteeringName = "steering",
+#                TablesDir = "/home/dvir/workFolder/P_ONE_dvirhilu/CrossSectioModels/",
+#                CrossSectionModel = "csms_differential_v1.0"
+#               )
 
-tray.AddModule("I3NeutrinoGenerator","generator",
-                RandomService = randomService,
-                SteeringName = "steering",
-                InjectorName = "diffusesource",
-                InteractionInfoName = "interaction",
-                PropagationWeightMode = "AutoDetect",
-                InteractionCCFactor = 1.0,
-                InteractionNCFactor = 0.0,
-                InteractionGRFactor = 0.0
-              )
+#tray.AddModule("I3NeutrinoGenerator","generator",
+#                RandomService = randomService,
+#                SteeringName = "steering",
+#                InjectorName = "diffusesource",
+#                InteractionInfoName = "interaction",
+#                PropagationWeightMode = "AutoDetect",
+#                InteractionCCFactor = 1.0,
+#                InteractionNCFactor = 0.0,
+#                InteractionGRFactor = 0.0
+#              )
 
 # Set up the Driving Time
 time = dataclasses.I3Time()

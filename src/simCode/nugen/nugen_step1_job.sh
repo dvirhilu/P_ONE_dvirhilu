@@ -15,12 +15,14 @@ eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 
 i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/src/simCode/nugen/ste1_neutrino_generator.py
+script=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/src/simCode/nugen/step1_neutrino_generator.py
 echo "Will use script: " $script
 
 RUNTYPE=$1
-ENERGYRANGE=$2
-NUMEVENTS=$3
+NUMEVENTS=$2
+LOGMINENERGY=$3
+LOGMAXENERGY=$4
+
 echo "Run type: " $RUNTYPE
 echo "Energy range: " $ENERGYRANGE
 echo "Number of events: " $NUMEVENTS
@@ -68,11 +70,11 @@ echo "NUMBER OF EVENTS : "$NUMEVENTS
 echo "OUTPUT FILE NAME : "$OUTNAME
 echo "OUTPUT FILE DIR  : "$OUTDIR
 echo "Keeping flavours, ratios, zenithRange as default"
-echo "LOG ENERGY RANGE : "$LOGENERGYRANGE
+echo "LOG ENERGY RANGE : "${LOGMINENERGY}":"${LOGMAXENERGY}
 echo "POWER LAW INDEX  : "$POWERLAWINDEX
 
 echo "CYLINDER LINE    : ""\""$CYLINDERSETTINGS"\""
 
-$i3env python $script -N ${FILE_NR} -n $NUMEVENTS -o ${OUTDIR}/${OUTNAME} -s ${FILE_NR}000 -E ${LOGENERGYRANGE} -p ${POWERLAWINDEX} ${CYLINDERSETTINGS}
+$i3env python $script -N ${FILE_NR} -n $NUMEVENTS -o ${OUTDIR}/${OUTNAME} -s ${FILE_NR}000 -E ${LOGMINENERGY}":"${LOGMAXENERGY} -p ${POWERLAWINDEX} ${CYLINDERSETTINGS}
 
 date 
