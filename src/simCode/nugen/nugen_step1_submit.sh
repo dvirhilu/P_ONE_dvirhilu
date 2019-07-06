@@ -1,7 +1,7 @@
 #!/bin/zsh
 #SBATCH --time=03:00:00
 #SBATCH --mem=4G
-#SBATCH --output=/home/dvirhilu/scratch/sbatchLogFiles/genie_step_1/arrayjob_%A_%a.log
+#SBATCH --output=/home/dvirhilu/scratch/sbatchLogFiles/nugen_step1/arrayjob_%A_%a.log
 #SBATCH --account=rpp-kenclark
 #SBATCH --job-name=genie_step1
 date

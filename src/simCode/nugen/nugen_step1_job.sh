@@ -61,7 +61,7 @@ fi
 CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERRADIUS" -l "$CYLINDERLENGTH
 POWERLAWINDEX=2.0
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}_${LOGENERGYRANGE}.i3.gz
-OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/
+OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1/
 
 echo "FILE NUMBER      : "$FILE_NR
 echo "NUMBER OF EVENTS : "$NUMEVENTS
