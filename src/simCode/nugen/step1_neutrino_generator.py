@@ -90,7 +90,7 @@ tray.AddService("I3NuGSteeringFactory", "steering",
                 SimMode = "Detector",
                 VTXGenMode = "NuGen",
                 InjectionMode = "surface",
-                CylinderParams = cylinder,
+#                CylinderParams = cylinder,
                 DoMuonRangeExtension = True,
                 UseSimpleScatterForm = True,
                 MCTreeName = "I3MCTree_NuGen"
@@ -143,7 +143,7 @@ tray.AddModule("I3NeutrinoGenerator","generator",
               )
 
 
-'''
+
 # Set up the Driving Time
 time = dataclasses.I3Time()
 time.set_mod_julian_time(55697, 0, 0)
@@ -184,7 +184,7 @@ tray.AddModule('I3PropagatorModule', 'muon_propagator',
         OutputMCTreeName="I3MCTree")	
 
 SkipKeys = ["I3MCTree_NuGen"]
-'''
+
 tray.AddModule("I3Writer","writer",
 # 	SkipKeys= SkipKeys,
     Filename = args.outfile)
