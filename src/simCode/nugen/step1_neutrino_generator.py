@@ -77,12 +77,12 @@ tray.AddModule("I3MCEventHeaderGenerator","gen_header",
 # At least EarthModelService & Steering Service are required
 #
 
-#tray.AddService("I3EarthModelServiceFactory", "EarthModelService",
-#                EarthModels = earth,
-#                MaterialModels = material,
-#                IceCapType = icecapmodel,
-#                DetectorDepth = 2600*I3Units.m,
-#                PathToDataFileDir = "")
+tray.AddService("I3EarthModelServiceFactory", "EarthModelService",
+                EarthModels = earth,
+                MaterialModels = material,
+                IceCapType = icecapmodel,
+                DetectorDepth = 2600*I3Units.m,
+                PathToDataFileDir = "")
 
 tray.AddService("I3NuGSteeringFactory", "steering",
                 EarthModelName = "EarthModelService",
@@ -142,6 +142,8 @@ tray.AddModule("I3NeutrinoGenerator","generator",
                 InteractionGRFactor = 0.0
               )
 
+
+'''
 # Set up the Driving Time
 time = dataclasses.I3Time()
 time.set_mod_julian_time(55697, 0, 0)
@@ -182,9 +184,9 @@ tray.AddModule('I3PropagatorModule', 'muon_propagator',
         OutputMCTreeName="I3MCTree")	
 
 SkipKeys = ["I3MCTree_NuGen"]
-
+'''
 tray.AddModule("I3Writer","writer",
- 	SkipKeys= SkipKeys,
+# 	SkipKeys= SkipKeys,
     Filename = args.outfile)
 
 tray.AddModule("TrashCan", "the can")
