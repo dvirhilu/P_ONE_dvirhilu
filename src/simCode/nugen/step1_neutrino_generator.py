@@ -127,7 +127,7 @@ tray.AddModule("I3NuGDiffuseSource","diffusesource",
 tray.AddService("I3NuGInteractionInfoDifferentialFactory", "interaction",
                 RandomService = randomService,
                 SteeringName = "steering",
-                TablesDir = "/home/dvir/workFolder/P_ONE_dvirhilu/CrossSectioModels/",
+                TablesDir = "/project/6008051/dvirhilu/P_ONE_dvirhilu/CrossSectioModels",
                 CrossSectionModel = "csms_differential_v1.0"
                )
 
@@ -186,7 +186,7 @@ tray.AddModule('I3PropagatorModule', 'muon_propagator',
 SkipKeys = ["I3MCTree_NuGen"]
 
 tray.AddModule("I3Writer","writer",
-# 	SkipKeys= SkipKeys,
+ 	SkipKeys= SkipKeys,
     Filename = args.outfile)
 
 tray.AddModule("TrashCan", "the can")
