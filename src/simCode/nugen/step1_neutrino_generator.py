@@ -77,12 +77,12 @@ tray.AddModule("I3MCEventHeaderGenerator","gen_header",
 # At least EarthModelService & Steering Service are required
 #
 
-tray.AddService("I3EarthModelServiceFactory", "EarthModelService",
-                EarthModels = earth,
-                MaterialModels = material,
-                IceCapType = icecapmodel,
-                DetectorDepth = 2600*I3Units.m,
-                PathToDataFileDir = "")
+#tray.AddService("I3EarthModelServiceFactory", "EarthModelService",
+#                EarthModels = earth,
+#                MaterialModels = material,
+#                IceCapType = icecapmodel,
+#                DetectorDepth = 2600*I3Units.m,
+#                PathToDataFileDir = "")
 
 tray.AddService("I3NuGSteeringFactory", "steering",
                 EarthModelName = "EarthModelService",
@@ -108,39 +108,39 @@ tray.AddService("I3NuGSteeringFactory", "steering",
 # (primary name is configuable)
 # You may use I3NuGPointSource either.
 #
-#tray.AddModule("I3NuGDiffuseSource","diffusesource", 
-#               SteeringName = "steering",
-#               NuTypes = flavours,
-#               PrimaryTypeRatio = ratios,
-#               GammaIndex = powerLawIndex,
-#               EnergyMinLog = logEMin,
-#               EnergyMaxLog = logEMax,
-#               ZenithMin = zenithMin,
-#               ZenithMax = zenithMax,
-#               AzimuthMin = 0,
-#               AzimuthMax = 360*I3Units.deg,
-#               ZenithWeightParam = 1.0,
-#               AngleSamplingMode = "ANGEMU"
-#              )
+tray.AddModule("I3NuGDiffuseSource","diffusesource", 
+               SteeringName = "steering",
+               NuTypes = flavours,
+               PrimaryTypeRatio = ratios,
+               GammaIndex = powerLawIndex,
+               EnergyMinLog = logEMin,
+               EnergyMaxLog = logEMax,
+               ZenithMin = zenithMin,
+               ZenithMax = zenithMax,
+               AzimuthMin = 0,
+               AzimuthMax = 360*I3Units.deg,
+               ZenithWeightParam = 1.0,
+               AngleSamplingMode = "ANGEMU"
+              )
 
 
-#tray.AddService("I3NuGInteractionInfoDifferentialFactory", "interaction",
-#                RandomService = randomService,
-#                SteeringName = "steering",
-#                TablesDir = "/home/dvir/workFolder/P_ONE_dvirhilu/CrossSectioModels/",
-#                CrossSectionModel = "csms_differential_v1.0"
-#               )
+tray.AddService("I3NuGInteractionInfoDifferentialFactory", "interaction",
+                RandomService = randomService,
+                SteeringName = "steering",
+                TablesDir = "/home/dvir/workFolder/P_ONE_dvirhilu/CrossSectioModels/",
+                CrossSectionModel = "csms_differential_v1.0"
+               )
 
-#tray.AddModule("I3NeutrinoGenerator","generator",
-#                RandomService = randomService,
-#                SteeringName = "steering",
-#                InjectorName = "diffusesource",
-#                InteractionInfoName = "interaction",
-#                PropagationWeightMode = "AutoDetect",
-#                InteractionCCFactor = 1.0,
-#                InteractionNCFactor = 0.0,
-#                InteractionGRFactor = 0.0
-#              )
+tray.AddModule("I3NeutrinoGenerator","generator",
+                RandomService = randomService,
+                SteeringName = "steering",
+                InjectorName = "diffusesource",
+                InteractionInfoName = "interaction",
+                PropagationWeightMode = "AutoDetect",
+                InteractionCCFactor = 1.0,
+                InteractionNCFactor = 0.0,
+                InteractionGRFactor = 0.0
+              )
 
 # Set up the Driving Time
 time = dataclasses.I3Time()
