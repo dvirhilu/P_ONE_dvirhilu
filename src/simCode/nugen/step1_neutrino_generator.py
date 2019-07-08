@@ -53,7 +53,7 @@ material = ["Standard"]
 icecapmodel = "IceSheet"
 
 # injection cylinder parameters
-cylinder = [args.cylinderRadius, args.cylinderLength, args.cylinderx, args.cylindery, args.cylinderz]
+cylinder = [float(args.cylinderRadius), float(args.cylinderLength), float(args.cylinderx), float(args.cylindery), float(args.cylinderz)]
 
 
 tray = I3Tray()
@@ -90,7 +90,7 @@ tray.AddService("I3NuGSteeringFactory", "steering",
                 SimMode = "Detector",
                 VTXGenMode = "NuGen",
                 InjectionMode = "surface",
-#                CylinderParams = cylinder,
+                CylinderParams = cylinder,
                 DoMuonRangeExtension = True,
                 UseSimpleScatterForm = True,
                 MCTreeName = "I3MCTree_NuGen"
