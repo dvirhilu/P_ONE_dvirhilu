@@ -137,7 +137,7 @@ tray.AddModule("I3NeutrinoGenerator","generator",
                 SteeringName = "steering",
                 InjectorName = "diffusesource",
                 InteractionInfoName = "interaction",
-                PropagationWeightMode = "AutoDetect",
+#                PropagationWeightMode = "AutoDetect",
                 InteractionCCFactor = 1.0,
                 InteractionNCFactor = 0.0,
                 InteractionGRFactor = 0.0
