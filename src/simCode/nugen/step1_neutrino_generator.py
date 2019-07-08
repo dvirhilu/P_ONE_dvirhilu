@@ -127,8 +127,8 @@ tray.AddModule("I3NuGDiffuseSource","diffusesource",
 tray.AddService("I3NuGInteractionInfoDifferentialFactory", "interaction",
                 RandomService = randomService,
                 SteeringName = "steering",
-                TablesDir = "/project/6008051/dvirhilu/P_ONE_dvirhilu/CrossSectioModels",
-                CrossSectionModel = "csms_differential_v1.0"
+                TablesDir = "/project/6008051/dvirhilu/P_ONE_dvirhilu/CrossSectionModels",
+                CrossSectionModel = "csms"
                )
 
 tray.AddModule("I3NeutrinoGenerator","generator",
