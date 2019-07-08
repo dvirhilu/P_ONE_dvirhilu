@@ -109,6 +109,7 @@ tray.AddService("I3NuGSteeringFactory", "steering",
 # You may use I3NuGPointSource either.
 #
 tray.AddModule("I3NuGDiffuseSource","diffusesource", 
+               RandomService = randomService,
                SteeringName = "steering",
                NuTypes = flavours,
                PrimaryTypeRatio = ratios,
