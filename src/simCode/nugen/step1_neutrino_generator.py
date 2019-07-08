@@ -38,12 +38,12 @@ flavours = args.flavours.split(":")
 ratios = [float(ratio) for ratio in args.ratios.split(":")]
 
 eRange = args.energyLog.split(":")
-logEMin = eRange[0]
-logEMax = eRange[1]
+logEMin = float(eRange[0])
+logEMax = float(eRange[1])
 
 zenithRange = args.zenithRange.split(":")
-zenithMin = zenithRange[0]
-zenithMax = zenithRange[1]
+zenithMin = float(zenithRange[0])
+zenithMax = float(zenithRange[1])
 
 powerLawIndex = float(args.powerLawIndex)
 
