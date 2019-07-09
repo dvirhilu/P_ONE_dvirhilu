@@ -61,15 +61,15 @@ class FindEventWeight(icetray.I3Module):
 
     def __init__(self, context):
         icetray.I3Module.__init__(self,context)
-        self.AddParameter("fluxModel", "FluxModel", 'honda2006')
-        self.AddParameter("types", "NeutrinoTypes", ["NuMu", "NuMuBar"])
-        self.AddParameter("ratios", "NeutrinoRatios", [1,1])
+        self.AddParameter("FluxModel", "FluxModel", 'honda2006')
+        self.AddParameter("NuTypes", "NeutrinoTypes", ["NuMu", "NuMuBar"])
+        self.AddParameter("Ratios", "NeutrinoRatios", [1,1])
         self.AddOutBox("OutBox")
     
     def Configure(self):
-        self.fluxModel = self.GetParameter("fluxModel")
-        self.types = self.GetParameter("types")
-        self.types = self.GetParameter("ratios")
+        self.fluxModel = self.GetParameter("FluxModel")
+        self.types = self.GetParameter("NuTypes")
+        self.ratios = self.GetParameter("Ratios")
 
     def parseTypes(self):
         parsedTypes = []
@@ -117,7 +117,8 @@ class FindEventWeight(icetray.I3Module):
         # get type-ratio dict
         typeRatioMap = self.getTypeRatioMap()
 
-        frame["EventWeight"] = fluxMult*typeRatioMap[ptype]*oneWeight/n_events
+        eventWeight = fluxMult*typeRatioMap[ptype]*oneWeight/n_events
+        frame["EventWeight"] = dataclasses.I3Double(eventWeight)
         self.PushFrame(frame)
 
 # initalize tray
@@ -250,8 +251,8 @@ tray.AddModule('I3PropagatorModule', 'muon_propagator',
         OutputMCTreeName="I3MCTree")
 
 tray.AddModule(FindEventWeight, 'event_weight_finder',
-        NeutrinoTypes = flavours,
-        NeutrinoRatios = ratios)	
+        NuTypes = flavours,
+        Ratios = ratios)	
 
 SkipKeys = ["I3MCTree_NuGen"]
 
