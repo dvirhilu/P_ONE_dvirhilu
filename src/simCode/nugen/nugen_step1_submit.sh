@@ -1,9 +1,9 @@
 #!/bin/zsh
 #SBATCH --time=03:00:00
 #SBATCH --mem=4G
-#SBATCH --output=/home/dvirhilu/scratch/sbatchLogFiles/nugen_step1/arrayjob_%A_%a.log
+#SBATCH --output=/home/dvirhilu/scratch/sbatchLogFiles/nugenStep1/arrayjob_%A_%a.log
 #SBATCH --account=rpp-kenclark
-#SBATCH --job-name=genie_step1
+#SBATCH --job-name=nugen_step1
 date
 echo "Sleeping for 30+-10 seconds to avoid hammering filesystems" 
 sleep $((20 + RANDOM % 20))
