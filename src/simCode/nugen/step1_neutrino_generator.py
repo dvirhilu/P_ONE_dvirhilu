@@ -5,7 +5,7 @@
 from I3Tray import *
 from icecube import icetray, dataclasses, phys_services, sim_services, dataio,  earthmodel_service, neutrino_generator, NuFlux
 from icecube.icetray import I3Units
-from icecube.dataclasses.I3Particle import ParticleType
+from icecube.dataclasses import I3Particle
 import numpy as np
 import argparse
 
@@ -76,17 +76,17 @@ class FindEventWeight(icetray.I3Module):
 
         for typeString in self.types:
             if typeString == "NuE":
-                parsedTypes.append(ParticleType.NuE)
+                parsedTypes.append(I3Particle.ParticleType.NuE)
             elif typeString == "NuEBar":
-                parsedTypes.append(ParticleType.NuEBar)
+                parsedTypes.append(I3Particle.ParticleType.NuEBar)
             elif typeString == "NuMu":
-                parsedTypes.append(ParticleType.NuMu)
+                parsedTypes.append(I3Particle.ParticleType.NuMu)
             elif typeString == "NuMuBar":
-                parsedTypes.append(ParticleType.NuMuBar)
+                parsedTypes.append(I3Particle.ParticleType.NuMuBar)
             elif typeString == "NuTau":
-                parsedTypes.append(ParticleType.NuTau)
+                parsedTypes.append(I3Particle.ParticleType.NuTau)
             elif typeString == "NuTauBar":
-                parsedTypes.append(ParticleType.NuTauBar)
+                parsedTypes.append(I3Particle.ParticleType.NuTauBar)
             else:
                 raise RuntimeError("Invalid Neutrino Type: " + typeString)
         
@@ -234,15 +234,15 @@ muMinusPropagator = PROPOSAL.I3PropagatorServicePROPOSAL(
 		mediadef=mediadef,
 		cylinderRadius=1200,
 		cylinderHeight=1700,
-		type=dataclasses.I3Particle.ParticleType.MuMinus)
+		type=I3Particle.ParticleType.MuMinus)
 muPlusPropagator = PROPOSAL.I3PropagatorServicePROPOSAL(
 		mediadef=mediadef,
 		cylinderRadius=1200,
 		cylinderHeight=1700,
-		type=dataclasses.I3Particle.ParticleType.MuPlus)
+		type=I3Particle.ParticleType.MuPlus)
 	
-propagators[dataclasses.I3Particle.ParticleType.MuMinus] = muMinusPropagator
-propagators[dataclasses.I3Particle.ParticleType.MuPlus] = muPlusPropagator
+propagators[I3Particle.ParticleType.MuMinus] = muMinusPropagator
+propagators[I3Particle.ParticleType.MuPlus] = muPlusPropagator
 tray.AddModule('I3PropagatorModule', 'muon_propagator',
 		PropagatorServices=propagators,
 		RandomService=randomService,
