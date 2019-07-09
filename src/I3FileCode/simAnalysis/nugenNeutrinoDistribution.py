@@ -13,18 +13,6 @@ args = parser.parse_args()
 # open file
 infile = dataio.I3File(args.infile)
 
-# get flux data
-# make output file
-infilePathStrings = args.infile.split("/")
-infileName = infilePathStrings[len(infilePathStrings)-1]
-infileAttributes = infileName.split("_")
-
-fluxFileName = "fluxData_" + infileAttributes[0] + "_" + infileAttributes[2] + "_" + infileAttributes[3] + ".dat"
-fluxFilePath = "/home/dvir/workFolder/P_ONE_dvirhilu/src/I3FileCode/simAnalysis/fluxData/"
-
-fluxData = np.loadtxt(fluxFilePath + fluxFileName, unpack = True)
-fluxDataMap = {eventID:fluxMult for eventID, fluxMult in zip(fluxData[0], fluxData[1])}
-
 # get all Q frames
 qframes = []
 while infile.more():
@@ -50,12 +38,9 @@ angDiff = []
 for frame in qframes:
     event_id = frame["I3EventHeader"].event_id
     primary = frame["NuGPrimary"]
-    weightDict = frame["I3MCWeightDict"]
-    oneWeight = weightDict["OneWeight"]
-    numEvents = weightDict["NEvents"]
+    eventWeight = frame["EventWeight"].value
     secondaryParticle = dataclasses.I3MCTree.children(frame["I3MCTree"], primary)[0]
-    fluxMult = fluxDataMap[event_id]
-    weight.append(fluxMult*oneWeight/numEvents/2)
+    weight.append(eventWeight)
     zenith.append(np.cos(secondaryParticle.dir.zenith))
     azimuth.append(np.cos(secondaryParticle.dir.azimuth))
     energy.append(primary.energy)
@@ -85,7 +70,6 @@ logE = np.log10(energy)
 r = [np.sqrt(x[i]**2 + y[i]**2 + z[i]**2) for i in range(len(x))]
 farEvents = [value for value in r if value > 5000]
 
-'''
 plt.hist(logE, histtype = "step", log = True, weights = weight, bins = 20)
 plt.title("Weighted Muon Log Energy Distribution")
 plt.xlabel("LogE (Energy in GeV, log base 10)")
@@ -110,7 +94,6 @@ plt.hist(y, histtype = "step", log = True, weights = weight, bins = 50)
 plt.title("Weighted Muon Position Distribution (y)")
 plt.xlabel("y Coordinate")
 
-
 plt.figure()
 plt.hist(z, histtype = "step", log = True, weights = weight, bins = 50)
 plt.title("Weighted Muon Position Distribution (z)")
@@ -120,7 +103,7 @@ plt.figure()
 plt.hist(r, histtype = "step", log = True, weights = weight, bins = 50)
 plt.title("Weighted Muon Distance Distribution")
 plt.xlabel("Distance from 0")
-
+'''
 plt.figure()
 plt.hist(zenith500prim, histtype = "step", log = True, weights = weight500, bins = 20)
 plt.title("Weighted Neutrino Angular Distribution (Zenith), Resulting Muon < 500m Away")
@@ -140,12 +123,12 @@ plt.figure()
 plt.hist(zenithZ300sec, histtype = "step", log = True, weights = weightZ300, bins = 20)
 plt.title("Weighted Muon Angular Distribution (Zenith), Z>300m")
 plt.xlabel("Cosine of the Zenith Angle")
-'''
+
 plt.figure()
 plt.hist(angDiff, histtype = "step", log = True, bins = 100)
 plt.title("Weighted Angular Difference Distribution Neutrino vs. Muon")
 plt.xlabel("Cosine of the Angular Difference")
-
+'''
 print(len(zenith500sec))
 print(len(farEvents))
 print(ptypeMap)
