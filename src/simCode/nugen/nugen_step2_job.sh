@@ -17,7 +17,7 @@ echo ${OPENCL_VENDOR_PATH}
 
 i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/simCode/nugen/step_2_clsim_setCrossE.py
+script=/project/6008051/dvirhilu/P_ONE_dvirhilu/src/simCode/nugen/step2_clsim_setCrossE.py
 echo "Will use script: " $script
 
 RUNTYPE=$1
@@ -54,7 +54,7 @@ INFILENAME=NuGen_step1_${RUNTYPE}_${FILE_NR}_.i3.bz2
 INFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1
 
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
-OUTFILENAME=MuonGun_step2_${RUNTYPE}_${FILE_NR}.i3.bz2
+OUTFILENAME=NuGen_step2_${RUNTYPE}_${FILE_NR}.i3.bz2
 OUTFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep2
 echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 
