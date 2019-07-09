@@ -15,7 +15,7 @@ outfilepath = "/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/ANTA
 
 # model data
 eda = 0.17
-effScatteringCoeff = np.array([1/265, 1/119])
+effScatteringCoeff = np.array([1/265.0, 1/119.0])
 absorptionCoeff = np.array([1/68.6, 1/23.5])
 wavelengths = np.array([473, 375])
 
@@ -44,25 +44,34 @@ leastSquaresRSAbs = np.matmul(coefficientMatrix.T, np.log(absorptionCoeff.T))
 scatLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSScat)
 absLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSAbs)
 
+alpha = str(-scatLSS[0]) + '\t# scattering wavelength dependence power law exponent\n'
+kappa = str(-absLSS[0]) + '\t# absorption wavelength dependence power law exponent\n'
+b_e_400 = np.e**scatLSS[1]
+a_e_400 = np.e**absLSS[1]
+
+
 # check fit works
 x = np.linspace(300,500,201)
-y = [ (np.e**scatLSS[1])*( (i/400)**scatLSS[0])  for i in x]
+y = [ (b_e_400)*( (i/400)**scatLSS[0])  for i in x]
 plt.plot(x,y)
-plt.scatter( wavelengths, effScatteringCoeff )
-plt.show()
+plt.scatter( wavelengths, effScatteringCoeff, label = "Alpha: " + str(scatLSS[0]) )
+plt.title("Scattering Coefficient Wavelength Dependence")
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Effective Scattering Coefficient (m^-1)")
+plt.legend()
 
 # check fit works
 plt.figure()
 x = np.linspace(300,500,201)
-y = [ (np.e**absLSS[1])*( (i/400)**absLSS[0])  for i in x]
+y = [ (a_e_400)*( (i/400)**absLSS[0])  for i in x]
 plt.plot(x,y)
-plt.scatter( wavelengths, absorptionCoeff )
-plt.show()
+plt.scatter( wavelengths, absorptionCoeff, label = "Kappa: " + str(absLSS[0]) )
+plt.title("Absorption Coefficient Wavelength Dependence")
+plt.xlabel("Wavelength (nm)")
+plt.ylabel("Absorption Coefficient (m^-1)")
+plt.legend()
 
-alpha = str(scatLSS[0]) + '\t# scattering wavelength dependence power law exponent\n'
-kappa = str(absLSS[0]) + '\t# absorption wavelength dependence power law exponent\n'
-b_e_400 = scatLSS[1]
-a_e_400 = absLSS[1]
+plt.show()
 
 # keep only power law portion of absorption coefficient
 A = str(0) + '\t# absorption exponential component multiple - ignored\n'
