@@ -4,10 +4,11 @@ date
 echo "Starting the MuonGun job"
 echo "Argument line : " $@
 
-echo "TASK ID " $SLURM_ARRAY_TASK_ID
-FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
-FILE_NR=`printf "%06d\n" $FILE_NR`
-echo "Filename ID : " $FILE_NR
+#echo "TASK ID " $SLURM_ARRAY_TASK_ID
+#FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
+#FILE_NR=`printf "%06d\n" $FILE_NR`
+#echo "Filename ID : " $FILE_NR
+FILE_NR=899
 
 echo ${OPENCL_VENDOR_PATH}
 echo "Starting cvmfs " 
@@ -59,4 +60,8 @@ echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 
 echo "GCD: " $GCD_FILE
 
+<<<<<<< HEAD
+$i3env python $script -t -i ${INFOLDER}/${INFILENAME} -g ${GCD_FILE} -o ${OUTFOLDER}/${OUTFILENAME} -r ${RUNTYPE} -l ${SLURM_ARRAY_TASK_ID} -c $CROSSENERGY -m $MEDIUMMODEL
+=======
 $i3env python $script -t -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r $RUNTYPE -l $SLURM_ARRAY_TASK_ID -c $CROSSENERGY -m $MEDIUMMODEL
+>>>>>>> 0677a4dcca7e1754d56ddb30a9bda225340c6639
