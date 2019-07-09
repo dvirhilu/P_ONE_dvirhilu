@@ -11,12 +11,12 @@ import numpy as np
 from numpy import linalg as la
 import matplotlib.pyplot as plt
 
-outfilepath = "/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModel/ANTARES/"
+outfilepath = "/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/ANTARES/"
 
 # model data
 eda = 0.17
-scattering = np.array([265, 119])
-absorption = np.array([68.6, 23.5])
+effScatteringCoeff = np.array([1/265, 1/119])
+absorptionCoeff = np.array([1/68.6, 1/23.5])
 wavelengths = np.array([473, 375])
 
 # configuration  
@@ -39,8 +39,8 @@ outfile.close()
 # least squares fit to find alpha and kappa
 coefficientMatrix = np.column_stack( (np.log(wavelengths/400.0), np.ones( len(wavelengths) )) )
 leastSquaresMatrix = np.matmul(coefficientMatrix.T, coefficientMatrix)
-leastSquaresRSScat = np.matmul(coefficientMatrix.T, np.log(scattering.T))
-leastSquaresRSAbs = np.matmul(coefficientMatrix.T, np.log(absorption.T))
+leastSquaresRSScat = np.matmul(coefficientMatrix.T, np.log(effScatteringCoeff.T))
+leastSquaresRSAbs = np.matmul(coefficientMatrix.T, np.log(absorptionCoeff.T))
 scatLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSScat)
 absLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSAbs)
 
@@ -48,7 +48,7 @@ absLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSAbs)
 x = np.linspace(300,500,201)
 y = [ (np.e**scatLSS[1])*( (i/400)**scatLSS[0])  for i in x]
 plt.plot(x,y)
-plt.scatter( wavelengths, scattering )
+plt.scatter( wavelengths, effScatteringCoeff )
 plt.show()
 
 # check fit works
@@ -56,7 +56,7 @@ plt.figure()
 x = np.linspace(300,500,201)
 y = [ (np.e**absLSS[1])*( (i/400)**absLSS[0])  for i in x]
 plt.plot(x,y)
-plt.scatter( wavelengths, absorption )
+plt.scatter( wavelengths, absorptionCoeff )
 plt.show()
 
 alpha = str(scatLSS[0]) + '\t# scattering wavelength dependence power law exponent\n'
