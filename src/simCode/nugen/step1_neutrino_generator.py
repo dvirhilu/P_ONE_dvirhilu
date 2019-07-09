@@ -3,8 +3,9 @@
 # script to generate high energy neutrino events for P-ONE. Put together from Neutrino Generator documentation resources
 
 from I3Tray import *
-from icecube import icetray, dataclasses, phys_services, sim_services, dataio,  earthmodel_service, neutrino_generator
+from icecube import icetray, dataclasses, phys_services, sim_services, dataio,  earthmodel_service, neutrino_generator, NuFlux
 from icecube.icetray import I3Units
+from icecube.dataclasses.I3Particle import ParticleType
 import numpy as np
 import argparse
 
@@ -19,7 +20,7 @@ parser.add_argument('-f', "--flavours", default = "NuMu:NuMuBar", help = "neutri
 parser.add_argument('-R', "--ratios", default = "1:1", help = "the ratios with which the flavours will be produced" )
 parser.add_argument('-E', "--energyLog", default = "2:8", help = "the range of the orders of magnitudes of energies in simulation. 1=GeV")
 parser.add_argument('-Z', '--zenithRange', default = "0:180", help = "the range of zenith angles spanned in generation")
-parser.add_argument("-p", "--powerLawIndex", default=1.0, help="generation power law index")
+parser.add_argument("-p", "--powerLawIndex", default=2.0, help="generation power law index")
 # generation surface parameters
 parser.add_argument('-x', '--cylinderx', help = "the x coordinate of the center of the injection cylinder")
 parser.add_argument('-y', '--cylindery', help = "the y coordinate of the center of the injection cylinder")
@@ -55,7 +56,71 @@ icecapmodel = "IceSheet"
 # injection cylinder parameters
 cylinder = [float(args.cylinderRadius), float(args.cylinderLength), float(args.cylinderx), float(args.cylindery), float(args.cylinderz)]
 
+# I3Module to make weighting the distribution easier
+class FindEventWeight(icetray.I3Module):
 
+    def __init__(self, context):
+        icetray.I3Module.__init__(self,context)
+        self.AddParameter("fluxModel", "FluxModel", 'honda2006')
+        self.AddParameter("types", "NeutrinoTypes", ["NuMu", "NuMuBar"])
+        self.AddParameter("ratios", "NeutrinoRatios", [1,1])
+        self.AddOutBox("OutBox")
+    
+    def Configure(self):
+        self.fluxModel = self.GetParameter("fluxModel")
+        self.types = self.GetParameter("types")
+        self.types = self.GetParameter("ratios")
+
+    def parseTypes(self):
+        parsedTypes = []
+
+        for typeString in self.types:
+            if typeString == "NuE":
+                parsedTypes.append(ParticleType.NuE)
+            elif typeString == "NuEBar":
+                parsedTypes.append(ParticleType.NuEBar)
+            elif typeString == "NuMu":
+                parsedTypes.append(ParticleType.NuMu)
+            elif typeString == "NuMuBar":
+                parsedTypes.append(ParticleType.NuMuBar)
+            elif typeString == "NuTau":
+                parsedTypes.append(ParticleType.NuTau)
+            elif typeString == "NuTauBar":
+                parsedTypes.append(ParticleType.NuTauBar)
+            else:
+                raise RuntimeError("Invalid Neutrino Type: " + typeString)
+        
+        return parsedTypes
+
+
+    def getTypeRatioMap(self):
+        parsedTypes = self.parseTypes()
+        ratioSum = sum(self.ratios)
+        normedRatios = [ratio/ratioSum for ratio in self.ratios]
+
+        return {ptype:nRatio for ptype, nRatio in zip(parsedTypes, normedRatios)}
+
+    def DAQ(self, frame):
+        # get all necessary data
+        primary = frame["NuGPrimary"]
+        weightDict = frame["I3MCWeightDict"]
+        oneWeight = weightDict["OneWeight"]
+        n_events = weightDict["NEvents"]
+        ptype = primary.type
+        penergy = primary.energy
+        ptheta = primary.dir.zenith
+
+        # get flux mult
+        flux = NuFlux.makeFlux(self.fluxModel).getFlux
+        fluxMult = flux(ptype, penergy, ptheta)
+
+        # get type-ratio dict
+        typeRatioMap = self.getTypeRatioMap()
+
+        frame["EventWeight"] = fluxMult*typeRatioMap[ptype]*oneWeight/n_events
+        self.PushFrame(frame)
+
+# initalize tray
 tray = I3Tray()
 
 # Random number generator
@@ -87,7 +152,7 @@ tray.AddService("I3EarthModelServiceFactory", "EarthModelService",
 tray.AddService("I3NuGSteeringFactory", "steering",
                 EarthModelName = "EarthModelService",
                 NEvents = numEvents,
-                SimMode = neutrino_generator.detector,
+                SimMode = "Detector",
                 VTXGenMode = "NuGen",
                 InjectionMode = "surface",
                 CylinderParams = cylinder,
@@ -182,7 +247,11 @@ tray.AddModule('I3PropagatorModule', 'muon_propagator',
 		PropagatorServices=propagators,
 		RandomService=randomService,
 		InputMCTreeName="I3MCTree_NuGen",
-        OutputMCTreeName="I3MCTree")	
+        OutputMCTreeName="I3MCTree")
+
+tray.AddModule(FindEventWeight, 'event_weight_finder',
+        NeutrinoTypes = flavours,
+        NeutrinoRatios = ratios)	
 
 SkipKeys = ["I3MCTree_NuGen"]
 
