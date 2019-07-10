@@ -5,9 +5,10 @@ echo "Starting the MuonGun job"
 echo "Argument line : " $@
 
 # source /home/hignight/setup_oscnext.sh
-echo "TASK ID " $SLURM_ARRAY_TASK_ID
-FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
-FILE_NR=`printf "%06d\n" $FILE_NR`
+#echo "TASK ID " $SLURM_ARRAY_TASK_ID
+#FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
+#FILE_NR=`printf "%06d\n" $FILE_NR`
+FILE_NR=000950
 echo "Filename ID : " $FILE_NR
 
 echo "Starting cvmfs " 
@@ -61,7 +62,7 @@ else
 fi
 
 CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERRADIUS" -l "$CYLINDERLENGTH
-POWERLAWINDEX=2.0
+POWERLAWINDEX=0.5
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
 OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1/
 
