@@ -46,7 +46,7 @@ else
     exit
 fi
 
-MEDIUMMODEL=/project/6008051/dvirhilu/P_ONE_dvirhilu/propagationMediumModels/${MEDIUMMODEL}
+MEDIUMMODEL=/project/6008051/dvirhilu/P_ONE_dvirhilu/propagationMediumModels/${MEDIUMNAME}
 CROSSENERGY=200.0
 echo "MEDIUMMODEL    : " $MEDIUMMODEL
 echo "CROSSENERGY : " $CROSSENERGY

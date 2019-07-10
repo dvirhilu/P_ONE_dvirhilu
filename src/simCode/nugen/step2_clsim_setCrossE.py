@@ -88,7 +88,7 @@ tray.AddModule('I3Reader', 'reader',
 
 tray.AddModule("I3GeometryDecomposer", "I3ModuleGeoMap")
 
-icemodel_path = expandvars("$I3_SRC/ice-models/resources/models/" + args.ICEMODEL)
+icemodel_path = args.ICEMODEL
 print 'Medium model ', "ANTARES"
 print "DOM efficiency: ", args.EFFICIENCY
 # Only the photons are made. Still have to convert them to hits!
