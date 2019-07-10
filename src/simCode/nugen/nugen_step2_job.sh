@@ -8,8 +8,8 @@ echo "Argument line : " $@
 #FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
 #FILE_NR=`printf "%06d\n" $FILE_NR`
 #echo "Filename ID : " $FILE_NR
-FILE_NR=899
-ARR_NUM=900
+FILE_NR=000900
+ARR_NUM=901
 
 echo ${OPENCL_VENDOR_PATH}
 echo "Starting cvmfs " 
@@ -50,7 +50,7 @@ MEDIUMMODEL=/project/6008051/dvirhilu/P_ONE_dvirhilu/propagationMediumModels/${M
 CROSSENERGY=200.0
 echo "MEDIUMMODEL    : " $MEDIUMMODEL
 echo "CROSSENERGY : " $CROSSENERGY
-INFILENAME=NuGen_step1_${RUNTYPE}_${FILE_NR}_.i3.gz
+INFILENAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
 INFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1
 
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
