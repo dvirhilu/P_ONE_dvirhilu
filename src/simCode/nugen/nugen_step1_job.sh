@@ -62,7 +62,7 @@ else
 fi
 
 CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERRADIUS" -l "$CYLINDERLENGTH
-POWERLAWINDEX=0.5
+POWERLAWINDEX=1
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
 OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1/
 
