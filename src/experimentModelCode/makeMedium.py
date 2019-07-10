@@ -51,8 +51,8 @@ leastSquaresRSAbs = np.matmul(coefficientMatrix.T, np.log(absorptionCoeff.T))
 scatLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSScat)
 absLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSAbs)
 
-alpha = str(-scatLSS[0]) + '\t# scattering wavelength dependence power law exponent\n'
-kappa = str(-absLSS[0]) + '\t# absorption wavelength dependence power law exponent\n'
+alpha = str(-scatLSS[0]) + '\t' + str(0) + '\t# scattering wavelength dependence power law exponent\n'
+kappa = str(-absLSS[0]) + '\t' + str(0) + '\t# absorption wavelength dependence power law exponent\n'
 b_e_400 = np.e**scatLSS[1]
 a_e_400 = np.e**absLSS[1]
 
@@ -81,8 +81,8 @@ plt.legend()
 plt.show()
 
 # keep only power law portion of absorption coefficient
-A = str(0) + '\t# absorption exponential component multiple - ignored\n'
-B = str(0) + '\t# absorption exponential component exponent multiple - ignored\n'
+A = str(0) + '\t' + str(0) + '\t# absorption exponential component multiple - ignored\n'
+B = str(0) + '\t' + str(0) + '\t# absorption exponential component exponent multiple - ignored\n'
 
 configArray = [alpha, kappa, A, B]
 

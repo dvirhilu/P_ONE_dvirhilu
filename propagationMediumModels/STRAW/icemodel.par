@@ -1,4 +1,4 @@
-2.20226446338404	# scattering wavelength dependence power law exponent
-3.4375132175725227	# absorption wavelength dependence power law exponent
-0	# absorption exponential component multiple - ignored
-0	# absorption exponential component exponent multiple - ignored
+2.20226446338404	0	# scattering wavelength dependence power law exponent
+3.4375132175725227	0	# absorption wavelength dependence power law exponent
+0	0	# absorption exponential component multiple - ignored
+0	0	# absorption exponential component exponent multiple - ignored
