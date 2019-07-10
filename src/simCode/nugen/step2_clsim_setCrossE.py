@@ -14,17 +14,17 @@ parser.add_argument("-o", "--outfile",default="./test_output.i3",
                   dest="OUTFILE", help="Write output to OUTFILE (.i3{.gz} format)")
 parser.add_argument("-i", "--infile",default="./test_input.i3",
                   dest="INFILE", help="Read input from INFILE (.i3{.gz} format)")
-parser.add_argument("-r", "--runnumber", type="string", default="1",
+parser.add_argument("-r", "--runnumber", default="1",
                   dest="RUNNUMBER", help="The run/dataset number for this simulation, is used as seed for random generator")
-parser.add_argument("-l", "--filenr",type="string",default="1",
+parser.add_argument("-l", "--filenr",default="1",
                    dest="FILENR", help="File number, stream of I3SPRNGRandomService")
 parser.add_argument("-g", "--gcdfile", default=os.getenv('GCDfile'),
 		  dest="GCDFILE", help="Read in GCD file")
-parser.add_argument("-e","--efficiency", type="float",default=1.2, # Using efficiency > 1 as default so we can support systematics sets
+parser.add_argument("-e","--efficiency",default=1.2, # Using efficiency > 1 as default so we can support systematics sets
                   dest="EFFICIENCY",help="DOM Efficiency ... the same as UnshadowedFraction")
 parser.add_argument("-m","--icemodel", default="spice_3.2.1",
                  dest="ICEMODEL",help="Ice model (spice_mie, spice_lea, etc)")
-parser.add_argument("-c","--crossenergy", type="float",default=30.0,
+parser.add_argument("-c","--crossenergy", default=30.0,
                   dest="CROSSENERGY",help="The cross energy where the hybrid clsim approach will be used")
 parser.add_argument("-t", action="store_true",  dest="GPU", default=False ,help="Run on GPUs or CPUs")
 
