@@ -4,7 +4,7 @@ from icecube import dataclasses, dataio, icetray
 from icecube.icetray import I3Units
 import matplotlib.pyplot as plt
 import numpy as np
-import argparse
+import argparse, matplotlib
 
 parser = argparse.ArgumentParser(description = "Find neutrino distribution from NuGen simulation")
 parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
@@ -38,12 +38,13 @@ logEStep1 = np.log10(energyStep1)
 cosZenStep1 = np.cos(zenithStep1)
 azimuthStep1 = [angle/I3Units.deg for angle in azimuthStep1]
 
-plt.rc('text', usetex = True)
-plt.rc('font', family='serif')
+#matplotlib.rcParams['text.usetex']=True
+#matplotlib.rcParams['text.latex.unicode']=True
 
+'''
 plt.hist(logEStep1, histtype = "step", log = True, weights = weights, bins = 30)
 plt.title("Weighted Neutrino Energy Distribution")
-plt.xlabel("LogE (Energy in GeV, log base 10)")
+plt.xlabel(r'$log_{10}\, E/GeV$')
 
 plt.figure()
 plt.hist(azimuthStep1, histtype = "step", log = True, weights = weights, bins = 30)
@@ -54,11 +55,13 @@ plt.figure()
 plt.hist(cosZenStep1, histtype = "step", log = True, weights = weights, bins = 30)
 plt.title("Weighted Muon Angular Distribution (Zenith)")
 plt.xlabel("Cosine of the Zenith Angle")
-
+'''
 plt.figure()
-h = plt.hist2d(logEStep1,cosZenStep1, log = True, weights = weights)
-plt.title("Neutrino Energy and Angular Distribution")
-plt.xlabel(r"$\displaystyle\sum_{n=1}^\infty\frac{-e^{i\pi}}{2^n}$!")
+plotOutputs = plt.hist2d(logEStep1,cosZenStep1, norm = matplotlib.colors.LogNorm(), bins = 10)
+plt.xlabel(r'$log_{10}\, E/GeV$')
+plt.ylabel(r'$\cos{\theta}$')
+plt.title("Neutrino Energy and Zenith Distribution")
+plt.colorbar(plotOutputs[3])
 
 plt.show()
 
