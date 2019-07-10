@@ -11,13 +11,20 @@ import numpy as np
 from numpy import linalg as la
 import matplotlib.pyplot as plt
 
-outfilepath = "/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/ANTARES/"
+# change directory to the proper model directory!!
+outfilepath = "/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/STRAW/"
 
-# model data
-eda = 0.17
-effScatteringCoeff = np.array([1/265.0, 1/119.0])
-absorptionCoeff = np.array([1/68.6, 1/23.5])
-wavelengths = np.array([473, 375])
+# ANTARES model data June 1999
+#eda = 0.17
+#effScatteringCoeff = np.array([1/265.0, 1/119.0])
+#absorptionCoeff = np.array([1/68.6, 1/23.5])
+#wavelengths = np.array([473, 375])
+
+# STRAW model data April 2019
+eda = 0.6
+effScatteringCoeff = np.array([1/50.9, 1/69.0])
+absorptionCoeff = np.array([1/25.5, 1/41.0])
+wavelengths = np.array([405, 465])
 
 # configuration  
 header = '# configuration file\n'
