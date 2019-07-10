@@ -40,6 +40,11 @@ elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
     GCD_FILE=/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
     echo "Using IceCube GCD"
+
+elif [ "$RUNTYPE" == "cube" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz
+    echo "Using cube GCD"
     
 else 
     echo "No configuration for " $RUNTYPE "... exiting"
