@@ -19,10 +19,46 @@ for i in range(int(args.minFileNum), int(args.maxFileNum) + 1):
     infileListStep1.append(infile)
     print('file ' + str(i) + 'done' )
 
-qFrameListStep1 = []
-for infile in infileListStep1:
-    print("qframessss")
-    while infile.more():
-        qFrameListStep1.append(infile.pop_daq)
 
-print(len(qFrameListStep1))
+energyStep1 = []
+zenithStep1 = []
+azimuthStep1 = []
+weights = []
+for infile in infileListStep1:
+    while infile.more():
+        frame = infile.pop_daq()
+        primary = frame["NuGPrimary"]
+        weights.append(frame["EventWeight"].value)
+        zenithStep1.append(primary.dir.zenith)
+        azimuthStep1.append(primary.dir.azimuth)
+        energyStep1.append(primary.energy)
+
+
+logEStep1 = np.log10(energyStep1)
+cosZenStep1 = np.cos(zenithStep1)
+azimuthStep1 = [angle/I3Units.deg for angle in azimuthStep1]
+
+plt.rc('text', usetex = True)
+plt.rc('font', family='serif')
+
+plt.hist(logEStep1, histtype = "step", log = True, weights = weights, bins = 30)
+plt.title("Weighted Neutrino Energy Distribution")
+plt.xlabel("LogE (Energy in GeV, log base 10)")
+
+plt.figure()
+plt.hist(azimuthStep1, histtype = "step", log = True, weights = weights, bins = 30)
+plt.title("Weighted Muon Angular Distribution (Azimuth)")
+plt.xlabel("Azimuth Angle (degrees)")
+
+plt.figure()
+plt.hist(cosZenStep1, histtype = "step", log = True, weights = weights, bins = 30)
+plt.title("Weighted Muon Angular Distribution (Zenith)")
+plt.xlabel("Cosine of the Zenith Angle")
+
+plt.figure()
+h = plt.hist2d(logEStep1,cosZenStep1, log = True, weights = weights)
+plt.title("Neutrino Energy and Angular Distribution")
+plt.xlabel(r"$\displaystyle\sum_{n=1}^\infty\frac{-e^{i\pi}}{2^n}$!")
+
+plt.show()
+

@@ -9,6 +9,7 @@ echo "Argument line : " $@
 #FILE_NR=`printf "%06d\n" $FILE_NR`
 #echo "Filename ID : " $FILE_NR
 FILE_NR=899
+ARR_NUM=900
 
 echo ${OPENCL_VENDOR_PATH}
 echo "Starting cvmfs " 
@@ -47,7 +48,6 @@ fi
 
 MEDIUMMODEL=/project/6008051/dvirhilu/P_ONE_dvirhilu/propagationMediumModels/${MEDIUMMODEL}
 CROSSENERGY=200.0
-echo "INRUN       : " $INRUN
 echo "MEDIUMMODEL    : " $MEDIUMMODEL
 echo "CROSSENERGY : " $CROSSENERGY
 INFILENAME=NuGen_step1_${RUNTYPE}_${FILE_NR}_.i3.bz2
@@ -60,4 +60,4 @@ echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 
 echo "GCD: " $GCD_FILE
 
-$i3env python $script -t -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r $RUNTYPE -m $MEDIUMMODEL -c $CROSSENERGY -l $SLURM_ARRAY_TASK_ID
+$i3env python $script -t -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r $RUNTYPE -m $MEDIUMMODEL -c $CROSSENERGY -l $ARR_NUM

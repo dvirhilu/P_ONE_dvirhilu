@@ -36,7 +36,6 @@ weightZ300 = []
 angDiff = []
 
 for frame in qframes:
-    event_id = frame["I3EventHeader"].event_id
     primary = frame["NuGPrimary"]
     eventWeight = frame["EventWeight"].value
     secondaryParticle = dataclasses.I3MCTree.children(frame["I3MCTree"], primary)[0]
