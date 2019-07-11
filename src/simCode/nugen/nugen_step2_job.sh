@@ -10,6 +10,7 @@ echo "Argument line : " $@
 #echo "Filename ID : " $FILE_NR
 FILE_NR=000900
 ARR_NUM=901
+#ARR_NUM=$SLURM_ARRAY_TASK_ID
 
 echo ${OPENCL_VENDOR_PATH}
 echo "Starting cvmfs " 
@@ -26,7 +27,7 @@ MEDIUMNAME=$2
 
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=TestString_n15_b100.0_v50.0_l1_simple_spacing
+    GCDNAME=TestString_n15_b100.0_v50.0_l3_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
     GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
  
