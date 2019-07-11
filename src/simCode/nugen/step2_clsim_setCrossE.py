@@ -134,12 +134,12 @@ tray.AddSegment(clsim.I3CLSimMakePhotons, 'goCLSIM',
 
 
 # Tested that all frames go through CLSIM. Removing the ones without any hits to save space.
-tray.AddModule(BasicHitFilter, 'FilterNullPhotons', Streams = [icetray.I3Frame.DAQ, icetray.I3Frame.Physics])
+#tray.AddModule(BasicHitFilter, 'FilterNullPhotons', Streams = [icetray.I3Frame.DAQ, icetray.I3Frame.Physics])
 
-SkipKeys = ["I3MCTree_bak"]
+#SkipKeys = ["I3MCTree_bak"]
 
 tray.AddModule("I3Writer","writer",
-               SkipKeys=SkipKeys,
+#               SkipKeys=SkipKeys,
                Filename = args.OUTFILE,
                Streams = [icetray.I3Frame.DAQ, icetray.I3Frame.Physics, icetray.I3Frame.TrayInfo],
               )
