@@ -27,7 +27,7 @@ MEDIUMNAME=$2
 
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=TestString_n15_b100.0_v50.0_l3_simple_spacing
+    GCDNAME=TestString_n15_b100.0_v50.0_l1_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
     GCD_FILE=/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
  
@@ -61,7 +61,7 @@ INFILENAME=testFile.i3.gz
 INFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1
 
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
-OUTFILENAME=NuGen_step2_${RUNTYPE}_test.i3.gz
+OUTFILENAME=NuGen_step2_${RUNTYPE}_test1String.i3.gz
 OUTFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep2
 echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 
