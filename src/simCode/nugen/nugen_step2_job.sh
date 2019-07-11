@@ -60,7 +60,7 @@ INFILENAME=testFile.i3.gz
 INFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1
 
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
-OUTFILENAME=NuGen_step2_${RUNTYPE}_${FILE_NR}.i3.gz
+OUTFILENAME=NuGen_step2_${RUNTYPE}_test.i3.gz
 OUTFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep2
 echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 
