@@ -56,7 +56,7 @@ CROSSENERGY=200.0
 echo "MEDIUMMODEL    : " $MEDIUMMODEL
 echo "CROSSENERGY : " $CROSSENERGY
 #INFILENAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
-INFILENAME=NuGen_step1_testString_${FILE_NR}.i3.gz
+INFILENAME=testFile.i3.gz
 INFOLDER=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1
 
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
