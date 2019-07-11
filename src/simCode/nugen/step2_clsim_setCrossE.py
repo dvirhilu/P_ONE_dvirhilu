@@ -44,6 +44,7 @@ from icecube import icetray, dataclasses, dataio, simclasses
 from icecube import phys_services, sim_services
 #from icecube import diplopia
 from icecube import clsim
+import numpy as np
 
 photon_series = "I3Photons"
 #print 'CUDA devices: ', args.DEVICE
@@ -129,6 +130,7 @@ tray.AddSegment(clsim.I3CLSimMakePhotons, 'goCLSIM',
                     "DoublePrecision":False, #will impact performance if true
                     "StatisticsName":"clsim_stats",
                     "IgnoreDOMIDs":[],
+                    "ClosestDOMDistanceCutoff":+np.inf
                     }
                 )
 
