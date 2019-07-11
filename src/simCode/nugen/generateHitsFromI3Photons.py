@@ -38,7 +38,7 @@ else:
     raise RuntimeError("Invalid Simulation Type")
 
 
-infile = dataio.I3File(inPath)
+infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/nugen/nugenStep2/NuGen_step2_testString_test1String.i3.gz')
 geofile = dataio.I3File(gcdPath)
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/' + outname, 'w')
 logfile = open("photonProbabilities.txt",'w')
