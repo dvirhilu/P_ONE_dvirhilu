@@ -15,7 +15,7 @@ parser.add_argument('-l', '--layers', dest = 'layers',
                     default = 1, help = "number of layers of DOMs in detector i.e. number of DOMs per vertical string" )
 parser.add_argument('-v', '--verticalSpacing', dest = 'verticalSpacing', 
                     default = 50, help = "spacing between layers of DOMs" )
-parser.add_argument('-s', '--SpacingType', dest = 'spacing_type', type = SpacingType, choices = list(SpacingType), 
+parser.add_argument('-s', '--SpacingType', dest = 'spacing_type', type = SpacingType, 
                     default = "simple_spacing", help = "type of DOM spacing on DOM lines" )                 
 args = parser.parse_args()
 

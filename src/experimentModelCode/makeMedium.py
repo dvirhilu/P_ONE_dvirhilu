@@ -61,22 +61,22 @@ a_e_400 = np.e**absLSS[1]
 x = np.linspace(300,500,201)
 y = [ (b_e_400)*( (i/400)**scatLSS[0])  for i in x]
 plt.plot(x,y)
-plt.scatter( wavelengths, effScatteringCoeff, label = "Alpha: " + str(scatLSS[0]) )
+plt.scatter( wavelengths, effScatteringCoeff, label = r'$\alpha:\,$' + str(scatLSS[0]) + '\n' + r'$b_{eff}(400):\,$' + str(b_e_400) + r'$\,m^{-1}$' + '\n' + r'$\lambda_{sct}^{eff}(400):\,$' + str(1/b_e_400)+ r'$\,m$')
 plt.title("Scattering Coefficient Wavelength Dependence")
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Effective Scattering Coefficient (m^-1)")
-plt.legend()
+plt.xlabel("Wavelength" r'$(nm)$')
+plt.ylabel("Effective Scattering Coefficient " r'$(m^{-1})$')
+plt.legend(borderpad = 1.5)
 
 # check fit works
 plt.figure()
 x = np.linspace(300,500,201)
 y = [ (a_e_400)*( (i/400)**absLSS[0])  for i in x]
 plt.plot(x,y)
-plt.scatter( wavelengths, absorptionCoeff, label = "Kappa: " + str(absLSS[0]) )
+plt.scatter( wavelengths, absorptionCoeff, label = r'$\kappa:\,$' + str(absLSS[0]) + '\n' + r'$a(400):\,$' + str(a_e_400) + r'$\,m^{-1}$' + '\n' + r'$\lambda_{abs}(400):\,$' + str(1/a_e_400) + r'$\,m$')
 plt.title("Absorption Coefficient Wavelength Dependence")
-plt.xlabel("Wavelength (nm)")
-plt.ylabel("Absorption Coefficient (m^-1)")
-plt.legend()
+plt.xlabel("Wavelength " r'$nm$')
+plt.ylabel("Absorption Coefficient " + r'$m^{-1}$')
+plt.legend(borderpad = 1.25)
 
 plt.show()
 

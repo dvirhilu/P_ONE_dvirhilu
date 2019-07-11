@@ -8,9 +8,10 @@ import argparse
 import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(description = "Takes I3Photons from step2 of the simulations and generates DOM hits")
-parser.add_argument('-n', '--runNum', dest = 'runNum', help = "number assigned to this specific run", default = 0 )
-parser.add_argument('-g', '--isGenie',dest = 'isGenie', action='store_true', help="is this a simulation done with muongun or genie")
-parser.add_argument('-t', '--gcdType',dest = 'GCDType', help = "the type of GCD File used in the simulation")
+parser.add_argument('-n', '--runNum',  dest = 'runNum', help = "number assigned to this specific run", default = 0 )
+parser.add_argument('-s', '--simType', dest = 'simType', help="which sim tool is used?")
+parser.add_argument('-g', '--gcdType', dest = 'GCDType', help = "the type of GCD File used in the simulation")
+parser.add_argument('-d', '--domType', dest = 'DOMType', help = "the type of DOM used in the simulation")
 args = parser.parse_args()
 
 if args.GCDType == 'testString':
@@ -19,20 +20,33 @@ elif args.GCDType == 'HorizGeo':
     gcdPath = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/uncorHorizGeo/HorizGeo_n10_b100.0_a90.0_l1_rise_fall_offset_exp_r_spacing.i3.gz'
 elif args.GCDType == 'IceCube':
     gcdPath = '/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz'
+elif args.GCDType == 'cube':
+    gcdPath = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz'
 else:
     raise RuntimeError("Invalid GCD Type")
 
-if args.isGenie:
+if args.simType == 'genie':
     outname = 'genie/customGenHitsGenie/Genie_customGenHits_' + str(args.runNum) + '.i3.gz'
     inPath  = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/genie/genie_step2/NuMu/NuMu_C_' + str(args.GCDType) + str(args.runNum) + '.i3.zst'
-else:
+elif args.simType == 'muongun':
     outname = 'muongun/customGenHitsMuongun/MuonGun_customGenHits_' + str(args.runNum) + '.i3.gz'
     inPath  = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step2/MuonGun_step2_'+ str(args.GCDType) + str(args.runNum) + '.i3.zst'
+elif args.simType == 'nugen':
+    outname = 'nugen/nugenStep3/NuGen_step3_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
+    inPath = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/nugen/nugenStep2/NuGen_step2_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
+else:
+    raise RuntimeError("Invalid Simulation Type")
 
-infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step2/MuonGun_step2_139005_000000.i3.bz2')
+
+infile = dataio.I3File(inPath)
 geofile = dataio.I3File(gcdPath)
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/' + outname, 'w')
 logfile = open("photonProbabilities.txt",'w')
+
+# get files detailing DOM characteristics
+inFolder = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/' + args.DOMType + '/'
+filenameDomEff = 'DOMEfficiency.dat'
+filenameAngAcc = 'AngularAcceptance.dat'
 
 # get geometry
 cframe = geofile.pop_frame(I3Frame.Calibration)
@@ -46,15 +60,9 @@ qframes = []
 while(infile.more()):
     qframes.append(infile.pop_daq())
 
-# get files detailing DOM characteristics
-inFolder = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/'
-filenameDomEff = 'icecubeDOMEfficiency.dat'
-filenameAngAcc = 'icecubeAngularAcceptance.dat'
-
-domEff = np.loadtxt(inFolder + filenameDomEff, unpack = True)
-angAcc = np.loadtxt(inFolder + filenameAngAcc)
-
 def getAngularAcceptanceValue(cos_theta):
+    angAcc = np.loadtxt(inFolder + filenameAngAcc)
+    
     # check if model exists
     if angAcc.size == 0:
         raise RuntimeError("empty angular Acceptance model")
@@ -69,6 +77,8 @@ def getAngularAcceptanceValue(cos_theta):
     return sumVal
 
 def getDOMAcceptanceValue(wavelength):
+    domEff = np.loadtxt(inFolder + filenameDomEff, unpack = True)
+    
     # spacing might not be even just search through
     wlens = domEff[0]
     values = domEff[1]
