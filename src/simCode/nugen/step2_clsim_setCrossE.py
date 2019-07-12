@@ -114,7 +114,7 @@ tray.AddSegment(clsim.I3CLSimMakePhotons, 'goCLSIM',
                 RandomService=randomService,
                 IceModelLocation=icemodel_path,
                 #UnWeightedPhotons=True, #turn off optimizations
-                UseGeant4=True,
+                UseGeant4=False,
                 CrossoverEnergyEM=0.1,
 		CrossoverEnergyHadron=float(args.CROSSENERGY),
                 StopDetectedPhotons=True,
