@@ -4,12 +4,12 @@ date
 echo "Starting the clsim job"
 echo "Argument line : " $@
 
-echo "TASK ID " $SLURM_ARRAY_TASK_ID
-FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
-FILE_NR=`printf "%06d\n" $FILE_NR`
-echo "Filename ID : " $FILE_NR
+#echo "TASK ID " $SLURM_ARRAY_TASK_ID
+#FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
+#FILE_NR=`printf "%06d\n" $FILE_NR`
+#echo "Filename ID : " $FILE_NR
 #FILE_NR=000900
-#ARR_NUM=901
+ARR_NUM=901
 #ARR_NUM=$SLURM_ARRAY_TASK_ID
 
 echo ${OPENCL_VENDOR_PATH}
@@ -24,6 +24,7 @@ echo "Will use script: " $script
 
 RUNTYPE=$1
 MEDIUMNAME=$2
+FILE_NR=$3
 
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
