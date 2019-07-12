@@ -8,7 +8,7 @@ echo "Argument line : " $@
 #echo "TASK ID " $SLURM_ARRAY_TASK_ID
 #FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
 #FILE_NR=`printf "%06d\n" $FILE_NR`
-FILE_NR=000950
+FILE_NR=$5
 echo "Filename ID : " $FILE_NR
 
 echo "Starting cvmfs " 
