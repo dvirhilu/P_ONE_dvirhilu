@@ -43,8 +43,8 @@ logEMin = float(eRange[0])
 logEMax = float(eRange[1])
 
 zenithRange = args.zenithRange.split(":")
-zenithMin = float(zenithRange[0]) / I3Units.deg
-zenithMax = float(zenithRange[1]) / I3Units.deg
+zenithMin = float(zenithRange[0]) * I3Units.deg
+zenithMax = float(zenithRange[1]) * I3Units.deg
 
 powerLawIndex = float(args.powerLawIndex)
 

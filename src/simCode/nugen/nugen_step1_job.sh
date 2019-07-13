@@ -5,10 +5,10 @@ echo "Starting the MuonGun job"
 echo "Argument line : " $@
 
 # source /home/hignight/setup_oscnext.sh
-#echo "TASK ID " $SLURM_ARRAY_TASK_ID
-#FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
-#FILE_NR=`printf "%06d\n" $FILE_NR`
-FILE_NR=$5
+echo "TASK ID " $SLURM_ARRAY_TASK_ID
+FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
+FILE_NR=`printf "%06d\n" $FILE_NR`
+#FILE_NR=$5
 echo "Filename ID : " $FILE_NR
 
 echo "Starting cvmfs " 
