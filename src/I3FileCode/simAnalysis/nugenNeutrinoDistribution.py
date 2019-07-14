@@ -82,7 +82,7 @@ plt.figure()
 plt.hist(zenith, histtype = "step", log = True, weights = weight, bins = 20)
 plt.title("Weighted Muon Angular Distribution (Zenith)")
 plt.xlabel("Cosine of the Zenith Angle")
-
+'''
 plt.figure()
 plt.hist(x, histtype = "step", log = True, weights = weight, bins = 50)
 plt.title("Weighted Muon Position Distribution (x)")
@@ -102,7 +102,7 @@ plt.figure()
 plt.hist(r, histtype = "step", log = True, weights = weight, bins = 50)
 plt.title("Weighted Muon Distance Distribution")
 plt.xlabel("Distance from 0")
-'''
+
 plt.figure()
 plt.hist(zenith500prim, histtype = "step", log = True, weights = weight500, bins = 20)
 plt.title("Weighted Neutrino Angular Distribution (Zenith), Resulting Muon < 500m Away")
