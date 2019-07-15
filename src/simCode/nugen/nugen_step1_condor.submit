@@ -9,10 +9,10 @@ when_to_transfer_output = ON_EXIT
 requestCpus = 1
 requestMemory = 4096
 
-runType = $(1)
-numEvents = $(2)
-minLogE = $(3)
-maxLogE = $(4)
+runType = testString
+numEvents = 5000
+minLogE = 3
+maxLogE = 7
 
 arguments = $(runType) $(numEvents) $(minLogE) $(maxLogE) $(item) 
 
