@@ -1,0 +1,19 @@
+# this is the step2 submit file for nugen on Illume
+
+executable = nugen_step1_job.sh
+log = /home/users/dhilu/logFiles/job.log
+output = /home/users/dhilu/LogFiles/job.out
+error = /home/users/dhilu/LogFiles/job.err
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+requestCpus = 1
+requestMemory = 4096
+
+runType = $(1)
+numEvents = $(2)
+minLogE = $(3)
+maxLogE = $(4)
+
+arguments = $(runType) $(numEvents) $(minLogE) $(maxLogE) $(item) 
+
+queue [200:220]

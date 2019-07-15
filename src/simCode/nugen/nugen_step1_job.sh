@@ -1,22 +1,22 @@
 #!/bin/bash
 date
 
-echo "Starting the MuonGun job"
+echo "Starting the NuGen job"
 echo "Argument line : " $@
 
 # source /home/hignight/setup_oscnext.sh
-echo "TASK ID " $SLURM_ARRAY_TASK_ID
-FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
-FILE_NR=`printf "%06d\n" $FILE_NR`
-#FILE_NR=$5
+#echo "TASK ID " $SLURM_ARRAY_TASK_ID
+#FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
+#FILE_NR=`printf "%06d\n" $FILE_NR`
+FILE_NR=$5
 echo "Filename ID : " $FILE_NR
 
 echo "Starting cvmfs " 
 eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 
-i3env=/home/hignight/work/oscNext_official/oscNext/build_trunk_jan21_py2_v3.1.1/env-shell.sh
+i3env=/home/users/hignight/oscnext/build_trunk_july_02_2019/env-shell.sh
 echo "Will use i3 environment: " ${i3env}
-script=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/src/simCode/nugen/step1_neutrino_generator.py
+script=/home/users/dhilu/P_ONE_dvirhilu/src/simCode/nugen/step1_neutrino_generator.py
 echo "Will use script: " $script
 
 RUNTYPE=$1
@@ -62,9 +62,9 @@ else
 fi
 
 CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERRADIUS" -l "$CYLINDERLENGTH
-POWERLAWINDEX=1
+POWERLAWINDEX=2
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
-OUTDIR=/home/dvirhilu/projects/rpp-kenclark/dvirhilu/P_ONE_dvirhilu/I3Files/nugen/nugenStep1/
+OUTDIR=/home/users/dhilu/I3Files/nugen/nugenStep1/
 
 echo "FILE NUMBER      : "$FILE_NR
 echo "NUMBER OF EVENTS : "$NUMEVENTS

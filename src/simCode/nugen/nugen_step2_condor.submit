@@ -1,0 +1,19 @@
+# this is the step2 submit file for nugen on Illume
+
+executable = nugen_step2_job.sh
+log = /home/users/dhilu/logFiles/job.log
+output = /home/users/dhilu/LogFiles/job.out
+error = /home/users/dhilu/LogFiles/job.err
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+transfer_input_files = /home/users/dhilu/I3Files/nugenStep1/NuGen_step1_testString_000$(runNum).i3.gz, step1_neutrino_generator.py
+transfer_output_files = NuGen_step2_testString_000$(runNum).i3.gz
+requestGpus = 1
+requestCpus = 1
+requestMemory = 8192
+
+runType = $(1)
+
+arguments = runType 
+
+queue runNum in 
