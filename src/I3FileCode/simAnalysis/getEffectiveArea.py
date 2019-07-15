@@ -15,7 +15,7 @@ args = parser.parse_args()
 # open file
 infileListStep1 = []
 for i in range(int(args.minFileNum), int(args.maxFileNum) + 1):
-    infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/nugen/nugenStep1/NuGen_step1_' + str(args.runType) + '_000' + str(i) + '.i3.gz')
+    infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep1/NuGen_step1_' + str(args.runType) + '_' + str(i) + '.i3.gz')
     infileListStep1.append(infile)
     print('file ' + str(i) + 'done' )
 
@@ -38,10 +38,6 @@ logEStep1 = np.log10(energyStep1)
 cosZenStep1 = np.cos(zenithStep1)
 azimuthStep1 = [angle/I3Units.deg for angle in azimuthStep1]
 
-#matplotlib.rcParams['text.usetex']=True
-#matplotlib.rcParams['text.latex.unicode']=True
-
-'''
 plt.hist(logEStep1, histtype = "step", log = True, weights = weights, bins = 30)
 plt.title("Weighted Neutrino Energy Distribution")
 plt.xlabel(r'$log_{10}\, E/GeV$')
@@ -55,7 +51,7 @@ plt.figure()
 plt.hist(cosZenStep1, histtype = "step", log = True, weights = weights, bins = 30)
 plt.title("Weighted Muon Angular Distribution (Zenith)")
 plt.xlabel("Cosine of the Zenith Angle")
-'''
+
 plt.figure()
 plotOutputs = plt.hist2d(logEStep1,cosZenStep1, norm = matplotlib.colors.LogNorm(), bins = 10)
 plt.xlabel(r'$log_{10}\, E/GeV$')
