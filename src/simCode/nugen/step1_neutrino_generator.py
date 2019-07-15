@@ -187,7 +187,7 @@ tray.AddModule("I3NuGDiffuseSource","diffusesource",
                AzimuthMin = 0,
                AzimuthMax = 360*I3Units.deg,
                ZenithWeightParam = 1.0,
-               AngleSamplingMode = "ANGEMU"
+               AngleSamplingMode = "COS"
               )
 
 

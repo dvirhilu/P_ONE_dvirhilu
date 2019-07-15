@@ -41,7 +41,6 @@ else:
 infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/nugen/nugenStep2/NuGen_step2_testString_test1String.i3.gz')
 geofile = dataio.I3File(gcdPath)
 outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/' + outname, 'w')
-logfile = open("photonProbabilities.txt",'w')
 
 # get files detailing DOM characteristics
 inFolder = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/' + args.DOMType + '/'
@@ -54,11 +53,6 @@ geometry = cframe["I3Geometry"]
 geoMap = geometry.omgeo
 calibration = cframe["I3Calibration"]
 calMap = calibration.dom_cal
-
-# get all Q frames
-qframes = []
-while(infile.more()):
-    qframes.append(infile.pop_daq())
 
 def getAngularAcceptanceValue(cos_theta):
     angAcc = np.loadtxt(inFolder + filenameAngAcc)
@@ -143,7 +137,8 @@ def generateMCPEList(photons, modkey):
 
 # TODO: def getCorrectedTime(photon, omkey):
 
-for frame in qframes:
+while( infile.more() ):
+    frame = infile.pop_daq()
     photonDOMMap = frame["I3Photons"]
     mcpeMap = simclasses.I3MCPESeriesMap()
     for modkey in photonDOMMap.keys():
@@ -158,7 +153,6 @@ for frame in qframes:
         outfile.push(frame)
 
 
-logfile.close()
 outfile.close()
 
 # plot DOM Characteristics
