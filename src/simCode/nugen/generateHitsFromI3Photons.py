@@ -12,35 +12,37 @@ parser.add_argument('-n', '--runNum',  dest = 'runNum', help = "number assigned 
 parser.add_argument('-s', '--simType', dest = 'simType', help="which sim tool is used?")
 parser.add_argument('-g', '--gcdType', dest = 'GCDType', help = "the type of GCD File used in the simulation")
 parser.add_argument('-d', '--domType', dest = 'DOMType', help = "the type of DOM used in the simulation")
+parser.add_argument('-H', '--hitThresh', help = "number of total hits required to not cut a frame")
+parser.add_argument('-D', '--DOMNumThresh', help = "Number of DOMs with hits required to not cut a frame")
 args = parser.parse_args()
 
 if args.GCDType == 'testString':
-    gcdPath = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/testStrings/TestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
+    gcdPath = '/home/dvir/workFolder/I3Files/gcd/testStrings/TestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
 elif args.GCDType == 'HorizGeo':
-    gcdPath = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/uncorHorizGeo/HorizGeo_n10_b100.0_a90.0_l1_rise_fall_offset_exp_r_spacing.i3.gz'
+    gcdPath = '/home/dvir/workFolderI3Files/gcd/uncorHorizGeo/HorizGeo_n10_b100.0_a90.0_l1_rise_fall_offset_exp_r_spacing.i3.gz'
 elif args.GCDType == 'IceCube':
     gcdPath = '/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz'
 elif args.GCDType == 'cube':
-    gcdPath = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz'
+    gcdPath = '/home/dvir/workFolder/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz'
 else:
     raise RuntimeError("Invalid GCD Type")
 
 if args.simType == 'genie':
     outname = 'genie/customGenHitsGenie/Genie_customGenHits_' + str(args.runNum) + '.i3.gz'
-    inPath  = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/genie/genie_step2/NuMu/NuMu_C_' + str(args.GCDType) + str(args.runNum) + '.i3.zst'
+    inPath  = '/home/dvir/workFolder/I3Files/genie/genie_step2/NuMu/NuMu_C_' + str(args.GCDType) + str(args.runNum) + '.i3.zst'
 elif args.simType == 'muongun':
     outname = 'muongun/customGenHitsMuongun/MuonGun_customGenHits_' + str(args.runNum) + '.i3.gz'
-    inPath  = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step2/MuonGun_step2_'+ str(args.GCDType) + str(args.runNum) + '.i3.zst'
+    inPath  = '/home/dvir/workFolder/I3Files/muongun/muongun_step2/MuonGun_step2_'+ str(args.GCDType) + str(args.runNum) + '.i3.zst'
 elif args.simType == 'nugen':
     outname = 'nugen/nugenStep3/NuGen_step3_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
-    inPath = '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/nugen/nugenStep2/NuGen_step2_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
+    inPath = '/home/dvir/workFolder/I3Files/nugen/nugenStep2/NuGen_step2_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
 else:
     raise RuntimeError("Invalid Simulation Type")
 
 
-infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/nugen/nugenStep2/NuGen_step2_testString_test1String.i3.gz')
+infile = dataio.I3File(inPath)
 geofile = dataio.I3File(gcdPath)
-outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/' + outname, 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/' + outname, 'w')
 
 # get files detailing DOM characteristics
 inFolder = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/' + args.DOMType + '/'
@@ -134,6 +136,17 @@ def generateMCPEList(photons, modkey):
     
     return mcpeList
 
+def enoughDOMsHit(mcpeMap, domNumThresh):
+    return len(mcpeMap.keys()) >= domNumThresh
+
+def enoughTotalHits(mcpeMap, hitThresh):
+    hits = mcpeMap.values()
+    hitSum = 0
+    for hitList in hits:
+        hitSum += len(hitList)
+    
+    return hitSum >= hitThresh
+
 
 # TODO: def getCorrectedTime(photon, omkey):
 
@@ -148,13 +161,14 @@ while( infile.more() ):
             mcpeMap[omkey] = mcpeList
     
     # only add frame to file if a hit was generated
-    if len(mcpeMap.keys()) > 0:
+    if enoughDOMsHit(mcpeMap, int(args.DOMNumThresh)) and enoughTotalHits(mcpeMap, int(args.hitThresh)):
         frame["MCPESeriesMap"] = mcpeMap
         outfile.push(frame)
 
 
 outfile.close()
 
+'''
 # plot DOM Characteristics
 
 costheta = np.linspace(-1,1,100)
@@ -179,3 +193,4 @@ plt.title("Wavelength Acceptance of DOM")
 plt.xlabel("Wavelength (nm)")
 plt.ylabel("hit probability")
 plt.show()
+'''
