@@ -1,12 +1,12 @@
 # this is the step2 submit file for nugen on Illume
 
 executable = nugen_step2_job.sh
-log = /home/users/dhilu/logFiles/job2_$(Process).log
-output = /home/users/dhilu/LogFiles/job2Out_$(Process).out
-error = /home/users/dhilu/LogFiles/job2Err_$(Process).err
+log = /home/users/dhilu/logFiles/nugenStep2/job2_$(Process).log
+output = /home/users/dhilu/logFiles/nugenStep2/job2Out_$(Process).out
+error = /home/users/dhilu/logFiles/nugenStep2/job2Err_$(Process).err
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT
-requestGpus = 1
+request_GPUs = 1
 requestCpus = 1
 requestMemory = 8192
 requirements = CUDACapability
