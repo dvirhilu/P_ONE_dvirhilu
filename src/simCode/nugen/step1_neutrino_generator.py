@@ -20,7 +20,7 @@ parser.add_argument('-g', '--gcdFile', help = "gcd file used for simulation set"
 parser.add_argument('-f', '--flavours', default = "NuMu:NuMuBar", help = "neutrino types to be simulated")
 parser.add_argument('-R', '--ratios', default = "1:1", help = "the ratios with which the flavours will be produced" )
 parser.add_argument('-E', '--energyLog', default = "2:8", help = "the range of the orders of magnitudes of energies in simulation. 1=GeV")
-parser.add_argument('-Z', '--zenithRange', default = "0:180", help = "the range of zenith angles spanned in generation")
+parser.add_argument('-a', '--coneAngle', default = 45, help = "the angle spanned by generation")
 parser.add_argument('-p', '--powerLawIndex', default=2.0, help="generation power law index")
 # generation surface parameters
 parser.add_argument('-x', '--cylinderx', help = "the x coordinate of the center of the injection cylinder")
@@ -43,9 +43,10 @@ eRange = args.energyLog.split(":")
 logEMin = float(eRange[0])
 logEMax = float(eRange[1])
 
-zenithRange = args.zenithRange.split(":")
-zenithMin = float(zenithRange[0]) * I3Units.deg
-zenithMax = float(zenithRange[1]) * I3Units.deg
+zenithMin = (90 - float(args.coneAngle)) * I3Units.deg
+zenithMax = (90 + float(args.coneAngle)) * I3Units.deg
+azimuthMin = -float(args.coneAngle) * I3Units.deg
+azimuthMax = float(args.coneAngle) * I3Units.deg
 
 powerLawIndex = float(args.powerLawIndex)
 
@@ -175,8 +176,8 @@ tray.AddModule("I3NuGDiffuseSource","diffusesource",
                EnergyMaxLog = logEMax,
                ZenithMin = zenithMin,
                ZenithMax = zenithMax,
-               AzimuthMin = 0,
-               AzimuthMax = 360*I3Units.deg,
+               AzimuthMin = azimuthMin,
+               AzimuthMax = azimuthMax,
                ZenithWeightParam = 1.0,
                AngleSamplingMode = "COS"
               )

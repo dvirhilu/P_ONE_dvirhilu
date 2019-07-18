@@ -14,9 +14,10 @@ runType = testString
 numEvents = 5000
 minLogE = 3
 maxLogE = 7
+coneAngle
 
 runNum = $(offset) + $(Process)
 
-arguments = $(runType) $(numEvents) $(minLogE) $(maxLogE) $INT(runNum) 
+arguments = $(runType) $(numEvents) $(minLogE) $(maxLogE) coneAngle $INT(runNum)
 
 queue 20

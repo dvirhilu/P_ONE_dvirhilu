@@ -107,6 +107,9 @@ for logE in logEnergy:
     dE.append(10**binsE[position] - 10**binsE[position-1])
 
 areaWeights = [weights[i]*10**(-9)/(dE[i]*dOmega) for i in range(len(weights))]
+print binsE
+print binsZenith
+print areaWeights
 
 plt.hist(logEnergy, histtype = "step", log = True, weights = areaWeights, bins = binsE)
 plt.title("Effective Area Distribution (in " + r'$cm^2$' + ')')
