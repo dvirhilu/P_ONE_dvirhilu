@@ -12,11 +12,12 @@ from enum import Enum
 import numpy as np
 
 cdfile = dataio.I3File(
-    '/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/cal_DS_Files/Calib_and_DetStat_File.i3.gz')
+    '/home/dvir/workFolder/I3Files/gcd/cal_DS_Files/Calib_and_DetStat_File.i3.gz')
 cdframe = cdfile.pop_frame()
 calib = cdframe["I3Calibration"]
 start_time = calib.start_time
 end_time = calib.end_time
+bedrockz = -I3Constants.OriginElev
 
 # Takes the distance from the surface and returns the z position in
 # Icecube coordinates.
@@ -121,8 +122,6 @@ def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
 # @Return:
 # an I3GeoMap objects with the geometries of DOMs in the line
 def generateDOMLine(stringNum, startPos, spacing, direction, vertSpacing, numStrings, layers):
-    orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)          # same orientation as icecube DOMs (dir=down)
-    area = 0.04439999908208847*I3Units.meter2                           # same area as icecube DOMs
     lineMap = dataclasses.I3OMGeoMap()
     x = startPos.x
     y = startPos.y

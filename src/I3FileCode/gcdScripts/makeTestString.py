@@ -22,21 +22,21 @@ args = parser.parse_args()
 # parse arguments and set parameters
 domsPerLine = int(args.domsPerLine)
 basicSpacing = float(args.basicSpacing) * I3Units.meter
-zpos = gcdHelpers.convertDepthToZ(float(2600)) * I3Units.meter
+zpos = gcdHelpers.bedrockz + 1000
 ypos = 0.0
 layers = int(args.layers)
 verticalSpacing = float(args.verticalSpacing)
 spacing_type = args.spacing_type
 
 # create name for output file
-outname = "TestString_n" + str(domsPerLine)
+outname = "HorizTestString_n" + str(domsPerLine)
 outname += "_b" + str(basicSpacing)
 outname += "_v" + str(verticalSpacing)
 outname += "_l" + str(layers)
 outname += "_" + str(spacing_type)
 outname += ".i3.gz"
 
-outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/testStrings/' + outname, 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/testStrings/' + outname, 'w')
 
 # create new geometry object
 geometry = dataclasses.I3Geometry()
@@ -49,13 +49,12 @@ geometry.omgeo = dataclasses.I3OMGeoMap()
 # create spacing distortion
 spacing = gcdHelpers.generateSpacingList(spacing_type, basicSpacing, domsPerLine)
 
-for i in xrange(0, layers):
-    stringNum = i + 1
-    xpos = verticalSpacing*(i - (layers-1)/2)   # centering position
-    startPos = dataclasses.I3Position(xpos, ypos, zpos)
-    direction = dataclasses.I3Direction(0, 0, 1)
-    stringMap = gcdHelpers.generateOMString(stringNum, startPos, domsPerLine, spacing, direction)
-    geometry.omgeo.update(stringMap)
+stringNum = 1   
+xpos = -(domsPerLine-1)/2.0*basicSpacing        # centering position
+startPos = dataclasses.I3Position(xpos, ypos, zpos)
+direction = dataclasses.I3Direction(1, 0, 0)
+lineMap = gcdHelpers.generateDOMLine(stringNum, startPos, spacing, direction, verticalSpacing, domsPerLine, layers)
+geometry.omgeo.update(lineMap)
 
 # generate new frames
 gframe = icetray.I3Frame(icetray.I3Frame.Geometry) 

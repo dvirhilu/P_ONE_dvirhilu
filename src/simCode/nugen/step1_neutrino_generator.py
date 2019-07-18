@@ -4,7 +4,7 @@
 
 from I3Tray import *
 from icecube import icetray, dataclasses, phys_services, sim_services, dataio,  earthmodel_service, neutrino_generator, NuFlux
-from icecube.icetray import I3Units
+from icecube.icetray import I3Units, I3Frame
 from icecube.dataclasses import I3Particle
 import numpy as np
 import argparse
@@ -13,14 +13,15 @@ parser = argparse.ArgumentParser(description = "A scripts to run the neutrino ge
 # simulation parameters
 parser.add_argument('-N', '--runNum', help = "number assigned to this specific run", default = 0 )
 parser.add_argument('-n', '--numEvents', help = "number of events produced by the simulation" )
-parser.add_argument("-o", "--outfile", help="name and path of output file")
-parser.add_argument("-s", "--seed", default=1234567, help="seed for random generator") 
+parser.add_argument('-o', '--outfile', help="name and path of output file")
+parser.add_argument('-s', '--seed', default=1234567, help="seed for random generator") 
+parser.add_argument('-g', '--gcdFile', help = "gcd file used for simulation set")
 # physics parameters
-parser.add_argument('-f', "--flavours", default = "NuMu:NuMuBar", help = "neutrino types to be simulated")
-parser.add_argument('-R', "--ratios", default = "1:1", help = "the ratios with which the flavours will be produced" )
-parser.add_argument('-E', "--energyLog", default = "2:8", help = "the range of the orders of magnitudes of energies in simulation. 1=GeV")
+parser.add_argument('-f', '--flavours', default = "NuMu:NuMuBar", help = "neutrino types to be simulated")
+parser.add_argument('-R', '--ratios', default = "1:1", help = "the ratios with which the flavours will be produced" )
+parser.add_argument('-E', '--energyLog', default = "2:8", help = "the range of the orders of magnitudes of energies in simulation. 1=GeV")
 parser.add_argument('-Z', '--zenithRange', default = "0:180", help = "the range of zenith angles spanned in generation")
-parser.add_argument("-p", "--powerLawIndex", default=2.0, help="generation power law index")
+parser.add_argument('-p', '--powerLawIndex', default=2.0, help="generation power law index")
 # generation surface parameters
 parser.add_argument('-x', '--cylinderx', help = "the x coordinate of the center of the injection cylinder")
 parser.add_argument('-y', '--cylindery', help = "the y coordinate of the center of the injection cylinder")
@@ -57,68 +58,58 @@ icecapmodel = "IceSheet"
 cylinder = [float(args.cylinderRadius), float(args.cylinderLength), float(args.cylinderx), float(args.cylindery), float(args.cylinderz)]
 
 # I3Module to make weighting the distribution easier
-class FindEventWeight(icetray.I3Module):
+class ClosestApproachFilter(icetray.I3Module):
 
     def __init__(self, context):
         icetray.I3Module.__init__(self,context)
-        self.AddParameter("FluxModel", "FluxModel", 'honda2006')
-        self.AddParameter("NuTypes", "NeutrinoTypes", ["NuMu", "NuMuBar"])
-        self.AddParameter("Ratios", "NeutrinoRatios", [1,1])
+        self.AddParameter("GCDFile", "GCDFile")
         self.AddOutBox("OutBox")
     
     def Configure(self):
-        self.fluxModel = self.GetParameter("FluxModel")
-        self.types = self.GetParameter("NuTypes")
-        self.ratios = self.GetParameter("Ratios")
+        gcdFile = self.GetParameter("GCDFile")
 
-    def parseTypes(self):
-        parsedTypes = []
+        gcd = dataio.I3File(gcdFile)
+        geometry = gcd.pop_frame(I3Frame.Geometry)["I3Geometry"]
+        self.geoMap = geometry.omgeo
 
-        for typeString in self.types:
-            if typeString == "NuE":
-                parsedTypes.append(I3Particle.ParticleType.NuE)
-            elif typeString == "NuEBar":
-                parsedTypes.append(I3Particle.ParticleType.NuEBar)
-            elif typeString == "NuMu":
-                parsedTypes.append(I3Particle.ParticleType.NuMu)
-            elif typeString == "NuMuBar":
-                parsedTypes.append(I3Particle.ParticleType.NuMuBar)
-            elif typeString == "NuTau":
-                parsedTypes.append(I3Particle.ParticleType.NuTau)
-            elif typeString == "NuTauBar":
-                parsedTypes.append(I3Particle.ParticleType.NuTauBar)
-            else:
-                raise RuntimeError("Invalid Neutrino Type: " + typeString)
-        
-        return parsedTypes
+    def getClosestApproachDistance(self, muon):
+        muonPos = muon.pos
+        muonDir = muon.dir
+        mx = muonPos.x
+        my = muonPos.y
+        mz = muonPos.z
+        mex = muonDir.x
+        mey = muonDir.y
+        mez = muonDir.z
 
+        for domgeo in self.geoMap.values():
+            domPos = domgeo.position
+            domx = domPos.x
+            domy = domPos.y
+            domz = domPos.z
 
-    def getTypeRatioMap(self):
-        parsedTypes = self.parseTypes()
-        ratioSum = sum(self.ratios)
-        normedRatios = [ratio/ratioSum for ratio in self.ratios]
+            relPosx = domx - mx
+            relPosy = domy - my
+            relPosz = domz - mz
 
-        return {ptype:nRatio for ptype, nRatio in zip(parsedTypes, normedRatios)}
+            projDist = relPosx*mex + relPosy*mey + relPosz*mez
+
+            projx = mx + mex*projDist
+            projy = my + mey*projDist
+            projz = mz + mez*projDist
+
+            rSquared = (projx - domx)**2 + (projy - domy)**2 + (projz - domz)**2
+
+            return np.sqrt(rSquared)
+
 
     def DAQ(self, frame):
         # get all necessary data
-        primary = frame["NuGPrimary"]
-        weightDict = frame["I3MCWeightDict"]
-        oneWeight = weightDict["OneWeight"]
-        n_events = weightDict["NEvents"]
-        ptype = primary.type
-        penergy = primary.energy
-        ptheta = primary.dir.zenith
+        trackList = frame["MMCTrackList"]
+        muon = trackList[0].GetI3Particle()
+        closestAppDistance = self.getClosestApproachDistance(muon)
 
-        # get flux mult
-        flux = NuFlux.makeFlux(self.fluxModel).getFlux
-        fluxMult = flux(ptype, penergy, ptheta)
-
-        # get type-ratio dict
-        typeRatioMap = self.getTypeRatioMap()
-
-        eventWeight = fluxMult*typeRatioMap[ptype]*oneWeight/n_events
-        frame["EventWeight"] = dataclasses.I3Double(eventWeight)
+        frame["ClosestAppoachDistance"] = dataclasses.I3Double(closestAppDistance)
         self.PushFrame(frame)
 
 # initalize tray
@@ -250,9 +241,8 @@ tray.AddModule('I3PropagatorModule', 'muon_propagator',
 		InputMCTreeName="I3MCTree_NuGen",
         OutputMCTreeName="I3MCTree")
 
-tray.AddModule(FindEventWeight, 'event_weight_finder',
-        NuTypes = flavours,
-        Ratios = ratios)	
+tray.AddModule(ClosestApproachFilter, 'closesr_approach_filter',
+        GCDFile = args.gcdFile)	
 
 SkipKeys = ["I3MCTree_NuGen"]
 

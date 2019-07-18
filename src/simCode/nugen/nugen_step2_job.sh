@@ -1,5 +1,6 @@
 #!/bin/bash
 date
+startsecond=$(date +%s)
 
 echo "Starting the clsim job"
 echo "Argument line : " $@
@@ -69,3 +70,7 @@ echo "GCD: " $GCD_FILE
 
 $i3env python $script -t -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r 14000 -m $MEDIUMMODEL -c $CROSSENERGY -l $ARR_NUM
 #$i3env python $script -i ${INFOLDER}/$INFILENAME -g $GCD_FILE -o ${OUTFOLDER}/$OUTFILENAME -r 14000 -m $MEDIUMMODEL -c $CROSSENERGY -l $ARR_NUM
+
+endsecond=$(date +%s)
+echo "End second: " $endsecond 
+echo "This job took : "`expr $endsecond - $startsecond`" s"

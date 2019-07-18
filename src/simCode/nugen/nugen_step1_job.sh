@@ -1,5 +1,6 @@
 #!/bin/bash
 date
+startsecond=$(date +%s)
 
 echo "Starting the NuGen job"
 echo "Argument line : " $@
@@ -30,6 +31,10 @@ echo "Number of events: " $NUMEVENTS
 
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
+    GCDNAME=HorizTestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
+ 
     CYLINDERX=0
     CYLINDERY=0
     CYLINDERZ=0
@@ -37,6 +42,10 @@ if [ "$RUNTYPE" == "testString" ]; then
     CYLINDERRADIUS=300
 elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Found configuration for " $RUNTYPE
+    GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/uncorHorizGeo/${GCDNAME}.i3.gz
+
     CYLINDERX=0
     CYLINDERY=0
     CYLINDERZ=-600
@@ -44,6 +53,10 @@ elif [ "$RUNTYPE" == "HorizGeo" ]; then
     CYLINDERRADIUS=1700
 elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/IceCube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+    echo "Using IceCube GCD"
+
     CYLINDERX=0
     CYLINDERY=0
     CYLINDERZ=0
@@ -51,6 +64,10 @@ elif [ "$RUNTYPE" == "IceCube" ]; then
     CYLINDERRADIUS=800
 elif [ "$RUNTYPE" == "cube" ]; then
     echo "Found configuration for " $RUNTYPE
+    echo "Found configuration for " $RUNTYPE
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz
+    echo "Using cube GCD"
+    
     CYLINDERX=0
     CYLINDERY=0
     CYLINDERZ=0
@@ -79,3 +96,6 @@ echo "CYLINDER LINE    : ""\""$CYLINDERSETTINGS"\""
 $i3env python $script -N ${FILE_NR} -n $NUMEVENTS -o ${OUTDIR}/${OUTNAME} -s ${FILE_NR}000 -E ${LOGMINENERGY}":"${LOGMAXENERGY} -p ${POWERLAWINDEX} ${CYLINDERSETTINGS}
 
 date 
+endsecond=$(date +%s)
+echo "End second: " $endsecond 
+echo "This job took : "`expr $endsecond - $startsecond`" s"

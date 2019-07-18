@@ -23,6 +23,7 @@ for i in range(int(args.minFileNum), int(args.maxFileNum) + 1):
     infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep2/NuGen_step2_' + str(args.runType) + '_' + str(i) + '.i3.gz')
     infileListStep2.append(infile)
 
+
 infileListStep3 = []
 for i in range(int(args.minFileNum), int(args.maxFileNum) + 1):
     infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/NuGen_step3_' + str(args.runType) + '_' + str(i) + '.i3.gz')
@@ -87,7 +88,7 @@ for infile in infileListStep3:
         oneWeight = weightDict["OneWeight"]
         # assuming all files have equal event numbers
         numEvents = weightDict["NEvents"] * len(infileListStep3)
-        weights.append(oneWeight/numEvents/2)
+        weights.append(oneWeight/numEvents)
         minLogE = weightDict["MinEnergyLog"]
         maxLogE = weightDict["MaxEnergyLog"]
 

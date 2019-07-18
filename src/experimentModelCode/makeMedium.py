@@ -22,8 +22,8 @@ outfilepath = "/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/STRA
 
 # STRAW model data April 2019
 eda = 0.6
-effScatteringCoeff = np.array([1/50.9, 1/69.0])
-absorptionCoeff = np.array([1/25.5, 1/41.0])
+effScatteringCoeff = np.array([1/52.5, 1/81.3])
+absorptionCoeff = np.array([1/28.8, 1/38.7])
 wavelengths = np.array([405, 465])
 
 # configuration  
