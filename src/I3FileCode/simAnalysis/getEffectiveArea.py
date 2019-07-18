@@ -106,25 +106,25 @@ for logE in logEnergy:
             break
     dE.append(10**binsE[position] - 10**binsE[position-1])
 
-areaWeights = [weights[i]*10**(-9)/(dE[i]*dOmega) for i in range(len(weights))]
+areaWeights = [weights[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weights))]
 print binsE
 print binsZenith
 print areaWeights
 
 plt.hist(logEnergy, histtype = "step", log = True, weights = areaWeights, bins = binsE)
-plt.title("Effective Area Distribution (in " + r'$cm^2$' + ')')
+plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$log_{10}\, E/GeV$')
 
 plt.figure()
 plt.hist(cosZenith, histtype = "step", log = True, weights = areaWeights, bins = binsZenith)
-plt.title("Effective Area Distribution (in " + r'$cm^2$' + ')')
+plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$\cos{\theta}$')
 
 plt.figure()
 plotOutputs = plt.hist2d(logEnergy,cosZenith, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsZenith])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
-plt.title("Effective Area Distribution (in " + r'$cm^2$' + ')')
+plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.colorbar(plotOutputs[3])
 
 #plt.show()
