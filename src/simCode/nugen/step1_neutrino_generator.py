@@ -107,8 +107,9 @@ class ClosestApproachFilter(icetray.I3Module):
 
     def DAQ(self, frame):
         # get all necessary data
-        trackList = frame["MMCTrackList"]
-        muon = trackList[0].GetI3Particle()
+        mctree = frame["I3MCTree"]
+        primary = mctree.primaries[0]
+        muon = dataclasses.I3MCTree.children(mctree, primary)[0]
         closestAppDistance = self.getClosestApproachDistance(muon)
 
         frame["ClosestAppoachDistance"] = dataclasses.I3Double(closestAppDistance)

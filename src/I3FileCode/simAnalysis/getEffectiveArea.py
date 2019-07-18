@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from icecube import dataclasses, dataio, icetray
-from icecube.icetray import I3Units
+from icecube.icetray import I3Units, I3Frame
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse, matplotlib
@@ -107,10 +107,7 @@ for logE in logEnergy:
     dE.append(10**binsE[position] - 10**binsE[position-1])
 
 areaWeights = [weights[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weights))]
-print binsE
-print binsZenith
-print areaWeights
-
+''''
 plt.hist(logEnergy, histtype = "step", log = True, weights = areaWeights, bins = binsE)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$log_{10}\, E/GeV$')
@@ -164,4 +161,76 @@ plt.colorbar(pc)
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
 plt.title("Detection Efficiency")
+plt.show()
+'''
+infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/examples/Level2_Pass3_IC86.2016_NuMu.020808.000280.i3.zst')
+
+logEnergyIceCube = []
+cosZenithIceCube = []
+weightsIceCube = []
+minLogE = 0
+maxLogE = 0
+
+for frame in infile:
+    if frame.Stop == I3Frame.DAQ:
+        primary = frame["I3MCTree_preMuonProp"].primaries[0]
+        logEnergyIceCube.append(np.log10(primary.energy))
+        cosZenithIceCube.append(np.cos(primary.dir.zenith))
+        weightDict = frame["I3MCWeightDict"]
+        oneWeight = weightDict["OneWeight"]
+        # assuming all files have equal event numbers
+        numEvents = weightDict["NEvents"]
+        weightsIceCube.append(oneWeight/numEvents)
+        minLogE = weightDict["MinEnergyLog"]
+        maxLogE = weightDict["MaxEnergyLog"]
+
+
+binsE = np.linspace(3, 7, 10)
+binsZenith = np.linspace(-1, 1, 10)
+
+dOmega = (binsZenith[1] - binsZenith[0])*np.pi*2
+dE = []
+for logE in logEnergyIceCube:
+    position = 0
+    for i in range(len(binsE)):
+        if logE < binsE[i]:
+            position = i
+            break
+    dE.append(10**binsE[position] - 10**binsE[position-1])
+
+areaWeightsIceCube = [weightsIceCube[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weightsIceCube))]
+'''
+plt.hist(logEnergyIceCube, histtype = "step", log = True, weights = areaWeights, bins = binsE)
+plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
+plt.xlabel(r'$log_{10}\, E/GeV$')
+
+plt.figure()
+plt.hist(cosZenithIceCube, histtype = "step", log = True, weights = areaWeights, bins = binsZenith)
+plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
+plt.xlabel(r'$\cos{\theta}$')
+
+plt.figure()
+plotOutputs = plt.hist2d(logEnergyIceCube,cosZenithIceCube, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsZenith])
+plt.xlabel(r'$log_{10}\, E/GeV$')
+plt.ylabel(r'$\cos{\theta}$')
+plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
+plt.colorbar(plotOutputs[3])
+
+plt.show()
+'''
+plt.figure()
+h1, edges= np.histogram(logEnergy, bins = binsE, weights = areaWeights)
+h2, edges = np.histogram(logEnergyIceCube, bins = binsE, weights = areaWeightsIceCube)
+for i in range(len(edges)-1):
+    if h2[i] <=0.0000001:
+        h2[i] = 1.0
+        h1[i] = 0
+print h1
+print h2
+print edges
+ratioHist = h1 / h2
+plt.bar(edges[:-1], ratioHist, log = True, align = 'edge')
+plt.xlabel(r'$log_{10}\, E/GeV$')
+plt.ylabel(r'$ratio$')
+plt.title("Ratio Of Effective Areas")
 plt.show()
