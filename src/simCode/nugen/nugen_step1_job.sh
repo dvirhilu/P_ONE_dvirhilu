@@ -9,7 +9,7 @@ echo "Argument line : " $@
 #echo "TASK ID " $SLURM_ARRAY_TASK_ID
 #FILE_NR=`expr $SLURM_ARRAY_TASK_ID - 1`
 #FILE_NR=`printf "%06d\n" $FILE_NR`
-FILE_NR=$6
+FILE_NR=$5
 echo "Filename ID : " $FILE_NR
 
 echo "Starting cvmfs " 
@@ -24,7 +24,6 @@ RUNTYPE=$1
 NUMEVENTS=$2
 LOGMINENERGY=$3
 LOGMAXENERGY=$4
-CONENAGLE=$5
 
 echo "Run type: " $RUNTYPE
 echo "Energy range: " $ENERGYRANGE
@@ -81,6 +80,7 @@ fi
 
 CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERRADIUS" -l "$CYLINDERLENGTH
 POWERLAWINDEX=2
+CONEANGLE=45
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
 OUTDIR=/home/users/dhilu/I3Files/nugenStep1
 
