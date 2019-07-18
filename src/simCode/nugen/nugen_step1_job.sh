@@ -31,7 +31,7 @@ echo "Number of events: " $NUMEVENTS
 
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=HorizTestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz
+    GCDNAME=HorizTestString_n15_b100.0_v50.0_l1_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
     GCD_FILE=/home/users/dhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
  
@@ -82,7 +82,7 @@ CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERR
 POWERLAWINDEX=2
 CONEANGLE=45
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
-OUTDIR=/home/users/dhilu/I3Files/nugenStep1
+OUTDIR=/home/users/dhilu/I3Files/nugen/nugenStep1
 
 echo "FILE NUMBER      : "$FILE_NR
 echo "NUMBER OF EVENTS : "$NUMEVENTS

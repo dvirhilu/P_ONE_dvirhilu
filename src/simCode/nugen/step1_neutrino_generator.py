@@ -6,6 +6,7 @@ from I3Tray import *
 from icecube import icetray, dataclasses, phys_services, sim_services, dataio,  earthmodel_service, neutrino_generator, NuFlux
 from icecube.icetray import I3Units, I3Frame
 from icecube.dataclasses import I3Particle
+from icecube.simclasses import I3MMCTrack
 import numpy as np
 import argparse
 
