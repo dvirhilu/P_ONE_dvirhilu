@@ -84,6 +84,7 @@ class ClosestApproachFilter(icetray.I3Module):
         mey = muonDir.y
         mez = muonDir.z
 
+	closestApproach = 0
         for domgeo in self.geoMap.values():
             domPos = domgeo.position
             domx = domPos.x
@@ -102,7 +103,10 @@ class ClosestApproachFilter(icetray.I3Module):
 
             rSquared = (projx - domx)**2 + (projy - domy)**2 + (projz - domz)**2
 
-            return np.sqrt(rSquared)
+            if rSquared > closestApproach**2:
+		closestApproach = np.sqrt(rSquared)
+	
+	return closestApproach
 
 
     def DAQ(self, frame):
