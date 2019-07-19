@@ -110,14 +110,19 @@ class ClosestApproachFilter(icetray.I3Module):
 
 
     def DAQ(self, frame):
+        if not frame.Has("MMCTrackList"):
+            return False
         # get all necessary data
-        mctree = frame["I3MCTree"]
-        primary = mctree.primaries[0]
-        muon = dataclasses.I3MCTree.children(mctree, primary)[0]
+        trackList = frame["MMCTrackList"]
+        muon = trackList[0].GetI3Particle()
         closestAppDistance = self.getClosestApproachDistance(muon)
 
-        frame["ClosestAppoachDistance"] = dataclasses.I3Double(closestAppDistance)
-        self.PushFrame(frame)
+        if closestAppDistance > 200:
+            return False
+        else:
+            frame["ClosestAppoachDistance"] = dataclasses.I3Double(closestAppDistance)
+            self.PushFrame(frame)
+            return True
 
 # initalize tray
 tray = I3Tray()
