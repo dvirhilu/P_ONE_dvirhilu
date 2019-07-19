@@ -39,7 +39,7 @@ if [ "$RUNTYPE" == "testString" ]; then
     CYLINDERY=0
     CYLINDERZ=116.08
     CYLINDERLENGTH=1600
-    CYLINDERRADIUS=800
+    CYLINDERRADIUS=300
 elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Found configuration for " $RUNTYPE
     GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
