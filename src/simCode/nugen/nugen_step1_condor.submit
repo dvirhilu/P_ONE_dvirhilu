@@ -9,9 +9,9 @@ when_to_transfer_output = ON_EXIT
 requestCpus = 1
 requestMemory = 4096
 
-offset = 220
+offset = 250
 runType = testString
-numEvents = 5000
+numEvents = 150000
 minLogE = 3
 maxLogE = 7
 
@@ -19,4 +19,4 @@ runNum = $(offset) + $(Process)
 
 arguments = $(runType) $(numEvents) $(minLogE) $(maxLogE) $INT(runNum)
 
-queue 1
+queue 50

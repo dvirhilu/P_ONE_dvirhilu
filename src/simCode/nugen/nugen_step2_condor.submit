@@ -13,10 +13,10 @@ requirements = CUDACapability
 
 runType = testString
 medium = STRAW
-offset = 200
+offset = 250
 
 runNum = $(offset) + $(Process)
 
 arguments = $(runType) $(medium) $INT(runNum) 
 
-queue 20
+queue 50

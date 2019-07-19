@@ -117,7 +117,7 @@ class ClosestApproachFilter(icetray.I3Module):
         muon = trackList[0].GetI3Particle()
         closestAppDistance = self.getClosestApproachDistance(muon)
 
-        if closestAppDistance > 200:
+        if closestAppDistance > 150:
             return False
         else:
             frame["ClosestAppoachDistance"] = dataclasses.I3Double(closestAppDistance)
