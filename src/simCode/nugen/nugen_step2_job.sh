@@ -28,7 +28,7 @@ MEDIUMNAME=$2
 
 if [ "$RUNTYPE" == "testString" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=TestString_n15_b100.0_v50.0_l1_simple_spacing
+    GCDNAME=HorizTestString_n15_b100.0_v50.0_l1_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
     GCD_FILE=/home/users/dhilu/I3Files/gcd/testStrings/${GCDNAME}.i3.gz
  

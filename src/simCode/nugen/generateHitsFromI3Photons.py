@@ -17,7 +17,7 @@ parser.add_argument('-D', '--DOMNumThresh', help = "Number of DOMs with hits req
 args = parser.parse_args()
 
 if args.GCDType == 'testString':
-    gcdPath = '/home/dvir/workFolder/I3Files/gcd/testStrings/TestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
+    gcdPath = '/home/dvir/workFolder/I3Files/gcd/testStrings/HorizTestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
 elif args.GCDType == 'HorizGeo':
     gcdPath = '/home/dvir/workFolderI3Files/gcd/uncorHorizGeo/HorizGeo_n10_b100.0_a90.0_l1_rise_fall_offset_exp_r_spacing.i3.gz'
 elif args.GCDType == 'IceCube':

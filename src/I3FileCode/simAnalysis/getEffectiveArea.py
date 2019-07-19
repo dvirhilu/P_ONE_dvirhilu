@@ -30,60 +30,39 @@ for i in range(int(args.minFileNum), int(args.maxFileNum) + 1):
     infileListStep3.append(infile)
 
 energyStep1 = []
-zenithStep1 = []
-weights = []
+cosRelAnglStep1 = []
 for infile in infileListStep1:
     while infile.more():
         frame = infile.pop_daq()
         primary = frame["NuGPrimary"]
-        weights.append(frame["EventWeight"].value/len(infileListStep1))
-        zenithStep1.append(primary.dir.zenith)
+        cosRelAnglStep1.append(-primary.dir.x)
         energyStep1.append(primary.energy)
 
 logEStep1 = np.log10(energyStep1)
-cosZenStep1 = np.cos(zenithStep1)
-
-'''
-plt.hist(logEStep1, histtype = "step", log = True, weights = weights, bins = 30)
-plt.title("Weighted Neutrino Energy Distribution")
-plt.xlabel(r'$log_{10}\, E/GeV$')
-
-plt.figure()
-plt.hist(cosZenStep1, histtype = "step", log = True, weights = weights, bins = 30)
-plt.title("Weighted Muon Angular Distribution (Zenith)")
-plt.xlabel(r'$\cos{\theta}$')
-
-plt.figure()
-plotOutputs = plt.hist2d(logEStep1,cosZenStep1, norm = matplotlib.colors.LogNorm(), bins = 10)
-plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel(r'$\cos{\theta}$')
-plt.title("Neutrino Energy and Zenith Distribution")
-plt.colorbar(plotOutputs[3])
-
-plt.show()
-'''
 
 logEStep2 = []
-cosZenStep2 = []
+cosRelAnglStep2 = []
 for infile in infileListStep2:
     while infile.more():
         frame = infile.pop_daq()
         primary = frame["NuGPrimary"]
-        cosZenStep2.append(np.cos(primary.dir.zenith))
+        cosRelAnglStep2.append(-primary.dir.x)
         logEStep2.append(np.log10(primary.energy))
 
 
 logEnergy = []
-cosZenith = []
+cosRelAngl = []
 weights = []
 minLogE = 0
 maxLogE = 0
+maxZenith = 0
+minAzimuth = 0
 for infile in infileListStep3:
     while(infile.more()):
         frame = infile.pop_daq()
         primary = frame["NuGPrimary"]
         logEnergy.append(np.log10(primary.energy))
-        cosZenith.append(np.cos(primary.dir.zenith))
+        cosRelAngl.append(-primary.dir.x)
         weightDict = frame["I3MCWeightDict"]
         oneWeight = weightDict["OneWeight"]
         # assuming all files have equal event numbers
@@ -91,12 +70,15 @@ for infile in infileListStep3:
         weights.append(oneWeight/numEvents)
         minLogE = weightDict["MinEnergyLog"]
         maxLogE = weightDict["MaxEnergyLog"]
+        minAzimuth = weightDict["MinAzimuth"]
+        minZenith = weightDict["MinZenith"]
 
+print np.sin(minZenith)*np.cos(minAzimuth)
 
 binsE = np.linspace(minLogE, maxLogE, 10)
-binsZenith = np.linspace(-1, 1, 10)
+binsRelAngl = np.linspace(np.sin(minZenith)*np.cos(minAzimuth), 1, 10)
 
-dOmega = (binsZenith[1] - binsZenith[0])*np.pi*2
+dOmega = (binsRelAngl[1] - binsRelAngl[0])*np.pi*2
 dE = []
 for logE in logEnergy:
     position = 0
@@ -107,18 +89,18 @@ for logE in logEnergy:
     dE.append(10**binsE[position] - 10**binsE[position-1])
 
 areaWeights = [weights[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weights))]
-''''
+
 plt.hist(logEnergy, histtype = "step", log = True, weights = areaWeights, bins = binsE)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$log_{10}\, E/GeV$')
 
 plt.figure()
-plt.hist(cosZenith, histtype = "step", log = True, weights = areaWeights, bins = binsZenith)
+plt.hist(cosRelAngl, histtype = "step", log = True, weights = areaWeights, bins = binsRelAngl)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$\cos{\theta}$')
 
 plt.figure()
-plotOutputs = plt.hist2d(logEnergy,cosZenith, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsZenith])
+plotOutputs = plt.hist2d(logEnergy,cosRelAngl, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsRelAngl])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
@@ -127,29 +109,29 @@ plt.colorbar(plotOutputs[3])
 #plt.show()
 
 plt.figure()
-plotouts = plt.hist2d(logEStep1, cosZenStep1, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsZenith])
+plotouts = plt.hist2d(logEStep1, cosRelAnglStep1, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsRelAngl])
 plt.colorbar(plotouts[3])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
 plt.title("Event Distribution - Step 1")
 
 plt.figure()
-plotouts = plt.hist2d(logEStep2, cosZenStep2, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsZenith])
+plotouts = plt.hist2d(logEStep2, cosRelAnglStep2, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsRelAngl])
 plt.colorbar(plotouts[3])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
 plt.title("Event Distribution - Step 2")
 
 plt.figure()
-plotouts = plt.hist2d(logEnergy, cosZenith, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsZenith])
+plotouts = plt.hist2d(logEnergy, cosRelAngl, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsRelAngl])
 plt.colorbar(plotouts[3])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
 plt.title("Event Distribution - Step 3")
 
 plt.figure()
-h1, xedges, yedges = np.histogram2d(logEStep1, cosZenStep1, bins = [binsE, binsZenith])
-h2, xedges, yedges = np.histogram2d(logEnergy, cosZenith, bins = [binsE, binsZenith])
+h1, xedges, yedges = np.histogram2d(logEStep1, cosRelAnglStep1, bins = [binsE, binsRelAngl])
+h2, xedges, yedges = np.histogram2d(logEnergy, cosRelAngl, bins = [binsE, binsRelAngl])
 for i in range(len(xedges)-1):
     for j in range(len(yedges)-1):
         if h1[j][i] <=0.0000001:
@@ -162,11 +144,11 @@ plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
 plt.title("Detection Efficiency")
 plt.show()
-'''
+
 infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/examples/Level2_Pass3_IC86.2016_NuMu.020808.000280.i3.zst')
 
 logEnergyIceCube = []
-cosZenithIceCube = []
+cosRelAnglIceCube = []
 weightsIceCube = []
 minLogE = 0
 maxLogE = 0
@@ -175,7 +157,7 @@ for frame in infile:
     if frame.Stop == I3Frame.DAQ:
         primary = frame["I3MCTree_preMuonProp"].primaries[0]
         logEnergyIceCube.append(np.log10(primary.energy))
-        cosZenithIceCube.append(np.cos(primary.dir.zenith))
+        cosRelAnglIceCube.append(primary.dir.x)
         weightDict = frame["I3MCWeightDict"]
         oneWeight = weightDict["OneWeight"]
         # assuming all files have equal event numbers
@@ -184,11 +166,7 @@ for frame in infile:
         minLogE = weightDict["MinEnergyLog"]
         maxLogE = weightDict["MaxEnergyLog"]
 
-
-binsE = np.linspace(3, 7, 10)
-binsZenith = np.linspace(-1, 1, 10)
-
-dOmega = (binsZenith[1] - binsZenith[0])*np.pi*2
+dOmega = (binsRelAngl[1] - binsRelAngl[0])*np.pi*2
 dE = []
 for logE in logEnergyIceCube:
     position = 0
@@ -199,25 +177,23 @@ for logE in logEnergyIceCube:
     dE.append(10**binsE[position] - 10**binsE[position-1])
 
 areaWeightsIceCube = [weightsIceCube[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weightsIceCube))]
-'''
+
 plt.hist(logEnergyIceCube, histtype = "step", log = True, weights = areaWeights, bins = binsE)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$log_{10}\, E/GeV$')
 
 plt.figure()
-plt.hist(cosZenithIceCube, histtype = "step", log = True, weights = areaWeights, bins = binsZenith)
+plt.hist(cosRelAnglIceCube, histtype = "step", log = True, weights = areaWeights, bins = binsRelAngl)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$\cos{\theta}$')
 
 plt.figure()
-plotOutputs = plt.hist2d(logEnergyIceCube,cosZenithIceCube, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsZenith])
+plotOutputs = plt.hist2d(logEnergyIceCube,cosRelAnglIceCube, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsRelAngl])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$\cos{\theta}$')
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.colorbar(plotOutputs[3])
 
-plt.show()
-'''
 plt.figure()
 h1, edges= np.histogram(logEnergy, bins = binsE, weights = areaWeights)
 h2, edges = np.histogram(logEnergyIceCube, bins = binsE, weights = areaWeightsIceCube)
