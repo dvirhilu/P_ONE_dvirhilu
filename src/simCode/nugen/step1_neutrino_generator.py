@@ -84,7 +84,7 @@ class ClosestApproachFilter(icetray.I3Module):
         mey = muonDir.y
         mez = muonDir.z
 
-	closestApproach = 0
+	closestApproach = np.inf
         for domgeo in self.geoMap.values():
             domPos = domgeo.position
             domx = domPos.x
@@ -103,8 +103,8 @@ class ClosestApproachFilter(icetray.I3Module):
 
             rSquared = (projx - domx)**2 + (projy - domy)**2 + (projz - domz)**2
 
-            if rSquared > closestApproach**2:
-		closestApproach = np.sqrt(rSquared)
+            if np.sqrt(rSquared) < closestApproach:
+                closestApproach = np.sqrt(rSquared)
 	
 	return closestApproach
 
