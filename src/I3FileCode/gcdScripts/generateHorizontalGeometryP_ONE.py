@@ -66,7 +66,7 @@ outname += "_" + str(offset_type)
 outname += "_" + str(spacing_type)
 outname += ".i3.gz"
 
-outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/corHorizgeo/' + outname, 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/corHorizgeo/' + outname, 'w')
 
 # create new geometry object
 geometry = dataclasses.I3Geometry()

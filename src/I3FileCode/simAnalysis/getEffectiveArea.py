@@ -73,10 +73,13 @@ for infile in infileListStep3:
         minAzimuth = weightDict["MinAzimuth"]
         minZenith = weightDict["MinZenith"]
 
-print np.sin(minZenith)*np.cos(minAzimuth)
+print len(logEnergy)
 
 binsE = np.linspace(minLogE, maxLogE, 10)
 binsRelAngl = np.linspace(np.sin(minZenith)*np.cos(minAzimuth), 1, 10)
+
+netdE = 10**binsE[len(binsE)-1] - 10**binsE[0]
+netdOmega = binsRelAngl[len(binsRelAngl)-1] - binsRelAngl[0]
 
 dOmega = (binsRelAngl[1] - binsRelAngl[0])*np.pi*2
 dE = []
@@ -88,21 +91,23 @@ for logE in logEnergy:
             break
     dE.append(10**binsE[position] - 10**binsE[position-1])
 
-areaWeights = [weights[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weights))]
+areaWeights2Var = [weights[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weights))]
+areaWeightsEnergy = [weights[i]*10**(-4)/(dE[i]*netdOmega) for i in range(len(weights))]
+areaWeightsAngle = [weights[i]*10**(-4)/(netdE*dOmega) for i in range(len(weights))]
 
-plt.hist(logEnergy, histtype = "step", log = True, weights = areaWeights, bins = binsE)
+plt.hist(logEnergy, histtype = "step", log = True, weights = areaWeightsEnergy, bins = binsE)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$log_{10}\, E/GeV$')
 
 plt.figure()
-plt.hist(cosRelAngl, histtype = "step", log = True, weights = areaWeights, bins = binsRelAngl)
+plt.hist(cosRelAngl, histtype = "step", log = True, weights = areaWeightsAngle, bins = binsRelAngl)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
-plt.xlabel(r'$\cos{\theta}$')
+plt.xlabel(r'$\cos{\theta_{rel}}$')
 
 plt.figure()
-plotOutputs = plt.hist2d(logEnergy,cosRelAngl, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsRelAngl])
+plotOutputs = plt.hist2d(logEnergy,cosRelAngl, norm = matplotlib.colors.LogNorm(), weights = areaWeights2Var, bins = [binsE, binsRelAngl])
 plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel(r'$\cos{\theta}$')
+plt.ylabel(r'$\cos{\theta_{rel}}$')
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.colorbar(plotOutputs[3])
 
@@ -112,21 +117,21 @@ plt.figure()
 plotouts = plt.hist2d(logEStep1, cosRelAnglStep1, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsRelAngl])
 plt.colorbar(plotouts[3])
 plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel(r'$\cos{\theta}$')
+plt.ylabel(r'$\cos{\theta_{rel}}$')
 plt.title("Event Distribution - Step 1")
 
 plt.figure()
 plotouts = plt.hist2d(logEStep2, cosRelAnglStep2, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsRelAngl])
 plt.colorbar(plotouts[3])
 plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel(r'$\cos{\theta}$')
+plt.ylabel(r'$\cos{\theta_{rel}}$')
 plt.title("Event Distribution - Step 2")
 
 plt.figure()
 plotouts = plt.hist2d(logEnergy, cosRelAngl, norm = matplotlib.colors.LogNorm(), bins = [binsE, binsRelAngl])
 plt.colorbar(plotouts[3])
 plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel(r'$\cos{\theta}$')
+plt.ylabel(r'$\cos{\theta_{rel}}$')
 plt.title("Event Distribution - Step 3")
 
 plt.figure()
@@ -141,7 +146,7 @@ ratioHist = h2 / h1
 pc = plt.pcolor(xedges, yedges, ratioHist.T, norm = matplotlib.colors.LogNorm())
 plt.colorbar(pc)
 plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel(r'$\cos{\theta}$')
+plt.ylabel(r'$\cos{\theta_{rel}}$')
 plt.title("Detection Efficiency")
 plt.show()
 
@@ -166,7 +171,8 @@ for frame in infile:
         minLogE = weightDict["MinEnergyLog"]
         maxLogE = weightDict["MaxEnergyLog"]
 
-dOmega = (binsRelAngl[1] - binsRelAngl[0])*np.pi*2
+print len(logEnergyIceCube)
+
 dE = []
 for logE in logEnergyIceCube:
     position = 0
@@ -176,27 +182,29 @@ for logE in logEnergyIceCube:
             break
     dE.append(10**binsE[position] - 10**binsE[position-1])
 
-areaWeightsIceCube = [weightsIceCube[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weightsIceCube))]
+areaWeights2VarIC = [weightsIceCube[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weightsIceCube))]
+areaWeightsEnergyIC = [weightsIceCube[i]*10**(-4)/(dE[i]*netdOmega) for i in range(len(weightsIceCube))]
+areaWeightsAngleIC = [weightsIceCube[i]*10**(-4)/(netdE*dOmega) for i in range(len(weightsIceCube))]
 
-plt.hist(logEnergyIceCube, histtype = "step", log = True, weights = areaWeights, bins = binsE)
+plt.hist(logEnergyIceCube, histtype = "step", log = True, weights = areaWeightsEnergyIC, bins = binsE)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.xlabel(r'$log_{10}\, E/GeV$')
 
 plt.figure()
-plt.hist(cosRelAnglIceCube, histtype = "step", log = True, weights = areaWeights, bins = binsRelAngl)
+plt.hist(cosRelAnglIceCube, histtype = "step", log = True, weights = areaWeightsAngleIC, bins = binsRelAngl)
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
-plt.xlabel(r'$\cos{\theta}$')
+plt.xlabel(r'$\cos{\theta_{rel}}$')
 
 plt.figure()
-plotOutputs = plt.hist2d(logEnergyIceCube,cosRelAnglIceCube, norm = matplotlib.colors.LogNorm(), weights = areaWeights, bins = [binsE, binsRelAngl])
+plotOutputs = plt.hist2d(logEnergyIceCube,cosRelAnglIceCube, norm = matplotlib.colors.LogNorm(), weights = areaWeights2VarIC, bins = [binsE, binsRelAngl])
 plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel(r'$\cos{\theta}$')
+plt.ylabel(r'$\cos{\theta_{rel}}$')
 plt.title("Effective Area Distribution (in " + r'$m^2$' + ')')
 plt.colorbar(plotOutputs[3])
 
 plt.figure()
-h1, edges= np.histogram(logEnergy, bins = binsE, weights = areaWeights)
-h2, edges = np.histogram(logEnergyIceCube, bins = binsE, weights = areaWeightsIceCube)
+h1, edges= np.histogram(logEnergy, bins = binsE, weights = areaWeightsEnergy)
+h2, edges = np.histogram(logEnergyIceCube, bins = binsE, weights = areaWeightsEnergyIC)
 for i in range(len(edges)-1):
     if h2[i] <=0.0000001:
         h2[i] = 1.0

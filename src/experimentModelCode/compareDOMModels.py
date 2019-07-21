@@ -2,9 +2,11 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from icecube.icetray import I3Units
 
-nominalModel = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/IceCube/icecubeAngularAcceptanceNominal.dat')
+nominalModel = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/IceCube/AngularAcceptance.dat')
 compModel = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/MDOM/AngularAcceptance.dat')
+wavelengthAcc = np.loadtxt('/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/MDOM/DOMEfficiency.dat', unpack = True)
 
 # check if model exists
 if nominalModel.size == 0:
@@ -35,9 +37,16 @@ for element in costheta:
     yComp.append(sumVal)
 
 
-plt.plot(costheta, yNom, 'b', label = "nominal model")
-plt.plot(costheta, yComp, 'r--', label = "competing model")
-plt.title("Comparing Angular Acceptance of Two DOM Models")
-plt.xlabel("cos of the relative angle")
-plt.ylabel("hit probability")
+plt.plot(costheta, yNom, 'r--', label = "IceCube Model")
+plt.plot(costheta, yComp, 'b', label = "Used Model")
+plt.title("DOM Angular Acceptance")
+plt.xlabel(r'$cos_{\theta_{rel}}$')
+plt.ylabel("Hit Probability")
+plt.legend()
+plt.show()
+
+plt.plot(wavelengthAcc[0]/I3Units.nanometer, wavelengthAcc[1])
+plt.title("DOM Wavelength Acceptance")
+plt.xlabel('Wavelength (nm)')
+plt.ylabel("Hit Probability")
 plt.show()
