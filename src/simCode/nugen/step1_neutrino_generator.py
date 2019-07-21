@@ -46,8 +46,8 @@ logEMax = float(eRange[1])
 
 zenithMin = (90 - float(args.coneAngle)) * I3Units.deg
 zenithMax = (90 + float(args.coneAngle)) * I3Units.deg
-azimuthMin = -float(args.coneAngle) * I3Units.deg
-azimuthMax = float(args.coneAngle) * I3Units.deg
+azimuthMin = 0 * I3Units.deg
+azimuthMax = 180 * I3Units.deg
 
 powerLawIndex = float(args.powerLawIndex)
 

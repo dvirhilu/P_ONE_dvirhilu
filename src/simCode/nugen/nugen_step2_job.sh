@@ -34,13 +34,13 @@ if [ "$RUNTYPE" == "testString" ]; then
  
 elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
+    GCDNAME=CorrHorizGeo_n15_b100.0_a18.0_l3_rise_fall_offset_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
-    GCD_FILE=/home/users/dhilu/I3Files/gcd/uncorHorizGeo/${GCDNAME}.i3.gz
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/HorizGeo/${GCDNAME}.i3.gz
  
 elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCD_FILE=/home/users/dhilu/I3Files/gcd/IceCube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/icecube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
     echo "Using IceCube GCD"
 
 elif [ "$RUNTYPE" == "cube" ]; then
@@ -59,11 +59,11 @@ echo "MEDIUMMODEL    : " $MEDIUMMODEL
 echo "CROSSENERGY : " $CROSSENERGY
 INFILENAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
 #INFILENAME=testFile.i3.gz
-INFOLDER=/home/users/dhilu/I3Files/nugen/nugenStep1
+INFOLDER=/home/users/dhilu/I3Files/nugen/nugenStep1/fullGeometry
 
 echo "INFILEPATH: " ${INFOLDER}/$INFILENAME
 OUTFILENAME=NuGen_step2_${RUNTYPE}_${FILE_NR}.i3.gz
-OUTFOLDER=/home/users/dhilu/I3Files/nugen/nugenStep2
+OUTFOLDER=/home/users/dhilu/I3Files/nugen/nugenStep2/fullGeometry
 echo "OUTFILEPATH : " ${OUTFOLDER}/$OUTFILENAME
 
 echo "GCD: " $GCD_FILE

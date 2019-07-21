@@ -11,12 +11,12 @@ requestCpus = 1
 requestMemory = 8192
 requirements = CUDACapability
 
-runType = testString
+runType = HorizGeo
 medium = STRAW
-offset = 250
+offset = 300
 
 runNum = $(offset) + $(Process)
 
 arguments = $(runType) $(medium) $INT(runNum) 
 
-queue 50
+queue 100

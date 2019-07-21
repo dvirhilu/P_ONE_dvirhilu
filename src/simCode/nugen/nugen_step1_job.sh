@@ -42,19 +42,19 @@ if [ "$RUNTYPE" == "testString" ]; then
     CYLINDERRADIUS=300
 elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=HorizGeo_n10_b100.0_a90.0_l1_linear_reset_offset_exp_r_spacing
+    GCDNAME=CorrHorizGeo_n15_b100.0_a18.0_l3_rise_fall_offset_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
-    GCD_FILE=/home/users/dhilu/I3Files/gcd/uncorHorizGeo/${GCDNAME}.i3.gz
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/HorizGeo/${GCDNAME}.i3.gz
 
-    CYLINDERX=0
-    CYLINDERY=0
-    CYLINDERZ=-600
-    CYLINDERLENGTH=400
-    CYLINDERRADIUS=1700
+    CYLINDERX=216.312
+    CYLINDERY=665.74
+    CYLINDERZ=448.07
+    CYLINDERLENGTH=3200
+    CYLINDERRADIUS=800
 elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
     echo "Found configuration for " $RUNTYPE
-    GCD_FILE=/home/users/dhilu/I3Files/gcd/IceCube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/icecube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz
     echo "Using IceCube GCD"
 
     CYLINDERX=0
@@ -82,7 +82,7 @@ CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERR
 POWERLAWINDEX=2
 CONEANGLE=40
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
-OUTDIR=/home/users/dhilu/I3Files/nugen/nugenStep1
+OUTDIR=/home/users/dhilu/I3Files/nugen/nugenStep1/fullGeometry
 
 echo "FILE NUMBER      : "$FILE_NR
 echo "NUMBER OF EVENTS : "$NUMEVENTS
