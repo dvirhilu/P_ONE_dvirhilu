@@ -14,7 +14,7 @@ args = parser.parse_args()
 # open file
 infileList = []
 for i in range(int(args.minFileNum), int(args.maxFileNum) + 1):
-    infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/NuGen_step3_testString_' + str(i) + '.i3.gz')
+    infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep2/HorizGeo/NuGen_step2_HorizGeo_' + str(i) + '.i3.gz')
     infileList.append(infile)
 
 # get distribution of direction, position, and energy

@@ -40,7 +40,7 @@ for element in costheta:
 plt.plot(costheta, yNom, 'r--', label = "IceCube Model")
 plt.plot(costheta, yComp, 'b', label = "Used Model")
 plt.title("DOM Angular Acceptance")
-plt.xlabel(r'$cos_{\theta_{rel}}$')
+plt.xlabel(r'$cos_{\beta}$')
 plt.ylabel("Hit Probability")
 plt.legend()
 plt.show()
