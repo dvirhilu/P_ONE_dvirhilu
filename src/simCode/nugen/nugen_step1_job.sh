@@ -40,6 +40,7 @@ if [ "$RUNTYPE" == "testString" ]; then
     CYLINDERZ=116.08
     CYLINDERLENGTH=1600
     CYLINDERRADIUS=300
+
 elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Found configuration for " $RUNTYPE
     GCDNAME=CorrHorizGeo_n15_b100.0_a18.0_l3_rise_fall_offset_simple_spacing
@@ -51,6 +52,18 @@ elif [ "$RUNTYPE" == "HorizGeo" ]; then
     CYLINDERZ=448.07
     CYLINDERLENGTH=3200
     CYLINDERRADIUS=800
+
+elif [ "$RUNTYPE" == "denseGeo" ]; then
+    echo "Found configuration for " $RUNTYPE
+    GCDNAME=denseGeo_n30_b50.0_a4.5_l7_linear_reset_offset_simple_spacing
+    echo "Name of GCD File Used: " $GCDNAME
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/denseGeo/${GCDNAME}.i3.gz
+
+    CYLINDERX=0
+    CYLINDERY=775
+    CYLINDERZ=98.07
+    CYLINDERLENGTH=3200
+    CYLINDERRADIUS=1600
 elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
     echo "Found configuration for " $RUNTYPE
@@ -62,6 +75,7 @@ elif [ "$RUNTYPE" == "IceCube" ]; then
     CYLINDERZ=0
     CYLINDERLENGTH=1600
     CYLINDERRADIUS=800
+
 elif [ "$RUNTYPE" == "cube" ]; then
     echo "Found configuration for " $RUNTYPE
     echo "Found configuration for " $RUNTYPE
@@ -73,6 +87,7 @@ elif [ "$RUNTYPE" == "cube" ]; then
     CYLINDERZ=0
     CYLINDERLENGTH=1600
     CYLINDERRADIUS=800
+
 else 
     echo "No configuration for " $RUNTYPE "... exiting"
     exit
@@ -82,7 +97,7 @@ CYLINDERSETTINGS="-x "$CYLINDERX" -y "$CYLINDERY" -z "$CYLINDERZ" -r "$CYLINDERR
 POWERLAWINDEX=2
 CONEANGLE=40
 OUTNAME=NuGen_step1_${RUNTYPE}_${FILE_NR}.i3.gz
-OUTDIR=/home/users/dhilu/I3Files/nugen/nugenStep1/fullGeometry
+OUTDIR=/home/users/dhilu/I3Files/nugen/nugenStep1/denseGeo
 
 echo "FILE NUMBER      : "$FILE_NR
 echo "NUMBER OF EVENTS : "$NUMEVENTS

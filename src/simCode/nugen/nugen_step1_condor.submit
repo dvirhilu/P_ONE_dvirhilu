@@ -9,8 +9,8 @@ when_to_transfer_output = ON_EXIT
 requestCpus = 1
 requestMemory = 4096
 
-offset = 300
-runType = HorizGeo
+offset = 500
+runType = denseGeo
 numEvents = 150000
 minLogE = 3
 maxLogE = 7
@@ -19,4 +19,4 @@ runNum = $(offset) + $(Process)
 
 arguments = $(runType) $(numEvents) $(minLogE) $(maxLogE) $INT(runNum)
 
-queue 100
+queue 200

@@ -230,7 +230,7 @@ for infile in infileListOrig:
         mcpeMap = frame["MCPESeriesMap"]
         domCount = 0
         for mcpeList in mcpeMap.values():
-            if len(mcpeList) >= 6:
+            if len(mcpeList) >= 7:
                 domCount += 1
     
         if domCount >= 6:
@@ -370,10 +370,10 @@ print h1
 print h2
 print edges
 ratioHist = h1 / h2
-plt.bar(edges[:-1], ratioHist, align = 'edge')
+plt.bar(edges[:-1], ratioHist, align = 'edge', width = edges[1] - edges[0])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$ratio$')
-plt.title("Ratio Of Effective Areas (5 DOMs, 3 Hits/DOM)")
+plt.title("Ratio Of Effective Areas (6 DOMs, 7 Hits/DOM)")
 
 plt.figure()
 h1, edges= np.histogram(horizontalLogENew, bins = binsE, weights = areaWeightsHorNew)
@@ -387,7 +387,7 @@ print h2
 print edges
 print h1/h2
 ratioHist = h1 / h2
-plt.bar(edges[:-1], ratioHist, align = 'edge')
+plt.bar(edges[:-1], ratioHist, align = 'edge', width = edges[1] - edges[0])
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel(r'$ratio$')
 plt.title("Ratio Of Effective Areas, cos zenith between (-0.1,0.1)")

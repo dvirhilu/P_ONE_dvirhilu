@@ -11,12 +11,12 @@ requestCpus = 1
 requestMemory = 8192
 requirements = CUDACapability
 
-runType = HorizGeo
+runType = denseGeo
 medium = STRAW
-offset = 300
+offset = 500
 
 runNum = $(offset) + $(Process)
 
 arguments = $(runType) $(medium) $INT(runNum) 
 
-queue 100
+queue 200

@@ -161,10 +161,10 @@ def generateOffsetList(offset_type, length):
     if offset_type == OffsetType.LinearResetOffset:
         offset = 0
         for i in xrange(0,length):
-            if(offset > 300):
-                offset = 150
+            if(offset > 100):
+                offset = 100
             offsetList.append(offset)
-            offset += 150
+            offset += 100
     elif offset_type == OffsetType.LinearRiseFallOffset:
         # start at center
         offset = 0
