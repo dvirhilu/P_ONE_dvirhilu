@@ -38,11 +38,11 @@ elif [ "$RUNTYPE" == "HorizGeo" ]; then
     echo "Name of GCD File Used: " $GCDNAME
     GCD_FILE=/home/users/dhilu/I3Files/gcd/HorizGeo/${GCDNAME}.i3.gz
  
- elif [ "$RUNTYPE" == "HorizGeo" ]; then
+ elif [ "$RUNTYPE" == "denseGeo" ]; then
     echo "Found configuration for " $RUNTYPE
-    GCDNAME=CorrHorizGeo_n15_b100.0_a18.0_l3_rise_fall_offset_simple_spacing
+    GCDNAME=denseGeo_n30_b50.0_a4.5_l7_linear_reset_offset_simple_spacing
     echo "Name of GCD File Used: " $GCDNAME
-    GCD_FILE=/home/users/dhilu/I3Files/gcd/HorizGeo/${GCDNAME}.i3.gz
+    GCD_FILE=/home/users/dhilu/I3Files/gcd/demseGeo/${GCDNAME}.i3.gz
 
 elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
