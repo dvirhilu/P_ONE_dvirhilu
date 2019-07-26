@@ -63,7 +63,7 @@ elif [ "$RUNTYPE" == "denseGeo" ]; then
     CYLINDERY=775
     CYLINDERZ=98.07
     CYLINDERLENGTH=3200
-    CYLINDERRADIUS=1600
+    CYLINDERRADIUS=1000
 elif [ "$RUNTYPE" == "IceCube" ]; then
     echo "Found configuration for " $RUNTYPE
     echo "Found configuration for " $RUNTYPE
