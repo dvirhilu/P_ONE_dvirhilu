@@ -58,10 +58,19 @@ plt.xlabel(r'$\alpha}$')
 plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
 
 plt.figure()
-plotOutputs = plt.hist2d(logEnergy, alpha, norm = LogNorm())
-plt.title("Distribution of Angular Difference and Energy")
-plt.xlabel(r'$log_{10} E/GeV$')
-plt.ylabel("Angular Difference (degrees)")
-colourbar = plotOutputs[3]
-plt.colorbar(colourbar)
+h, xedges, yedges = np.histogram2d(logEnergy, alpha)
+for i in range(len(xedges)-1):
+    total = 0
+    for j in range(len(yedges)-1):
+        total += h[i][j]
+    if total == 0:
+        h[i] = [0*element for element in h[i]]
+    else:
+        h[i] = [element/total for element in h[i]]
+
+pc = plt.pcolor(xedges, yedges, h.T)
+plt.colorbar(pc)
+plt.xlabel(r'$log_{10}\, E/GeV$')
+plt.ylabel('Relative Angle')
+plt.title("Detection Efficiency")
 plt.show()

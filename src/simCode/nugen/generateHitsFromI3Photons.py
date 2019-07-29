@@ -20,6 +20,8 @@ if args.GCDType == 'testString':
     gcdPath = str(args.filePath) + 'I3Files/gcd/testStrings/HorizTestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
 elif args.GCDType == 'HorizGeo':
     gcdPath = str(args.filePath) + 'I3Files/gcd/corHorizgeo/CorrHorizGeo_n15_b100.0_a18.0_l3_rise_fall_offset_simple_spacing.i3.gz'
+elif args.GCDType == 'HorizGeo':
+    gcdPath = str(args.filePath) + 'I3Files/gcd/denseGeo/denseGeo_n30_b50.0_a4.5_l7_linear_reset_offset_simple_spacing.i3.gz'
 elif args.GCDType == 'IceCube':
     gcdPath = str(args.filePath) + 'I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz'
 elif args.GCDType == 'cube':
