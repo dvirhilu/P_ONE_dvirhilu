@@ -40,7 +40,7 @@ else
     exit
 fi
 
-script=${FILEPATH}P_ONE_dvirhilu/src/simCode/nugen/step2_clsim_setCrossE.py
+script=${FILEPATH}P_ONE_dvirhilu/src/simCode/nugen/generateHitsFromI3Photons.py
 echo "Will use script: " $script
 
 echo "Run number: " $RUNNUM
