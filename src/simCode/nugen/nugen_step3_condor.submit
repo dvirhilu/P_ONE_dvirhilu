@@ -1,0 +1,23 @@
+# this is the step3 submit file for nugen on Illume
+
+executable = nugen_step3_job.sh
+log = /home/users/dhilu/logFiles/nugenStep3/job3_$(Process).log
+output = /home/users/dhilu/logFiles/nugenStep3/job3Out_$(Process).out
+error = /home/users/dhilu/logFiles/nugenStep3/job3Err_$(Process).err
+should_transfer_files   = YES
+when_to_transfer_output = ON_EXIT
+requestCpus = 1
+requestMemory = 8192
+
+hitThresh = 6
+domThresh = 6
+runType = denseGeo
+isLocal = false
+offset = 500
+
+
+runNum = $(offset) + $(Process)
+
+arguments = $INT(runNum) $(hitThresh) $(domThresh) $(runType) $(isLocal)
+
+queue 200

@@ -9,25 +9,47 @@ startsecond=$(date +%s)
 echo "Starting cvmfs " 
 eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 
-MIN_FILE_NR=$1
-MAX_FILE_NR=$2
-HIT_NUM_THRESH=$3
-DOM_NUM_THRESH=$4
-GCDTYPE=$5
+
+
+RUNNUM=$1
+HIT_NUM_THRESH=$2
+DOM_NUM_THRESH=$3
+GCDTYPE=$4
+ISLOCAL=$5
 SIMTYPE=nugen
 DOMTYPE=MDOM
 
-echo "Runs will go from file number: " $MIN_FILE_NR " to " $MAX_FILE_NR
-echo "Number of hits needed to preserve frame: "$HIT_NUM_THRESH
+if [ "$ISLOCAL" == "true" ]; then
+    echo "Running locally"
+    FILEPATH=/home/dvir/workfolder/
+    echo "File path: "$FILEPATH
+
+    i3env=/home/dvir/combo/build/env-shell.sh
+    echo "Will use i3 environment: " ${i3env}
+ 
+elif [ "$ISLOCAL" == "false" ]; then
+    echo "Running on illume"
+    FILEPATH=/home/users/dhilu/
+    echo "File path: "$FILEPATH
+
+    i3env=/home/users/hignight/oscnext/build_trunk_july_02_2019/env-shell.sh
+    echo "Will use i3 environment: " ${i3env}
+ 
+else 
+    echo "No configuration for " $ISLOCAL "... exiting"
+    exit
+fi
+
+script=${FILEPATH}P_ONE_dvirhilu/src/simCode/nugen/step2_clsim_setCrossE.py
+echo "Will use script: " $script
+
+echo "Run number: " $RUNNUM
+echo "Number of hits needed to preserve DOM: "$HIT_NUM_THRESH
 echo "Number of DOMs with hits needed to preserve frame: " $DOM_NUM_THRESH
 echo "Using GCD for: "$GCDTYPE
 echo "Simulations done with: "$SIMTYPE
 
-for value in $(seq $MIN_FILE_NR $MAX_FILE_NR); do
-    python generateHitsFromI3Photons.py -n $value -s $SIMTYPE -g $GCDTYPE -d $DOMTYPE -H $HIT_NUM_THRESH -D $DOM_NUM_THRESH
-    echo "finished loop for: "$value
-done
-
+$i3env python $script -n $RUNNUM -s $SIMTYPE -g $GCDTYPE -d $DOMTYPE -H $HIT_NUM_THRESH -D $DOM_NUM_THRESH -f $FILEPATH
 
 date 
 endsecond=$(date +%s)
