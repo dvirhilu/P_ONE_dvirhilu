@@ -20,7 +20,7 @@ if args.GCDType == 'testString':
     gcdPath = str(args.filePath) + 'I3Files/gcd/testStrings/HorizTestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
 elif args.GCDType == 'HorizGeo':
     gcdPath = str(args.filePath) + 'I3Files/gcd/corHorizgeo/CorrHorizGeo_n15_b100.0_a18.0_l3_rise_fall_offset_simple_spacing.i3.gz'
-elif args.GCDType == 'HorizGeo':
+elif args.GCDType == 'denseGeo':
     gcdPath = str(args.filePath) + 'I3Files/gcd/denseGeo/denseGeo_n30_b50.0_a4.5_l7_linear_reset_offset_simple_spacing.i3.gz'
 elif args.GCDType == 'IceCube':
     gcdPath = str(args.filePath) + 'I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz'
@@ -36,8 +36,8 @@ elif args.simType == 'muongun':
     outname = 'muongun/customGenHitsMuongun/MuonGun_customGenHits_' + str(args.runNum) + '.i3.gz'
     inPath  = str(args.filePath) + 'I3Files/muongun/muongun_step2/MuonGun_step2_'+ str(args.GCDType) + str(args.runNum) + '.i3.zst'
 elif args.simType == 'nugen':
-    outname = 'nugen/nugenStep3/HorizGeo/NuGen_step3_' + str(args.GCDType) + '_' + str(int(args.runNum)+100) + '.i3.gz'
-    inPath = str(args.filePath) + 'I3Files/nugen/nugenStep2/HorizGeo/NuGen_step2_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
+    outname = 'nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
+    inPath = str(args.filePath) + 'I3Files/nugen/nugenStep2/'+ str(args.GCDType) + '/NuGen_step2_' + str(args.GCDType) + '_' + str(args.runNum) + '.i3.gz'
 else:
     raise RuntimeError("Invalid Simulation Type")
 
