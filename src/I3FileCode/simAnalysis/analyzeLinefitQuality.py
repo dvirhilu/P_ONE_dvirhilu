@@ -13,31 +13,60 @@ parser.add_argument( '-i', '--infile', help = "input file used" )
 args = parser.parse_args()
 
 infile = dataio.I3File(str(args.infile))
+infilenoC = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/HorizGeo/NuGen_linefitReco_HorizGeo_noCoincidence.i3.gz')
 
-cosAlpha = []
-logEnergy = []
-#i = 0
-for frame in infile:
-    primary = frame["NuGPrimary"]
-    mctree = frame["I3MCTree"]
-    muon = dataclasses.I3MCTree.first_child(mctree, primary)
-    recoParticle = frame["LineFitRecoParticle"]
+def findIndex(energy, bins):
+    logE = np.log10(energy)
 
-    muonDir = muon.dir
-    recoDir = recoParticle.dir
-
-    dotProduct = muonDir.x*recoDir.x + muonDir.y*recoDir.y + muonDir.z*recoDir.z
-    cosAlpha.append(dotProduct)
-
-    logEnergy.append(np.log10(primary.energy))    
-
-    #if dotProduct < 0.1:
-    #    print i
-    #i += 1
+    for i in range(len(bins)):
+        if logE < bins[i+1]:
+            return i
+    
+    raise ValueError("energy not in range")
 
 
-alpha = [np.arccos(cosA)/I3Units.deg for cosA in cosAlpha]
+def lineFitanalysis(infile, binsE):
+    cosAlpha = []
+    listsError = [[] for i in range(10)]
 
+    for frame in infile:
+        primary = frame["NuGPrimary"]
+        mctree = frame["I3MCTree"]
+        muon = dataclasses.I3MCTree.first_child(mctree, primary)
+        recoParticle = frame["LineFitRecoParticle"]
+
+        muonDir = muon.dir
+        recoDir = recoParticle.dir
+
+        dotProduct = muonDir.x*recoDir.x + muonDir.y*recoDir.y + muonDir.z*recoDir.z
+        cosAlpha.append(dotProduct)
+
+        index = findIndex(primary.energy, binsE)
+        listsError[index].append(np.arccos(dotProduct)/I3Units.deg)   
+
+    alpha = [np.arccos(cosA)/I3Units.deg for cosA in cosAlpha]
+
+    percent50Error = []
+    percent90Error = []
+    for errorList in listsError:
+        errorList.sort()
+        index50Per = int(0.5*len(errorList))
+        index90Per = int(0.9*len(errorList))
+    
+        if len(errorList) == 0:
+            percent50Error.append(0)
+            percent90Error.append(0)
+        else:
+            percent50Error.append(errorList[index50Per])
+            percent90Error.append(errorList[index90Per])
+
+    return percent50Error, percent90Error, alpha, cosAlpha
+
+binsE = np.linspace(3,7,11)
+percent50ErrorC, percent90ErrorC, alphaC, cosAlphaC = lineFitanalysis(infile, binsE)
+percent50ErrornoC, percent90ErrornoC, alphanoC, cosAlphanoC = lineFitanalysis(infilenoC, binsE)
+
+'''
 plt.hist(cosAlpha, histtype = 'step', bins = 20)
 plt.xlabel(r'$\cos{\alpha}$')
 plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
@@ -56,21 +85,23 @@ plt.figure()
 plt.hist(alpha, histtype = 'step', bins = 20, log = True)
 plt.xlabel(r'$\alpha}$')
 plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
+'''
+
+print percent50ErrorC
+plt.figure()
+plt.step(binsE[:-1], percent50ErrorC, where = 'post', label = "50th percentile, with coincidence")
+plt.step(binsE[:-1], percent50ErrornoC, where = 'post', label = "50th percentile, no coincidence")
+plt.xlabel(r'$log_{10}\, E/GeV$')
+plt.ylabel("Angular Difference (degrees)")
+plt.title("LineFit Error")
+plt.legend()
 
 plt.figure()
-h, xedges, yedges = np.histogram2d(logEnergy, alpha)
-for i in range(len(xedges)-1):
-    total = 0
-    for j in range(len(yedges)-1):
-        total += h[i][j]
-    if total == 0:
-        h[i] = [0*element for element in h[i]]
-    else:
-        h[i] = [element/total for element in h[i]]
-
-pc = plt.pcolor(xedges, yedges, h.T)
-plt.colorbar(pc)
+plt.step(binsE[:-1], percent90ErrorC, where = 'post', label = "90th percentile, with coincidence")
+plt.step(binsE[:-1], percent90ErrornoC, where = 'post', label = "90th percentile, no coincidence")
 plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel('Relative Angle')
-plt.title("Detection Efficiency")
+plt.ylabel("Angular Difference (degrees)")
+plt.title("LineFit Error")
+plt.legend()
+
 plt.show()
