@@ -81,8 +81,8 @@ def generateDFrame(geometry):
 # an I3OMGeoMap object with the DOMs on the string and their
 # geometries
 def generateOMString(stringNumber, startPos, numDoms, spacing, direction):
-    orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)          # same orientation as icecube DOMs (dir=down)
-    area = 0.04439999908208847*I3Units.meter2                           # same area as icecube DOMs
+    orientation = dataclasses.I3Orientation(0, 0, -1, 1, 0, 0)            # same orientation as icecube DOMs (dir=down)
+    area = 0.5857538*I3Units.meter2                                    # same area as KM3NET MDOMs
     geomap = dataclasses.I3OMGeoMap()
     x = startPos.x
     y = startPos.y
