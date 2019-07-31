@@ -132,7 +132,9 @@ cfg = np.loadtxt(mediumPath + medium + '/cfg.txt')
 mediumEff = cfg[1] 
 
 angularAcceptance = GetIceCubeDOMAngularSensitivity()
-startWavelength, steps, effValues = GetIceCubeDOMAcceptance(efficiency = mediumEff)
+startWavelength, steps, effValues = GetIceCubeDOMAcceptance(efficiency = mediumEff, domRadius = 17*I3Units.ft/12/2)
+
+print 17*I3Units.ft/12/2
 
 aaFile.write("# This file contains polynomial coefficients for DOM angular Acceptance\n")
 for i in range(len(angularAcceptance)):

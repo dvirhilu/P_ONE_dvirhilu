@@ -54,8 +54,8 @@ def lineFitanalysis(infile, binsE):
         index90Per = int(0.9*len(errorList))
     
         if len(errorList) == 0:
-            percent50Error.append(0)
-            percent90Error.append(0)
+            percent50Error.append(-10)
+            percent90Error.append(-10)
         else:
             percent50Error.append(errorList[index50Per])
             percent90Error.append(errorList[index90Per])
@@ -88,6 +88,16 @@ plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
 '''
 
 print percent50ErrorC
+plt.figure()
+plt.step(binsE[:-1], percent50ErrorC, where = 'post', label = "50th percentile, with coincidence")
+plt.step(binsE[:-1], percent50ErrornoC, where = 'post', label = "50th percentile, no coincidence")
+plt.step(binsE[:-1], percent90ErrorC, where = 'post', label = "90th percentile, with coincidence")
+plt.step(binsE[:-1], percent90ErrornoC, where = 'post', label = "90th percentile, no coincidence")
+plt.xlabel(r'$log_{10}\, E/GeV$')
+plt.ylabel("Angular Difference (degrees)")
+plt.title("LineFit Error")
+plt.legend()
+
 plt.figure()
 plt.step(binsE[:-1], percent50ErrorC, where = 'post', label = "50th percentile, with coincidence")
 plt.step(binsE[:-1], percent50ErrornoC, where = 'post', label = "50th percentile, no coincidence")

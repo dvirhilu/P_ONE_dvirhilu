@@ -2,10 +2,8 @@
 
 from icecube import dataclasses, dataio, icetray, simclasses
 from icecube.icetray import I3Units, I3Frame
-import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as la
-import argparse, matplotlib
 
 def weightE(frame, energyWeighting):
     primary = frame["NuGPrimary"]
@@ -15,7 +13,7 @@ def weightE(frame, energyWeighting):
 def weightZenith(frame, zenithWeighting):
     primary = frame["NuGPrimary"]
 
-    return zenithWeighting(primary.zenith)
+    return zenithWeighting(primary.dir.zenith)
 
 def defaultWeighter(weightingParameter):
     return 1
@@ -44,6 +42,8 @@ def passFrame(frame, domsUsed, hitThresh, domThresh):
     
     domCount = 0
     for dom in domsUsed:
+        if dom not in mcpeMap:
+            continue
         if passDOM(mcpeMap[dom], hitThresh):
             domCount += 1
     
@@ -55,20 +55,61 @@ def passFrame(frame, domsUsed, hitThresh, domThresh):
 def calculateRetainedFrames(infileList, domsUsed, hitThresh, domThresh, energyWeighting = defaultWeighter, zenithWeighting = defaultWeighter):
     totalFrames = 0
     retainedFrames = 0
-    frameList = []
     for infile in infileList:
+        infile.rewind()
         for frame in infile:
             totalFrames += 1 * weightE(frame, energyWeighting) * weightZenith(frame, zenithWeighting)
             if passFrame(frame, domsUsed, hitThresh, domThresh):
                 retainedFrames += 1 * weightE(frame, energyWeighting) * weightZenith(frame, zenithWeighting)
-                frameList.append(frame)
-    
 
-    return frameList, retainedFrames, totalFrames
+    return retainedFrames, totalFrames
 
 
 def getSignificantMCPEs(mcpeList, hitThresh):
+    timeList = [mcpe.time for mcpe in mcpeList]
+    timeList.sort()
+    highIndex = 0
+    lowIndex = 0
+    significantMCPEList = simclasses.I3MCPESeries()
+
     for mcpe in mcpeList:
+
+        lowest = 0
+        highest = len(timeList)-1
+        while(lowest <= highest):
+            middle = int((lowest+highest)/2)
+            # if mcpe.time is greater than or equal to timeList[middle],  
+            # then search in timeList[mid + 1 to h]
+            if(timeList[middle] <= mcpe.time + 20): 
+                lowest = middle + 1 
+            else: 
+            # else search in timeList[l to mid-1] 
+                highest = middle - 1
+        
+        highIndex = highest
+
+        lowest = 0
+        while(lowest <= highest):
+            middle = int((lowest+highest)/2)
+            # if mcpe.time is greater than or equal to timeList[middle],  
+            # then search in timeList[mid + 1 to h]
+            if(timeList[middle] < mcpe.time): 
+                lowest = middle + 1 
+            else: 
+            # else search in timeList[l to mid-1] 
+                highest = middle - 1
+        
+        lowIndex = highest + 1
+
+        if highIndex - lowIndex >= hitThresh - 1:
+            break
+    
+    for mcpe in mcpeList:
+        if mcpe.time >= timeList[lowIndex] and mcpe.time <= timeList[highIndex]:
+            significantMCPEList.append(mcpe)
+    
+    return significantMCPEList
+        
 
 
 def getRecoDataPoints(frame, geometry, hitThresh):
@@ -77,7 +118,7 @@ def getRecoDataPoints(frame, geometry, hitThresh):
     significantMCPEMap = simclasses.I3MCPESeriesMap()
     data = []
     for omkey, mcpeList in mcpeMap:
-        if passDOM(omkey, hitThresh):
+        if passDOM(mcpeList, hitThresh):
             significantMCPEMap[omkey] = getSignificantMCPEs(mcpeList, hitThresh)
             for mcpe in significantMCPEMap[omkey]:
                 time = mcpe.time
@@ -92,6 +133,8 @@ def fitLeastSquaresLine(x, y):
     xMatrix = np.column_stack( (x, np.ones(len(x))) )
     yVector = np.array(y).T
     leastSquaresMatrix = np.matmul(xMatrix.T, xMatrix)
+    if la.det(leastSquaresMatrix) == 0:
+        print leastSquaresMatrix, xMatrix
     leastSquaresVector = np.matmul(xMatrix.T, yVector)
     fitCoefficients = np.matmul( la.inv(leastSquaresMatrix), leastSquaresVector)
 
