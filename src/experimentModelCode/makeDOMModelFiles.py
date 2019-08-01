@@ -226,7 +226,7 @@ def GetDOMAcceptance(domRadius = 0.2159*I3Units.m): # 17 inch diameter
 
     return FunctionClasses.FunctionFromTable(inputs, effValues)
 
-def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQE=False):
+def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQE=False, coverageFactor = 1):
     """
     this is taken from photonics/lib/efficiency.h:
     
@@ -308,7 +308,7 @@ def GetIceCubeDOMAcceptance(domRadius = 0.16510*I3Units.m, efficiency=1.0, highQ
     steps = 10.*I3Units.nanometer
     inputs = [(startVal + i*steps) for i in range(len(dom2007a_efficiency))]
 
-    return  FunctionClasses.FunctionFromTable(inputs, dom2007a_efficiency)
+    return  FunctionClasses.FunctionFromTable(inputs, dom2007a_efficiency*coverageFactor)
 
 filePath = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/MDOM/'
 filenameAA = 'AngularAcceptance.dat'
@@ -324,9 +324,20 @@ coefficients = np.ndarray([1])
 
 angularAcceptance = FunctionClasses.Polynomial(coefficients, -1, 1)
 
-# can either be done with ANTARES or IceCube data
-# domAcceptance = GetIceCubeDOMAcceptance() 
-domAcceptance = GetDOMAcceptance()
+# code in place to change all aspects of DOM efficiency (glass properties, gel properties, Q.E, 
+# PMT coverage) but right now only scaling IceCube efficiency by assumed portions of PMT coverage
+# due to lack of data 
+#domAcceptance = GetDOMAcceptance()
+upgradePMTRadius = 40.25 * I3Units.mm
+upgradeDOMRadius = 7.0/12 *I3Units.ft
+upgradeNumPMTs = 24
+upgradeCoverage = (upgradeNumPMTs * np.pi * upgradePMTRadius**2) / (4 * np.pi * upgradeDOMRadius**2)
+
+currentPMTRadius = 5.0/12 *I3Units.ft
+currentDOMRadius = 0.16510*I3Units.m
+currentCoverage = (2 * np.pi * currentPMTRadius**2) / (4 * np.pi * currentDOMRadius**2)
+
+domAcceptance = GetIceCubeDOMAcceptance(coverageFactor = upgradeCoverage / currentCoverage)
 
 aaFile.write("# This file contains polynomial coefficients for DOM angular Acceptance\n")
 for i in range(len(angularAcceptance.coefficients)):
