@@ -45,6 +45,8 @@ n = 1.34                                        # refractive index of water
 t_0 = 0                                         # initial time chosen as 0
 a_0 = 0                                         # satruation charge (for correction function)
 d_1 = 0                                         # minimal distance (for correction function)
+d_0 = 26.53 * I3Units.m                         # normalization distance (set to the eff. attenuation length)
+sigma_i = 20 * I3Units.nanosecond               # timing uncertainty (window used is 20 ns)
 
 parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
 parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
