@@ -87,8 +87,8 @@ def survived(photon,omkey):
     probability = getSurvivalProbability(photon, omkey)
     randomNumber = np.random.uniform()
 
-    if probability > 1:
-        raise RuntimeError("Probability = " + str(probability) " > 1. Most likely photon weights are too high")
+    if(probability > 1):
+        raise ValueError("Probability = " + str(probability) + " > 1. Most likely photon weights are too high")
 
     if(probability > randomNumber):
         return True
