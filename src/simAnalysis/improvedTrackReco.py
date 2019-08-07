@@ -76,3 +76,25 @@ def get_z_c(q, u, L_x, L_y):
 def get_t_c(q, u, L_x, L_y, z_c):
     return t_0 + 1/c * (L_x*u.x + L_y*u.y + z_c*u.z - q*u)
 
+def get_d_c(q, u, t_c, L_x, L_y):
+    p_x = q.x + c*(t-t_0)*u.x
+    p_y = q.y + c*(t-t_0)*u.y
+
+    return np.sqrt( (p_x - L_x)**2 + (p_y - L_y)**2 )
+
+def get_d_gamma(u, d_c, z_c, L_z):
+    ref_index_factor = n / np.sqrt(n**2 - 1)
+
+    return ref_index_factor * np.sqrt( d_c**2 + (L_z - z_c)**2*(1 - u.z**2) )
+
+def get_t_gamma(u, t_c, d_gamma, z_c, L_z):
+    ref_index_factor = (n**2 - 1)/n
+
+    return (t_c - t_0) + 1/c * (u.z*(L_z - z_c) + ref_index_factor*d_gamma)
+
+def get_cos_theta_gamma(u, d_gamma, z_c, L_z):
+    return (1 - u.z**2)*(L_z - z_c)/d_gamma + u.z/n
+
+
+
+
