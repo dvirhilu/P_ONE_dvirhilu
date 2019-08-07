@@ -47,7 +47,7 @@ else:
     raise RuntimeError("Invalid Simulation Type")
 
 
-infile = dataio.I3File(str(args.filePath) + inPath)
+infile = dataio.I3File(inPath)
 geofile = dataio.I3File(gcdPath)
 outfile = dataio.I3File(str(args.filePath) + 'I3Files/' + outname, 'w')
 
