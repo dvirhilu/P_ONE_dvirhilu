@@ -109,8 +109,6 @@ def getSignificantMCPEs(mcpeList, hitThresh):
             significantMCPEList.append(mcpe)
     
     return significantMCPEList
-        
-
 
 def getRecoDataPoints(frame, geometry, hitThresh):
     mcpeMap = frame["MCPESeriesMap"]
@@ -120,9 +118,10 @@ def getRecoDataPoints(frame, geometry, hitThresh):
     for omkey, mcpeList in mcpeMap:
         if passDOM(mcpeList, hitThresh):
             significantMCPEMap[omkey] = getSignificantMCPEs(mcpeList, hitThresh)
-            for mcpe in significantMCPEMap[omkey]:
-                time = mcpe.time
-                position = geoMap[omkey].position
+            timeList = [mcpe.time for mcpe in significantMCPEMap[omkey]]
+            time = min(timeList)
+            position = geoMap[omkey].position
+            for i in range(len(timeList)):
                 data.append([position.x, position.y, position.z, time])
     
     frame.Put("MCPESeriesMap_significant_hits", significantMCPEMap)
@@ -143,7 +142,7 @@ def fitLeastSquaresLine(x, y):
 
     return slope, intercept
 
-def reconstructParticleParams(datapoints):
+def linefitParticleParams(datapoints):
     x = [data[0] for data in datapoints]
     y = [data[1] for data in datapoints]
     z = [data[2] for data in datapoints]

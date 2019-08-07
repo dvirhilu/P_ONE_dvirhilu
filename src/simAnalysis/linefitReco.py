@@ -6,7 +6,8 @@ from icecube.dataclasses import I3Particle
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import linalg as la
-import argparse, SimAnalysis
+from simAnalysis import SimAnalysis
+import argparse
 
 parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
 parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
@@ -32,7 +33,7 @@ for i in range(int(args.minFileNum), int(args.maxFileNum)+1):
     infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + str(args.GCDType) + '_' + str(i) + '.i3.gz')
     infileList.append(infile)
 
-outfile = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/'+ str(args.GCDType) + '/NuGen_linefitReco_' + str(args.GCDType) + '_testAlgorithm.i3.gz', 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/'+ str(args.GCDType) + '/NuGen_linefitReco_' + str(args.GCDType) + '_testNewAlgorithm.i3.gz', 'w')
 gcdfile = dataio.I3File(gcdPath)
 geometry = gcdfile.pop_frame()["I3Geometry"]
 
@@ -40,7 +41,7 @@ for infile in infileList:
     for frame in infile:
         if SimAnalysis.passFrame(frame, geometry.omgeo.keys(), int(args.domThresh), int(args.hitThresh)):
             datapoints = SimAnalysis.getRecoDataPoints(frame, geometry, int(args.hitThresh))
-            direction, speed, vertex = SimAnalysis.reconstructParticleParams(datapoints)
+            direction, speed, vertex = SimAnalysis.linefitParticleParams(datapoints)
 
             recoParticle = I3Particle()
             recoParticle.shape = I3Particle.InfiniteTrack
@@ -52,6 +53,5 @@ for infile in infileList:
 
             frame.Put("LineFitRecoParticle", recoParticle)
             outfile.push(frame)
-
 
 outfile.close()
