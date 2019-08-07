@@ -32,8 +32,6 @@ elif [ "$ISLOCAL" == "false" ]; then
 
     i3env=/home/users/hignight/oscnext/build_trunk_july_02_2019/env-shell.sh
     echo "Will use i3 environment: " ${i3env}
-
-    export $PYTHONPATH=${PYTHONPATH}:/home/users/dhilu/P_ONE_dvirhilu/src
  
 else 
     echo "No configuration for " $ISLOCAL "... exiting"

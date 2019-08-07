@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import sys
+sys.path.insert(0,'/home/users/dhilu/P_ONE_dvirhilu/src')
+
 from icecube import dataio, dataclasses, simclasses
 from icecube.icetray import I3Units, OMKey, I3Frame
 from icecube.dataclasses import ModuleKey
