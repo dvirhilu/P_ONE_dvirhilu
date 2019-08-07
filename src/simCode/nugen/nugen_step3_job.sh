@@ -9,8 +9,6 @@ startsecond=$(date +%s)
 echo "Starting cvmfs " 
 eval `/cvmfs/icecube.opensciencegrid.org/py2-v3.1.1/setup.sh`
 
-
-
 RUNNUM=$1
 HIT_NUM_THRESH=$2
 DOM_NUM_THRESH=$3
