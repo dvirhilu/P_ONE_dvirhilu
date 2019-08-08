@@ -42,6 +42,7 @@ def passFrame(frame, domsUsed, hitThresh, domThresh):
     
     domCount = 0
     for dom in domsUsed:
+
         if dom not in mcpeMap:
             continue
         if passDOM(mcpeMap[dom], hitThresh):
@@ -110,21 +111,29 @@ def getSignificantMCPEs(mcpeList, hitThresh):
     
     return significantMCPEList
 
-def getRecoDataPoints(frame, geometry, hitThresh):
+def writeSigHitsMapToFrame(frame, domsUsed, hitThresh):
     mcpeMap = frame["MCPESeriesMap"]
-    geoMap = geometry.omgeo
     significantMCPEMap = simclasses.I3MCPESeriesMap()
+    for omkey in domsUsed:
+        if omkey not in mcpeMap:
+            continue
+        if passDOM(mcpeMap[omkey], hitThresh):
+            significantMCPEMap[omkey] = getSignificantMCPEs(mcpeMap[omkey], hitThresh)  
+         
+    frame.Put("MCPESeriesMap_significant_hits", significantMCPEMap)
+
+    return frame
+
+def getRecoDataPoints(frame, geometry, hitThresh):
+    mcpeMap = frame["MCPESeriesMap_significant_hits"]
+    geoMap = geometry.omgeo
     data = []
     for omkey, mcpeList in mcpeMap:
-        if passDOM(mcpeList, hitThresh):
-            significantMCPEMap[omkey] = getSignificantMCPEs(mcpeList, hitThresh)
-            timeList = [mcpe.time for mcpe in significantMCPEMap[omkey]]
-            time = min(timeList)
-            position = geoMap[omkey].position
-            for i in range(len(timeList)):
-                data.append([position.x, position.y, position.z, time])
-    
-    frame.Put("MCPESeriesMap_significant_hits", significantMCPEMap)
+        timeList = [mcpe.time for mcpe in mcpeList]
+        time = min(timeList)
+        position = geoMap[omkey].position
+        for i in range(len(timeList)):
+            data.append([position.x, position.y, position.z, time])
 
     return data
 

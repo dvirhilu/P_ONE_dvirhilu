@@ -40,6 +40,7 @@ geometry = gcdfile.pop_frame()["I3Geometry"]
 for infile in infileList:
     for frame in infile:
         if SimAnalysis.passFrame(frame, geometry.omgeo.keys(), int(args.domThresh), int(args.hitThresh)):
+            frame = SimAnalysis.writeSigHitsMapToFrame(frame, geometry.omgeo.keys(), int(args.hitThresh))
             datapoints = SimAnalysis.getRecoDataPoints(frame, geometry, int(args.hitThresh))
             direction, speed, vertex = SimAnalysis.linefitParticleParams(datapoints)
 

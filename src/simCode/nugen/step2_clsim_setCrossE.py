@@ -26,7 +26,7 @@ parser.add_argument("-m","--icemodel", default="spice_3.2.1",
                  dest="ICEMODEL",help="Ice model (spice_mie, spice_lea, etc)")
 parser.add_argument("-c","--crossenergy", default=30.0,
                   dest="CROSSENERGY",help="The cross energy where the hybrid clsim approach will be used")
-parser.add_argument("-t", action="store_true",  dest="GPU", default=False ,help="Run on GPUs or CPUs")
+parser.add_argument("-t", action="store_true",  dest="GPU", help="Run on GPUs or CPUs")
 
 
 args = parser.parse_args()

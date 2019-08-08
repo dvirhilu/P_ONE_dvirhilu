@@ -6,6 +6,7 @@ import numpy as np
 from simAnalysis import SimAnalysis
 from experimentModelCode import FunctionClasses
 import argparse
+from iminuit import Minuit
 
 '''
 A fast track reconstruction algorithm that takes into account
@@ -43,18 +44,18 @@ For convenience, t_0 is chosen to be 0 (linefit implementation uses t_0 = 0)
 c = 2.99792458e8 * I3Units.m / I3Units.second   # speed of light 
 n = 1.34                                        # refractive index of water
 t_0 = 0                                         # initial time chosen as 0
-a_0 = 0                                         # satruation charge (for correction function)
-d_1 = 0                                         # minimal distance (for correction function)
+a_0 = 0                                         # satruation charge (for correction function) (not used for now)
+d_1 = 0.25                                      # minimal distance (for correction function) (set to just above radius of detector)
 d_0 = 26.53 * I3Units.m                         # normalization distance (set to the eff. attenuation length)
 sigma_i = 20 * I3Units.nanosecond               # timing uncertainty (window used is 20 ns)
 
 parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
-parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
-parser.add_argument( '-N', '--maxFileNum', help = "largest file number used")
+parser.add_argument( '-n', '--fileNum', help = "file number to be used")
 parser.add_argument( '-H', '--hitThresh', help = "threshold of hits for the DOM to be considered")
 parser.add_argument( '-D', '--domThresh', help = "threshold of hit DOMs for the frame to be considered")
 parser.add_argument( '-g', '--GCDType', help = "type of geometry used for the simulation set")
-parser.add_argument('-d', '--domType', dest = 'DOMType', help = "the type of DOM used in the simulation")
+parser.add_argument( '-d', '--DOMType', help = "the type of DOM used in the simulation")
+parser.add_argument( '-c', '--useMaxCharge', action = 'store_true', help = "whether to use the maximum charge saturating function")
 args = parser.parse_args()
 
 if args.GCDType == 'testString':
@@ -68,12 +69,9 @@ elif args.GCDType == 'cube':
 else:
     raise RuntimeError("Invalid GCD Type")
 
-infileList = []
-for i in range(int(args.minFileNum), int(args.maxFileNum)+1):
-    infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + str(args.GCDType) + '_' + str(i) + '.i3.gz')
-    infileList.append(infile)
 
-outfile = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/'+ str(args.GCDType) + '/NuGen_linefitReco_' + str(args.GCDType) + '_' + str(args.minFileNum) + '_' + str(args.maxFileNum) + '.i3.gz', 'w')
+infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + str(args.GCDType) + '_' + str(args.fileNum) + '.i3.gz')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/'+ str(args.GCDType) + '/NuGen_improvedReco_' + str(args.GCDType) + '_' + str(args.fileNum) + '.i3.gz', 'w')
 gcdfile = dataio.I3File(gcdPath)
 geometry = gcdfile.pop_frame()["I3Geometry"]
 
@@ -82,6 +80,9 @@ inFolder = str(args.filePath) + 'P_ONE_dvirhilu/DOMCharacteristics/' + str(args.
 filenameAngAcc = 'AngularAcceptance.dat'
 angAcc = FunctionClasses.Polynomial(np.loadtxt(inFolder + filenameAngAcc, ndmin = 1), -1, 1)
 
+domsUsed = geometry.omgeo.values()
+hitThresh = int(args.hitThresh)
+domThresh = int(args.domThresh)
 
 def get_z_c(q, u, L_x, L_y):
     # multiplying an I3Position by I3Direction takes their dot product
@@ -121,13 +122,68 @@ def getHitInformation(mcpeList):
 def chargeCorrectionFunction(a_i, cos_theta_gamma):
     a_iCorrected = a_i / angAcc.getValue(cos_theta_gamma) # original paper approximated a function that doesn't fit MDOM model
 
+    if not args.useMaxCharge:
+        return a_iCorrected
+
     numerator = a_0 * a_iCorrected
     denominator = np.sqrt(a_0**2 + a_iCorrected**2)
 
     return numerator/denominator
 
+def getAverageCharge(mcpeMap):
+    totalCharge = 0
+    for mcpeList in mcpeMap.values():
+        charge, _time = getHitInformation(mcpeList)
+        totalCharge += charge
+    
+    return totalCharge / len(mcpeMap)
+
 def distanceCorrectionFactor(d_gamma):
     return np.sqrt(d_gamma**2 + d_1**2)
 
+def calculateInitialGuess(frame, domsUsed):
+    data = SimAnalysis.getRecoDataPoints(frame, geometry, int(args.hitThresh))
+    direction, _speed, vertex = SimAnalysis.linefitParticleParams(data)
 
+    return vertex.x, vertex.y, vertex.z, direction.z, np.arctan(direction.y/direction.x)
 
+def QualityFunction(frame, q_x, q_y, q_z, u_z, phi):
+    q = dataclasses.I3Position(q_x, q_y, q_z)
+    theta = np.arccos(u_z)
+    u = dataclasses.I3Direction(np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), u_z)
+
+    mcpeMap = frame["MCPESeriesMap_significant_hits"]
+    geoMap = geometry.omgeo
+    averageCharge = getAverageCharge(mcpeMap)
+    QSum = 0
+    for omkey, mcpeList in mcpeMap:
+        omPosition = geoMap[omkey].position
+
+        # calculate expected values
+        z_c = get_z_c(q, u, omPosition.x, omPosition.y)
+        t_c = get_t_c(q, u, omPosition.x, omPosition.y, z_c)
+        d_c = get_d_c(q, u, t_c, omPosition.x, omPosition.y)
+        d_gamma = get_d_gamma(u, d_c, z_c, omPosition.z)
+        t_gamma = get_t_gamma(u, t_c, d_gamma, z_c, omPosition.z)
+        cos_theta_gamma = get_cos_theta_gamma(u, d_gamma, z_c, omPosition.z)
+
+        # get data for om hits
+        charge, t_i = getHitInformation(mcpeList)
+
+        # calculate quality function components
+        timePortion = (t_gamma - t_i)**2 / sigma_i
+        A = chargeCorrectionFunction(charge, cos_theta_gamma)
+        D = distanceCorrectionFactor(d_gamma)
+        chargePortion = (A*D) / (averageCharge*d_0)
+
+        # add to quality function sum
+        QSum += timePortion + chargePortion
+
+    return QSum
+
+for frame in infile:
+    if SimAnalysis.passFrame(frame, domsUsed, hitThresh, domThresh):
+        frame = SimAnalysis.writeSigHitsMapToFrame(frame, domsUsed, hitThresh)
+        initialGuess = calculateInitialGuess(frame, domsUsed)
+
+        #TODO: find solution with minimizer, create particle, write to frame, write to file
