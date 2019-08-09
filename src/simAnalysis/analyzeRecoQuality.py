@@ -8,11 +8,11 @@ from matplotlib.colors import LogNorm
 import numpy as np
 import argparse
 
-#parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
-#parser.add_argument( '-i', '--infile', help = "input file used" )
-#args = parser.parse_args()
+parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
+parser.add_argument( '-i', '--infile', help = "input file used" )
+args = parser.parse_args()
 
-infile = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/HorizGeo/NuGen_linefitReco_HorizGeo_testAlgorithm.i3.gz')
+infile = dataio.I3File(str(args.infile))
 infilenoC = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/HorizGeo/NuGen_linefitReco_HorizGeo_noCoincidence.i3.gz')
 infileInitTime = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/HorizGeo/NuGen_linefitReco_HorizGeo_testNewAlgorithm.i3.gz')
 
@@ -26,7 +26,7 @@ def findIndex(energy, bins):
     raise ValueError("energy not in range")
 
 
-def lineFitanalysis(infile, binsE):
+def fitanalysis(infile, binsE, fitType):
     cosAlpha = []
     listsError = [[] for i in range(10)]
 
@@ -34,7 +34,11 @@ def lineFitanalysis(infile, binsE):
         primary = frame["NuGPrimary"]
         mctree = frame["I3MCTree"]
         muon = dataclasses.I3MCTree.first_child(mctree, primary)
-        recoParticle = frame["LineFitRecoParticle"]
+        
+        if fitType == "linefit":
+            recoParticle = frame["LineFitRecoParticle"]
+        else:
+            recoParticle = frame["ImprovedRecoParticle"]
 
         muonDir = muon.dir
         recoDir = recoParticle.dir
@@ -64,9 +68,9 @@ def lineFitanalysis(infile, binsE):
     return percent50Error, percent90Error, alpha, cosAlpha
 
 binsE = np.linspace(3,7,11)
-percent50ErrorC, percent90ErrorC, alphaC, cosAlphaC = lineFitanalysis(infile, binsE)
-percent50ErrornoC, percent90ErrornoC, alphanoC, cosAlphanoC = lineFitanalysis(infilenoC, binsE)
-percent50ErrorInitTime, percent90ErrorInitTime, alphaInitTime, cosAlphaInitTime = lineFitanalysis(infileInitTime, binsE)
+percent50ErrorImproved, percent90ErrorImproved, alphaImproved, cosAlphaImproved = fitanalysis(infile, binsE, "improved")
+percent50ErrornoC, percent90ErrornoC, alphanoC, cosAlphanoC = fitanalysis(infilenoC, binsE, "linefit")
+percent50ErrorC, percent90ErrorC, alphaC, cosAlphaC = fitanalysis(infileInitTime, binsE, "linefit")
 
 '''
 plt.hist(cosAlpha, histtype = 'step', bins = 20)
@@ -90,14 +94,14 @@ plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
 '''
 
 print percent50ErrorC
-print percent50ErrorInitTime
+print percent50ErrorImproved
 plt.figure()
 plt.step(binsE[:-1], percent50ErrorC, where = 'post', label = "50th percentile, with coincidence")
 #plt.step(binsE[:-1], percent50ErrornoC, where = 'post', label = "50th percentile, no coincidence")
-plt.step(binsE[:-1], percent50ErrorInitTime, where = 'post', label = "50th percentile, initial time")
+plt.step(binsE[:-1], percent50ErrorImproved, where = 'post', label = "50th percentile, improved")
 plt.step(binsE[:-1], percent90ErrorC, where = 'post', label = "90th percentile, with coincidence")
 #plt.step(binsE[:-1], percent90ErrornoC, where = 'post', label = "90th percentile, no coincidence")
-plt.step(binsE[:-1], percent90ErrorInitTime, where = 'post', label = "90th percentile, initial time")
+plt.step(binsE[:-1], percent90ErrorImproved, where = 'post', label = "90th percentile, improved")
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel("Angular Difference (degrees)")
 plt.title("LineFit Error")
@@ -106,7 +110,7 @@ plt.legend()
 plt.figure()
 plt.step(binsE[:-1], percent50ErrorC, where = 'post', label = "50th percentile, with coincidence")
 #plt.step(binsE[:-1], percent50ErrornoC, where = 'post', label = "50th percentile, no coincidence")
-plt.step(binsE[:-1], percent50ErrorInitTime, where = 'post', label = "50th percentile, initial time")
+plt.step(binsE[:-1], percent50ErrorImproved, where = 'post', label = "50th percentile, improved")
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel("Angular Difference (degrees)")
 plt.title("LineFit Error")
@@ -115,7 +119,7 @@ plt.legend()
 plt.figure()
 plt.step(binsE[:-1], percent90ErrorC, where = 'post', label = "90th percentile, with coincidence")
 #plt.step(binsE[:-1], percent90ErrornoC, where = 'post', label = "90th percentile, no coincidence")
-plt.step(binsE[:-1], percent90ErrorInitTime, where = 'post', label = "90th percentile, initial time")
+plt.step(binsE[:-1], percent90ErrorImproved, where = 'post', label = "90th percentile, improved")
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel("Angular Difference (degrees)")
 plt.title("LineFit Error")

@@ -43,14 +43,14 @@ For convenience, t_0 is chosen to be 0 (linefit implementation uses t_0 = 0)
 # constants
 c = 2.99792458e8 * I3Units.m / I3Units.second   # speed of light 
 n = 1.34                                        # refractive index of water
-t_0 = 0                                         # initial time chosen as 0
 a_0 = 0                                         # satruation charge (for correction function) (not used for now)
 d_1 = 0.25                                      # minimal distance (for correction function) (set to just above radius of detector)
 d_0 = 26.53 * I3Units.m                         # normalization distance (set to the eff. attenuation length)
 sigma_i = 20 * I3Units.nanosecond               # timing uncertainty (window used is 20 ns)
 
 parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
-parser.add_argument( '-n', '--fileNum', help = "file number to be used")
+parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
+parser.add_argument( '-N', '--maxFileNum', help = "largest file number used")
 parser.add_argument( '-H', '--hitThresh', help = "threshold of hits for the DOM to be considered")
 parser.add_argument( '-D', '--domThresh', help = "threshold of hit DOMs for the frame to be considered")
 parser.add_argument( '-g', '--GCDType', help = "type of geometry used for the simulation set")
@@ -69,32 +69,43 @@ elif args.GCDType == 'cube':
 else:
     raise RuntimeError("Invalid GCD Type")
 
+infileList = []
+for i in range(int(args.minFileNum), int(args.maxFileNum)+1):
+    infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + 
+                        str(args.GCDType) + '_' + str(i) + '.i3.gz')
+    infileList.append(infile)
 
-infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + str(args.GCDType) + '_' + str(args.fileNum) + '.i3.gz')
-outfile = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/'+ str(args.GCDType) + '/NuGen_improvedReco_' + str(args.GCDType) + '_' + str(args.fileNum) + '.i3.gz', 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/'+ str(args.GCDType) + '/NuGen_improvedReco_' + 
+                        str(args.GCDType) + '_improvedRecoTest.i3.gz', 'w')
 gcdfile = dataio.I3File(gcdPath)
 geometry = gcdfile.pop_frame()["I3Geometry"]
 
+printOutFile = open('MinimizerOutputs.txt', 'w')
+
 # get DOM angular acceptance characteristics
-inFolder = str(args.filePath) + 'P_ONE_dvirhilu/DOMCharacteristics/' + str(args.DOMType) + '/'
+inFolder = '/home/dvir/workFolder/P_ONE_dvirhilu/DOMCharacteristics/' + str(args.DOMType) + '/'
 filenameAngAcc = 'AngularAcceptance.dat'
 angAcc = FunctionClasses.Polynomial(np.loadtxt(inFolder + filenameAngAcc, ndmin = 1), -1, 1)
 
-domsUsed = geometry.omgeo.values()
+domsUsed = geometry.omgeo.keys()
 hitThresh = int(args.hitThresh)
 domThresh = int(args.domThresh)
 
 def get_z_c(q, u, L_x, L_y):
+
     # multiplying an I3Position by I3Direction takes their dot product
     numerator = q.z - u.z*(q*u) + u.z*(L_x*u.x + L_y*u.y)
     denominator = 1-u.z**2
 
+    if denominator == 0:
+        return q.z
+
     return numerator / denominator
 
-def get_t_c(q, u, L_x, L_y, z_c):
+def get_t_c(q, u, L_x, L_y, z_c, t_0):
     return t_0 + 1/c * (L_x*u.x + L_y*u.y + z_c*u.z - q*u)
 
-def get_d_c(q, u, t_c, L_x, L_y):
+def get_d_c(q, u, t_c, L_x, L_y, t_0):
     p_x = q.x + c*(t_c-t_0)*u.x
     p_y = q.y + c*(t_c-t_0)*u.y
 
@@ -108,7 +119,7 @@ def get_d_gamma(u, d_c, z_c, L_z):
 def get_t_gamma(u, t_c, d_gamma, z_c, L_z):
     ref_index_factor = (n**2 - 1)/n
 
-    return (t_c - t_0) + 1/c * (u.z*(L_z - z_c) + ref_index_factor*d_gamma)
+    return t_c + 1/c * (u.z*(L_z - z_c) + ref_index_factor*d_gamma)
 
 def get_cos_theta_gamma(u, d_gamma, z_c, L_z):
     return (1 - u.z**2)*(L_z - z_c)/d_gamma + u.z/n
@@ -141,49 +152,149 @@ def getAverageCharge(mcpeMap):
 def distanceCorrectionFactor(d_gamma):
     return np.sqrt(d_gamma**2 + d_1**2)
 
-def calculateInitialGuess(frame, domsUsed):
-    data = SimAnalysis.getRecoDataPoints(frame, geometry, int(args.hitThresh))
-    direction, _speed, vertex = SimAnalysis.linefitParticleParams(data)
+def calculateInitialGuess(frame, domsUsed, t_0):
+    data = SimAnalysis.getLinefitDataPoints(frame, geometry)
+    u, speed, vertex = SimAnalysis.linefitParticleParams(data)
 
-    return vertex.x, vertex.y, vertex.z, direction.z, np.arctan(direction.y/direction.x)
+    phi = np.arctan2(u.y, u.x)/I3Units.deg 
+    if phi < 0:
+        phi += 360
+    
+    linefit = dataclasses.I3Particle()
+    linefit.shape = dataclasses.I3Particle.InfiniteTrack
+    linefit.fit_status = dataclasses.I3Particle.OK
+    linefit.dir = u
+    linefit.speed = speed
+    linefit.pos = vertex
+    linefit.time = 0
 
-def QualityFunction(frame, q_x, q_y, q_z, u_z, phi):
-    q = dataclasses.I3Position(q_x, q_y, q_z)
-    theta = np.arccos(u_z)
-    u = dataclasses.I3Direction(np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), u_z)
+    delta_q = dataclasses.I3Position(u.x*speed*t_0, u.y*speed*t_0, u.z*speed*t_0)
 
+    q = vertex + delta_q
+
+    return q.x, q.y, q.z, u.z, phi, linefit
+
+def get_t_0(frame):
     mcpeMap = frame["MCPESeriesMap_significant_hits"]
-    geoMap = geometry.omgeo
-    averageCharge = getAverageCharge(mcpeMap)
-    QSum = 0
-    for omkey, mcpeList in mcpeMap:
-        omPosition = geoMap[omkey].position
+    mcpeList = mcpeMap[mcpeMap.keys()[0]]
 
-        # calculate expected values
-        z_c = get_z_c(q, u, omPosition.x, omPosition.y)
-        t_c = get_t_c(q, u, omPosition.x, omPosition.y, z_c)
-        d_c = get_d_c(q, u, t_c, omPosition.x, omPosition.y)
-        d_gamma = get_d_gamma(u, d_c, z_c, omPosition.z)
-        t_gamma = get_t_gamma(u, t_c, d_gamma, z_c, omPosition.z)
-        cos_theta_gamma = get_cos_theta_gamma(u, d_gamma, z_c, omPosition.z)
+    return mcpeList[0].time
+
+def calculateVertex(q, u, t_0):
+    delta_q = dataclasses.I3Position(u.x*c*t_0, u.y*c*t_0, u.z*c*t_0)
+
+    return q - delta_q
+
+# wrapper implemented so that input data can be passed and left untouched by minimizer
+class QualityFunctor():
+
+    def __init__(self, frame, t_0, printout = False):
+        self.frame = frame
+        self.printout = printout
+        self.t_0 = t_0
+    
+    def qualityFunction(self, q_x, q_y, q_z, u_z, phi):
+        q = dataclasses.I3Position(q_x, q_y, q_z)
+        theta = np.arccos(u_z)
+        rad_phi = np.radians(phi)
+        u = dataclasses.I3Direction(np.sin(theta)*np.cos(rad_phi), np.sin(theta)*np.sin(rad_phi), u_z)
+
+        mcpeMap = self.frame["MCPESeriesMap_significant_hits"]
+        geoMap = geometry.omgeo
+        averageCharge = getAverageCharge(mcpeMap)
+        QSum = 0
+        for omkey, mcpeList in mcpeMap:
+            omPosition = geoMap[omkey].position
+
+            # calculate expected values
+            z_c = get_z_c(q, u, omPosition.x, omPosition.y)
+            t_c = get_t_c(q, u, omPosition.x, omPosition.y, z_c, self.t_0)
+            d_c = get_d_c(q, u, t_c, omPosition.x, omPosition.y, self.t_0)
+            d_gamma = get_d_gamma(u, d_c, z_c, omPosition.z)
+            t_gamma = get_t_gamma(u, t_c, d_gamma, z_c, omPosition.z)
+            cos_theta_gamma = get_cos_theta_gamma(u, d_gamma, z_c, omPosition.z)
 
         # get data for om hits
-        charge, t_i = getHitInformation(mcpeList)
+            charge, t_i = getHitInformation(mcpeList)
 
         # calculate quality function components
-        timePortion = (t_gamma - t_i)**2 / sigma_i
-        A = chargeCorrectionFunction(charge, cos_theta_gamma)
-        D = distanceCorrectionFactor(d_gamma)
-        chargePortion = (A*D) / (averageCharge*d_0)
+            timePortion = (t_gamma - t_i)**2 / sigma_i
+            A = chargeCorrectionFunction(charge, cos_theta_gamma)
+            D = distanceCorrectionFactor(d_gamma)
+            chargePortion = (A*D) / (averageCharge*d_0)
 
-        # add to quality function sum
-        QSum += timePortion + chargePortion
+            # add to quality function sum
+            QSum += timePortion + chargePortion
+            
+            if self.printout:
+                printOutFile.write('measured: ' + str(t_i) + ', calculated: ' + str(t_gamma) + ', photon distance: ' + str(d_gamma) + ', charge portion: ' + str(chargePortion)
+                                    + ', distance factor: ' + str(D) + ', charge factor: ' + str(A) + ', average charge: ' + str(averageCharge) + '\n' )
 
-    return QSum
+        if self.printout:
+            printOutFile.write( "Qvalue: " + str(QSum) + '\n\n')
+        
+        return QSum
 
-for frame in infile:
-    if SimAnalysis.passFrame(frame, domsUsed, hitThresh, domThresh):
-        frame = SimAnalysis.writeSigHitsMapToFrame(frame, domsUsed, hitThresh)
-        initialGuess = calculateInitialGuess(frame, domsUsed)
+    def __call__(self, q_x, q_y, q_z, u_z, phi):
+        return self.qualityFunction(q_x, q_y, q_z, u_z, phi)
 
-        #TODO: find solution with minimizer, create particle, write to frame, write to file
+    
+
+for infile in infileList:
+    for frame in infile:
+        if SimAnalysis.passFrame(frame, domsUsed, hitThresh, domThresh):
+            frame = SimAnalysis.writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh)
+            t_0 = get_t_0(frame)
+            initialGuess = calculateInitialGuess(frame, domsUsed, t_0)
+
+            qFunctor = QualityFunctor(frame, t_0)
+            initialGuessQ = qFunctor(initialGuess[0], initialGuess[1], initialGuess[2], initialGuess[3], 
+                                initialGuess[4])
+            
+            # record seed values for comparison
+            printOutFile.write("initial guess: " + str(initialGuess) + ", \nvalue of Q: " + str(initialGuessQ) + '\n')
+
+            minimizer = Minuit(qFunctor, q_x = initialGuess[0], q_y = initialGuess[1],q_z = initialGuess[2], 
+                                u_z = initialGuess[3], phi = initialGuess[4], error_q_x = 1, error_q_y = 1, 
+                                error_q_z = 1, error_u_z = 0.05, error_phi = 1, errordef = 1, 
+                                limit_u_z = (-1, 1), limit_phi = (0, 360) )
+
+            minimizer.migrad()
+
+            # record minimizer results in output file
+            printOutFile.write("results:\n")
+            printOutFile.write(str(minimizer.get_fmin()) + '\n')
+            printOutFile.write( str(minimizer.values) + '\n')
+            printOutFile.write('\n\n')
+
+            solution = minimizer.values
+            q = dataclasses.I3Position(solution['q_x'], solution['q_y'], solution['q_z'])
+            phi = solution['phi'] * I3Units.deg
+            theta = np.arccos(solution['u_z'])
+            u = dataclasses.I3Direction(np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), solution['u_z'])
+
+            # record final q function breakdown in output file
+            printQFunctor = QualityFunctor(frame, t_0, printout = True)
+            printQFunctor(solution['q_x'], solution['q_y'], solution['q_z'], solution["u_z"], solution["phi"])
+
+            recoParticle = dataclasses.I3Particle()
+            recoParticle.shape = dataclasses.I3Particle.InfiniteTrack
+            
+            # record on particle whether reconstruction was successful
+            if minimizer.get_fmin()["is_valid"]:
+                recoParticle.fit_status = dataclasses.I3Particle.OK
+            else:
+                recoParticle.fit_status = dataclasses.I3Particle.InsufficientQuality
+
+            recoParticle.dir = u
+            recoParticle.speed = c
+            recoParticle.pos = calculateVertex(q, u, t_0)
+            recoParticle.time = 0
+        
+            # include both linefit and improved recos for comparison
+            frame.Put('ImprovedRecoParticle', recoParticle)
+            frame.Put('LineFitRecoParticle', initialGuess[5])
+            outfile.push(frame)
+
+outfile.close()
+printOutFile.close()

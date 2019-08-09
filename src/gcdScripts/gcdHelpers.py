@@ -11,8 +11,7 @@ from icecube.icetray import OMKey, I3Units
 from enum import Enum
 import numpy as np
 
-cdfile = dataio.I3File(
-    '/home/dvir/workFolder/I3Files/gcd/cal_DS_Files/Calib_and_DetStat_File.i3.gz')
+cdfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/cal_DS_Files/Calib_and_DetStat_File.i3.gz')
 cdframe = cdfile.pop_frame()
 calib = cdframe["I3Calibration"]
 start_time = calib.start_time
@@ -161,7 +160,7 @@ def generateOffsetList(offset_type, length):
     if offset_type == OffsetType.LinearResetOffset:
         offset = 0
         for i in xrange(0,length):
-            if(offset > 100):
+            if(offset > 500):
                 offset = 100
             offsetList.append(offset)
             offset += 100
@@ -171,7 +170,7 @@ def generateOffsetList(offset_type, length):
         # determines whether rising or falling offset
         signFactor = 1
         for i in xrange(0, length):
-            if(offset >= 300):
+            if(offset >= 600):
                 signFactor = -1
             if(offset <= 150):
                 signFactor = 1
