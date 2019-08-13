@@ -107,11 +107,11 @@ def passFrame(frame, domsUsed, hitThresh, domThresh):
             continue
         if passDOM(mcpeMap[dom], hitThresh):
             domCount += 1
+        
+        if domCount >= domThresh:
+            return True
     
-    if domCount < domThresh:
-        return False
-    
-    return True
+    return False
 
 # Calcualtes the number of retained frames given a list of unmasked DOMs,
 # hit threshold to keep a DOM, and the number of DOMs to keep the frame.
@@ -343,3 +343,105 @@ def linefitParticleParams(datapoints):
     vertex = dataclasses.I3Position(x,y,z)
 
     return direction, speed, vertex
+
+# For a given list of I3File and a geometry map (for omkeys used), it computes all
+# the necessary data to plot the effective area distributions in energy (total and 
+# only horizontal), zenith, or both 
+# 
+# @Param:
+# infileList:       List of I3Files containing simulation data   
+# domsUsed:         List of omkeys used for the analysis. Allows to look 
+#                   at smaller geometries from a larger geometry sim file
+# hitThresh:        Hit threshold for a single DOM
+# domThresh:        Number of passed DOMs needed to pass the frame
+# binNum:           Number of bins intended for the histogram 
+# 
+# @Return: 
+# A tuple containing three dictionaries that in order are:
+#       - the data to be histogramed
+#       - the weight to apply to the histogram to get effective area
+#       - the bins the data is binned in 
+# These dictionaries have the following keys:
+#       - "logEnergy":  in all three dictionaries, log(E/GeV) data
+#       - "cosZenith":  in all three dictionaries, cos(zenith) data
+#       - "Horizontal": in data and weight dictionaries, data for energy
+#                       of particles with cos(zenith) between (-0.1,0.1)
+#       - "2Variable":  only in weight dictionary, weighting data for a 
+#                       2D histogram of cos(zenith) and log(E/GeV) 
+def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, binNum):
+    logEnergy = []
+    weights = []
+    cosZenith = []
+    horizontalLogE = []
+    horizontalWeights = []
+
+    areaWeightDict = {}
+    dataDict = {}
+    binsDict = {}
+    for infile in infileList:
+        for frame in infile:
+            if passFrame(frame, domsUsed, hitThresh, domThresh ):
+                primary = frame["NuGPrimary"]
+                logEnergy.append(np.log10(primary.energy))
+                cosZenith.append(np.cos(primary.dir.zenith))
+                weightDict = frame["I3MCWeightDict"]
+                oneWeight = weightDict["OneWeight"]
+                # assuming all files have equal event numbers
+                numEvents = weightDict["NEvents"] * len(infileList)
+                weights.append(oneWeight/numEvents)
+                minLogE = weightDict["MinEnergyLog"]
+                maxLogE = weightDict["MaxEnergyLog"]
+                minAzimuth = weightDict["MinAzimuth"]
+                minZenith = weightDict["MinZenith"]
+                maxAzimuth = weightDict["MaxAzimuth"]
+                maxZenith = weightDict["MaxZenith"]
+                
+                if np.cos(primary.dir.zenith) < 0.1 and np.cos(primary.dir.zenith) > -0.1:
+                    horizontalLogE.append(np.log10(primary.energy))
+                    horizontalWeights.append(oneWeight/numEvents)
+
+
+    binsE = np.linspace(minLogE, maxLogE, binNum)
+    binsZenith = np.linspace(np.cos(maxZenith),np.cos(minZenith), binNum)
+    
+    netdE = 10**binsE[len(binsE)-1] - 10**binsE[0]
+    netdOmega = (binsZenith[len(binsZenith)-1] - binsZenith[0])*np.pi
+    dOmegaHorizon = 0.2*np.pi
+    
+    dOmega = (binsZenith[1] - binsZenith[0])*(maxAzimuth - minAzimuth)
+    dE = []
+    for logE in logEnergy:
+        position = 0
+        for i in range(len(binsE)):
+            if logE < binsE[i]:
+                position = i
+                break
+        dE.append(10**binsE[position] - 10**binsE[position-1])
+
+    dEHor = []
+    for logE in horizontalLogE:
+        position = 0
+        for i in range(len(binsE)):
+            if logE < binsE[i]:
+                position = i
+                break
+        dEHor.append(10**binsE[position] - 10**binsE[position-1])
+
+    areaWeights2Var = [weights[i]*10**(-4)/(dE[i]*dOmega) for i in range(len(weights))]
+    areaWeightsEnergy = [weights[i]*10**(-4)/(dE[i]*netdOmega) for i in range(len(weights))]
+    areaWeightsAngle = [weights[i]*10**(-4)/(netdE*dOmega) for i in range(len(weights))]
+    areaWeightsHor = [horizontalWeights[i]*10**(-4)/(dEHor[i]*dOmegaHorizon) for i in range(len(horizontalWeights))]
+
+    areaWeightDict["2Variable"] = areaWeights2Var
+    areaWeightDict["logEnergy"] = areaWeightsEnergy
+    areaWeightDict["cosZenith"] = areaWeightsAngle
+    areaWeightDict["Horizontal"] = areaWeightsHor
+
+    dataDict["logEnergy"] = logEnergy
+    dataDict["cosZenith"] = cosZenith
+    dataDict["Horizontal"] = horizontalLogE
+
+    binsDict["logEnergy"] = binsE
+    binsDict["cosZenith"] = binsZenith
+
+    return dataDict, areaWeightDict, binsDict
