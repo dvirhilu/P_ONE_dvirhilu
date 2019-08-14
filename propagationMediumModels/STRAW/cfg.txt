@@ -1,5 +1,5 @@
 # configuration file
-1	# over-R: DOM radius "oversize" scaling factor
+5	# over-R: DOM radius "oversize" scaling factor
 1.0	# overall DOM efficiency correction
 0.0	# 0=HG; 1=SAM (scattering function shape parameter)
 0.3696	# g=<cos(theta)> (formula from ANTARES paper)

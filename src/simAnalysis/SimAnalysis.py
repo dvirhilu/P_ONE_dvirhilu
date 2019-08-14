@@ -14,6 +14,7 @@ from icecube import dataclasses, dataio, icetray, simclasses
 from icecube.icetray import I3Units, I3Frame
 import numpy as np
 from numpy import linalg as la
+from icecube.phys_services import I3Calculator
 
 # Calculates energy weight applied to frame based on predefined function
 # 
@@ -66,18 +67,22 @@ def defaultWeighter(weightingParam):
 # 
 # @Return: 
 # A boolean variable indicating whether the DOM passed or not
-def passDOM(mcpeList, hitThresh):
+def passDOM(mcpeList, hitThresh, minResidual, position, track):
+    # length has to be at least equal to hitThresh
     if len(mcpeList) < hitThresh:
         return False
 
     timeList = [mcpe.time for mcpe in mcpeList]
     timeList.sort()
 
-    if timeList[len(timeList) - 1] - timeList[0] < 20:
+    # if entire list is within 20ns and smallest time has small enough residual, pass the DOM
+    if timeList[len(timeList) - 1] - timeList[0] < 20 and I3Calculator.time_residual(track, position, timeList[0]) < minResidual:
         return True
 
+    # check if any sequence matches criteria
     for i in range(len(timeList) - hitThresh):
-        if timeList[i+hitThresh-1] - timeList[i] < 20:
+        residual = I3Calculator.time_residual(track, position, timeList[i])
+        if timeList[i+hitThresh-1] - timeList[i] < 20 and residual < minResidual:
             return True 
         
     return False
@@ -95,17 +100,21 @@ def passDOM(mcpeList, hitThresh):
 # 
 # @Return: 
 # A boolean variable indicating whether the frame passed or not
-def passFrame(frame, domsUsed, hitThresh, domThresh):
+def passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
     if frame.Stop != I3Frame.DAQ:
         return False
+    primary = frame["NuGPrimary"]
+    mctree = frame["I3MCTree"]
+    track = dataclasses.I3MCTree.first_child(mctree, primary)
+    track.shape = dataclasses.I3Particle.InfiniteTrack
     mcpeMap = frame["MCPESeriesMap"]
     
     domCount = 0
     for dom in domsUsed:
-
+        position = geoMap[dom].position
         if dom not in mcpeMap:
             continue
-        if passDOM(mcpeMap[dom], hitThresh):
+        if passDOM(mcpeMap[dom], hitThresh, minResidual, position, track):
             domCount += 1
         
         if domCount >= domThresh:
@@ -138,12 +147,12 @@ def passFrame(frame, domsUsed, hitThresh, domThresh):
 # 
 # @Return: 
 # A number representing the weighted frame total
-def calculateRetainedFrames(infileList, domsUsed, hitThresh, domThresh, energyWeighting = defaultWeighter, zenithWeighting = defaultWeighter):
+def calculateRetainedFrames(infileList, domsUsed, hitThresh, domThresh, minResidual, geoMap, energyWeighting = defaultWeighter, zenithWeighting = defaultWeighter):
     retainedFrames = 0
     for infile in infileList:
         infile.rewind()
         for frame in infile:
-            if passFrame(frame, domsUsed, hitThresh, domThresh):
+            if passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
                 retainedFrames += 1 * weightE(frame, energyWeighting) * weightZenith(frame, zenithWeighting)
 
     return retainedFrames
@@ -165,10 +174,6 @@ def calculateRetainedFrames(infileList, domsUsed, hitThresh, domThresh, energyWe
 # @Return: 
 # An MCPESeries object with all the hits that were within the time window
 def getSignificantMCPEs(mcpeList, hitThresh):
-    
-    if not passDOM(mcpeList, hitThresh):
-        raise ValueError("The mcpeList given has not passed the passDOM function. Consider filtering with passDOM before running this function")
-    
     timeList = [mcpe.time for mcpe in mcpeList]
     timeList.sort()
     highIndex = 0
@@ -213,7 +218,7 @@ def getSignificantMCPEs(mcpeList, hitThresh):
 
     # sanity check
     if len(significantMCPEList) < hitThresh:
-        raise ValueError("There's a bug in the code: mcpeList passed the passDOM function but resulted in a list too small")
+        raise ValueError("There are not enough hits in this list. Make sure to filter with passDOM before calling this function")
     
     return significantMCPEList
 
@@ -236,21 +241,24 @@ def getSignificantMCPEs(mcpeList, hitThresh):
 # @Return: 
 # The frame inputted to the function after the significant MCPESeriesMap object
 # was appended to it with the key word "MCPESerieMap_significant_hits" 
-def writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh):
-    if not passFrame(frame, domsUsed, hitThresh, domThresh):
-        raise ValueError("The mcpeList given has not passed the passFrame function. Consider filtering with passFrame before running this function")
-    
+def writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
+
+    primary = frame["NuGPrimary"]
+    mctree = frame["I3MCTree"]
+    track = dataclasses.I3MCTree.first_child(mctree, primary)
+    track.shape = dataclasses.I3Particle.InfiniteTrack
     mcpeMap = frame["MCPESeriesMap"]
     significantMCPEMap = simclasses.I3MCPESeriesMap()
     for omkey in domsUsed:
+        position = geoMap[omkey].position
         if omkey not in mcpeMap:
             continue
-        if passDOM(mcpeMap[omkey], hitThresh):
+        if passDOM(mcpeMap[omkey], hitThresh, minResidual, position, track):
             significantMCPEMap[omkey] = getSignificantMCPEs(mcpeMap[omkey], hitThresh)  
     
     # sanity check
     if len(mcpeMap) < domThresh:
-        raise ValueError("There's a bug in the code: mcpeMap passed the passFrame function but resulted in a map too small")
+        raise ValueError("Not enough DOMs in map. Make sure to filter with passFrame before calling this function")
     
     frame.Put("MCPESeriesMap_significant_hits", significantMCPEMap)
 
@@ -368,7 +376,7 @@ def linefitParticleParams(datapoints):
 #                       of particles with cos(zenith) between (-0.1,0.1)
 #       - "2Variable":  only in weight dictionary, weighting data for a 
 #                       2D histogram of cos(zenith) and log(E/GeV) 
-def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, binNum):
+def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, minResidual, geoMap, binNum):
     logEnergy = []
     weights = []
     cosZenith = []
@@ -380,7 +388,7 @@ def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, binNum):
     binsDict = {}
     for infile in infileList:
         for frame in infile:
-            if passFrame(frame, domsUsed, hitThresh, domThresh ):
+            if passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
                 primary = frame["NuGPrimary"]
                 logEnergy.append(np.log10(primary.energy))
                 cosZenith.append(np.cos(primary.dir.zenith))

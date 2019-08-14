@@ -10,6 +10,7 @@ to create the files clsim takes to construct the propagation medium
 import numpy as np
 from numpy import linalg as la
 import matplotlib.pyplot as plt
+from simAnalysis.SimAnalysis import fitLeastSquaresLine
 
 # change directory to the proper model directory!!
 outfilepath = "/home/dvir/workFolder/P_ONE_dvirhilu/propagationMediumModels/STRAW/"
@@ -44,12 +45,8 @@ outfile.close()
 
 # parameters
 # least squares fit to find alpha and kappa
-coefficientMatrix = np.column_stack( (np.log(wavelengths/400.0), np.ones( len(wavelengths) )) )
-leastSquaresMatrix = np.matmul(coefficientMatrix.T, coefficientMatrix)
-leastSquaresRSScat = np.matmul(coefficientMatrix.T, np.log(effScatteringCoeff.T))
-leastSquaresRSAbs = np.matmul(coefficientMatrix.T, np.log(absorptionCoeff.T))
-scatLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSScat)
-absLSS = np.matmul( la.inv(leastSquaresMatrix), leastSquaresRSAbs)
+scatLSS = fitLeastSquaresLine(np.log(wavelengths/400.0), np.log(effScatteringCoeff.T))
+absLSS = fitLeastSquaresLine(np.log(wavelengths/400.0), np.log(absorptionCoeff.T))
 
 alpha = str(-scatLSS[0]) + '\t' + str(0) + '\t# scattering wavelength dependence power law exponent\n'
 kappa = str(-absLSS[0]) + '\t' + str(0) + '\t# absorption wavelength dependence power law exponent\n'

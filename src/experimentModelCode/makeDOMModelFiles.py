@@ -326,16 +326,18 @@ angularAcceptance = FunctionClasses.Polynomial(coefficients, -1, 1)
 
 # code in place to change all aspects of DOM efficiency (glass properties, gel properties, Q.E, 
 # PMT coverage) but right now only scaling IceCube efficiency by assumed portions of PMT coverage
-# due to lack of data 
+# due to lack of data. PMT areas treated as hemi-spheres
 #domAcceptance = GetDOMAcceptance()
 upgradePMTRadius = 40.25 * I3Units.mm
 upgradeDOMRadius = 7.0/12 *I3Units.ft
 upgradeNumPMTs = 24
-upgradeCoverage = (upgradeNumPMTs * np.pi * upgradePMTRadius**2) / (4 * np.pi * upgradeDOMRadius**2)
+upgradeCoverage = (upgradeNumPMTs * 2 * np.pi * upgradePMTRadius**2) / (4 * np.pi * upgradeDOMRadius**2)
 
 currentPMTRadius = 5.0/12 *I3Units.ft
 currentDOMRadius = 0.16510*I3Units.m
 currentCoverage = (2 * np.pi * currentPMTRadius**2) / (4 * np.pi * currentDOMRadius**2)
+
+print upgradeCoverage / currentCoverage
 
 domAcceptance = GetIceCubeDOMAcceptance(coverageFactor = upgradeCoverage / currentCoverage)
 
