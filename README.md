@@ -5,10 +5,10 @@ Currently, The repository heavily relies on software made by the group for IceCu
 
 Below is an outline of the file structure in the repository.
 
-##src
+## src
 This directory contains all source code used for the project.
 
-###src/experimentModelCode
+### src/experimentModelCode
 This directory contains any code used to make and analyze files describing the experiment model. This includes both the medium property files used by CLSim for photon propagation, and the DOM model files used for simulating hit detection. This directory contains the following files:
 
 * FunctionClasses.py - A module containing classes representing different function types. At the moment only has classes representing polynomials (any degree) and functions from tables, as no other functions were needed.
