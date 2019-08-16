@@ -58,7 +58,7 @@ totalDOMs = linesPerLayer * layers
 print(dphi/I3Units.deg, angularAcceptance/I3Units.deg, linesPerLayer, (linesPerLayer-1)*dphi/I3Units.deg)
 
 # create name for output file
-outname = "CorrHorizGeo_n" + str(domsPerLine)
+outname = "HorizGeo_n" + str(domsPerLine)
 outname += "_b" + str(basicSpacing)
 outname += "_a" + str(angularAcceptance/I3Units.deg)
 outname += "_l" + str(layers)
@@ -66,7 +66,7 @@ outname += "_" + str(offset_type)
 outname += "_" + str(spacing_type)
 outname += ".i3.gz"
 
-outfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/corHorizgeo/' + outname, 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/HorizGeo/' + outname, 'w')
 
 # create new geometry object
 geometry = dataclasses.I3Geometry()

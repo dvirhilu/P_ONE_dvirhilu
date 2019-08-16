@@ -6,12 +6,12 @@ import argparse
 
 parser = argparse.ArgumentParser(description = "Generate a simple detector geometry")
 parser.add_argument('-l', '--islocal', dest = 'isLocal', 
-                    default = 't', help = "configures paths depending on if code is running locally or in cedar (t or f)" )
+                    action = 'store_true', help = "configures paths depending on if code is running locally or in cedar (t or f)" )
 args = parser.parse_args()
                     
-if args.isLocal == 't':
-    infile = dataio.I3File('/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
-    outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz', 'w')
+if args.isLocal:
+    infile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/IceCube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
+    outfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/cal_DS_Files/Calib_and_DetStat_File.i3.gz', 'w')
 else:
     infile = dataio.I3File('/project/6008051/hignight/GCD_with_noise/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
     outfile = dataio.I3File('/project/6008051/dvirhilu/P_ONE_dvirhilu/I3Files/generated/gcd/Calib_and_DetStat_File.i3.gz', 'w')
@@ -155,8 +155,7 @@ combinedSPEChargeDistribution.gaus_mean = sum([domcal.combined_spe_charge_distri
                     if not is_nan(domcal.combined_spe_charge_distribution.gaus_mean)])/len(allI3DOMCalibrations)
 combinedSPEChargeDistribution.gaus_width = sum([domcal.combined_spe_charge_distribution.gaus_width for domcal in allI3DOMCalibrations 
                     if not is_nan(domcal.combined_spe_charge_distribution.gaus_width)])/len(allI3DOMCalibrations)
-combinedSPEChargeDistribution.compensation_factor = sum([domcal.combined_spe_charge_distribution.compensation_factor for domcal in allI3DOMCalibrations 
-                    if not is_nan(domcal.combined_spe_charge_distribution.compensation_factor)])/len(allI3DOMCalibrations)
+combinedSPEChargeDistribution.compensation_factor = 1 # no data for spe distribution for these DOMs so use 1 for now
 combinedSPEChargeDistribution.slc_gaus_mean = sum([domcal.combined_spe_charge_distribution.slc_gaus_mean for domcal in allI3DOMCalibrations 
                     if not is_nan(domcal.combined_spe_charge_distribution.slc_gaus_mean)])/len(allI3DOMCalibrations)
 newDOMCalib.combined_spe_charge_distribution = combinedSPEChargeDistribution

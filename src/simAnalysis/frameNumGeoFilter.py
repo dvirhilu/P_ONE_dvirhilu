@@ -11,7 +11,8 @@ from itertools import combinations
 '''
 A script that looks at the number of frames retained by different decompositions of
 a dense geometry. This allows to quickly discard geometries that are not of sufficient
-quality without having to run a full simulation set for them.
+quality without having to run a full simulation set for them. Creates new Geometries for 
+ones that passed and a new I3File with the events that passed. 
 '''
 
 parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
@@ -57,7 +58,7 @@ def convertToOmkeyList(stringList, layers):
 omkeys = convertToOmkeyList(comparisonStringList, layerInfo)
 retainedFramesComp = SimAnalysis.calculateRetainedFrames(infileList, omkeys, hitThresh, domThresh, maxResidual, densegeometry.omgeo)
 print retainedFramesComp, len(omkeys)
-'''
+
 testList = [i*2+0*30 for i in range(1,12)]
 #testList.extend([i*2+1*30 for i in range(2,10)])
 testList.extend([i*2+2*30 for i in range(8,12)])
@@ -84,34 +85,34 @@ layerInfo = [1,3,5]
 omkeys = convertToOmkeyList(testList, layerInfo)
 #retainedFramesTest = SimAnalysis.calculateRetainedFrames(infileList, omkeys, hitThresh, domThresh, maxResidual, densegeometry.omgeo)
 #print retainedFramesTest, len(omkeys)
-'''
-#if retainedFramesTest > 3000:
-print "passed"
-outfile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/partialDenseGeo/NuGen_step3_partialDenseGeo_' + str(args.outputName) + '.i3.gz', 'w')
-gcdOutfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_' + str(args.outputName) + '.i3.gz', 'w')
+
+if retainedFramesTest > 3000:
+    print "passed"
+    outfile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/partialDenseGeo/NuGen_step3_partialDenseGeo_' + str(args.outputName) + '.i3.gz', 'w')
+    gcdOutfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_' + str(args.outputName) + '.i3.gz', 'w')
     
-newGeometry = gcdHelpers.makePartialGeometry(densegeometry, omkeys)
+    newGeometry = gcdHelpers.makePartialGeometry(densegeometry, omkeys)
 
-# generate new frames
-gframe = icetray.I3Frame(icetray.I3Frame.Geometry) 
-cframe = gcdHelpers.generateCFrame(newGeometry)
-dframe = gcdHelpers.generateDFrame(newGeometry)
+    # generate new frames
+    gframe = icetray.I3Frame(icetray.I3Frame.Geometry) 
+    cframe = gcdHelpers.generateCFrame(newGeometry)
+    dframe = gcdHelpers.generateDFrame(newGeometry)
 
-# add keys and values to G frame
-gframe["I3Geometry"] = newGeometry
+    # add keys and values to G frame
+    gframe["I3Geometry"] = newGeometry
 
-# push frames onto output file
-gcdOutfile.push(gframe)
-gcdOutfile.push(cframe)
-gcdOutfile.push(dframe)
+    # push frames onto output file
+    gcdOutfile.push(gframe)
+    gcdOutfile.push(cframe)
+    gcdOutfile.push(dframe)
 
-# close output file
-gcdOutfile.close()
+    # close output file
+    gcdOutfile.close()
 
-for infile in infileList:
-    infile.rewind()
-    for frame in infile:
-        if SimAnalysis.passFrame(frame, omkeys, hitThresh, domThresh, maxResidual, densegeometry.omgeo):
-            outfile.push(frame)
+    for infile in infileList:
+        infile.rewind()
+        for frame in infile:
+            if SimAnalysis.passFrame(frame, omkeys, hitThresh, domThresh, maxResidual, densegeometry.omgeo):
+                outfile.push(frame)
 
-outfile.close()
+    outfile.close()

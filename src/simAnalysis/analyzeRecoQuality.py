@@ -72,22 +72,24 @@ def fitanalysis(infile, binsE, fitType):
     return percent50Error, percent90Error, alpha, cosAlpha, unsuccessfulRecoEnergy, successfulRecoEnergy
 
 binsE = np.linspace(3,7,11)
-fitanalysis5LineLF = fitanalysis(infile5LineGeoLineFit, binsE, "linefit")
-fitAnalysis10LineLF = fitanalysis(infile10LineGeoLineFit, binsE, "linefit")
+#fitanalysis5LineLF = fitanalysis(infile5LineGeoLineFit, binsE, "linefit")
+#fitAnalysis10LineLF = fitanalysis(infile10LineGeoLineFit, binsE, "linefit")
 fitanalysis5LineIF = fitanalysis(infile5LineGeoImproved, binsE, "improved")
 fitAnalysis10LineIF = fitanalysis(infile10LineGeoImproved, binsE, "improved")
 
-plt.hist(fitanalysis5LineLF[2], log = True, histtype = 'step', bins = 20, label = '5 line, linefit')
-plt.hist(fitAnalysis10LineLF[2], log = True, histtype = 'step', bins = 20, label = '10 line, linefit')
+# angle distribution
+#plt.hist(fitanalysis5LineLF[2], log = True, histtype = 'step', bins = 20, label = '5 line, linefit')
+#plt.hist(fitAnalysis10LineLF[2], log = True, histtype = 'step', bins = 20, label = '10 line, linefit')
 plt.hist(fitanalysis5LineIF[2], log = True, histtype = 'step', bins = 20, label = '5 line, chi-squared')
 plt.hist(fitAnalysis10LineIF[2], log = True, histtype = 'step', bins = 20, label = '10 line, chi-squared')
 plt.xlabel(r'$\alpha$')
 plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
 plt.legend()
 
+# 50% of recos in this energy have a smaller error
 plt.figure()
-plt.step(binsE[:-1], fitanalysis5LineLF[0], where = 'post', label = "5line, linefit")
-plt.step(binsE[:-1], fitAnalysis10LineLF[0], where = 'post', label = "10line, linefit")
+#plt.step(binsE[:-1], fitanalysis5LineLF[0], where = 'post', label = "5line, linefit")
+#plt.step(binsE[:-1], fitAnalysis10LineLF[0], where = 'post', label = "10line, linefit")
 plt.step(binsE[:-1], fitanalysis5LineIF[0], where = 'post', label = " 5line, chi-squared")
 plt.step(binsE[:-1], fitAnalysis10LineIF[0], where = 'post', label = "10line, chi-squared")
 plt.xlabel(r'$log_{10}\, E/GeV$')
@@ -95,9 +97,10 @@ plt.ylabel("Angular Difference (degrees)")
 plt.title("Reconstuction Error - Successful Reco Only, 50th Percentile")
 plt.legend()
 
+# 90% of recos in this energy have a smaller error
 plt.figure()
-plt.step(binsE[:-1], fitanalysis5LineLF[1], where = 'post', label = "5line, linefit")
-plt.step(binsE[:-1], fitAnalysis10LineLF[1], where = 'post', label = "10line, linefit")
+#plt.step(binsE[:-1], fitanalysis5LineLF[1], where = 'post', label = "5line, linefit")
+#plt.step(binsE[:-1], fitAnalysis10LineLF[1], where = 'post', label = "10line, linefit")
 plt.step(binsE[:-1], fitanalysis5LineIF[1], where = 'post', label = " 5line, chi-squared")
 plt.step(binsE[:-1], fitAnalysis10LineIF[1], where = 'post', label = "10line, chi-squared")
 plt.xlabel(r'$log_{10}\, E/GeV$')

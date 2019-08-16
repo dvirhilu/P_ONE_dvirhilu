@@ -15,7 +15,7 @@ parser.add_argument('-z', '--depth', dest = 'depth',
 args = parser.parse_args()
 
 outfileName = "cubeGeometry_" + str(args.depth) + "_" + str(args.domsPerString) + "_" + str(args.basicSpacing) + ".i3.gz"
-outfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/gcd/cube/' + outfileName, 'w')
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/cube/' + outfileName, 'w')
 domsPerString = int(args.domsPerString)
 basicSpacing = float(args.basicSpacing) * I3Units.meter
 zpos = gcdHelpers.convertDepthToZ(float(args.depth))

@@ -37,7 +37,7 @@ gcdl1 = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partial
 geoMapl1 = gcdl1.pop_frame()["I3Geometry"].omgeo
 #geoMapl2 = gcdl2.pop_frame()["I3Geometry"].omgeo
 
-gcdTest = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_l3_n12_filledGaps8.i3.gz') 
+gcdTest = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_10LineGeometry.i3.gz') 
 geoMapTest = gcdTest.pop_frame()["I3Geometry"].omgeo
 
 #dataOrig, weightsOrig, _binsOrig = SimAnalysis.getEffectiveAreaData(infileListOrig, geoMapOrig.keys(), hitThresh, domThresh, maxResidual, geoMapOrig, 10)

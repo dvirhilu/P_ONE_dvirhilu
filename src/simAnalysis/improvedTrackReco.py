@@ -71,7 +71,7 @@ else:
     raise RuntimeError("Invalid GCD Type")
 '''
 
-gcdPath = '/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_l3_n12_filledGaps8.i3.gz'
+gcdPath = '/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_10LineGeometry.i3.gz'
 '''
 infileList = []
 for i in range(int(args.minFileNum), int(args.maxFileNum)+1):

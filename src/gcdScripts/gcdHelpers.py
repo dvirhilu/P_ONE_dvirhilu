@@ -208,7 +208,7 @@ def generateOffsetList(offset_type, length):
     if offset_type == OffsetType.LinearResetOffset:
         offset = 0
         for i in xrange(0,length):
-            if(offset > 500):
+            if(offset > 300):
                 offset = 100
             offsetList.append(offset)
             offset += 100
@@ -218,7 +218,7 @@ def generateOffsetList(offset_type, length):
         # determines whether rising or falling offset
         signFactor = 1
         for i in xrange(0, length):
-            if(offset >= 600):
+            if(offset >= 300):
                 signFactor = -1
             if(offset <= 150):
                 signFactor = 1
