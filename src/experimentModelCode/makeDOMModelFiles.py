@@ -331,7 +331,7 @@ angularAcceptance = FunctionClasses.Polynomial(coefficients, -1, 1)
 upgradePMTRadius = 40.25 * I3Units.mm
 upgradeDOMRadius = 7.0/12 *I3Units.ft
 upgradeNumPMTs = 24
-upgradeCoverage = (upgradeNumPMTs * 2 * np.pi * upgradePMTRadius**2) / (4 * np.pi * upgradeDOMRadius**2)
+upgradeCoverage = (upgradeNumPMTs * np.pi * upgradePMTRadius**2) / (4 * np.pi * upgradeDOMRadius**2)
 
 currentPMTRadius = 5.0/12 *I3Units.ft
 currentDOMRadius = 0.16510*I3Units.m

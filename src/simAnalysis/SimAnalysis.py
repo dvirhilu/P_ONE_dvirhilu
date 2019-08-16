@@ -21,7 +21,7 @@ from icecube.phys_services import I3Calculator
 # @Param:
 # frame:            frame for the event in question
 # energyWeighting:  the energy weighting function used (passed as a function
-#                   and must is simply called once event info is parsed) 
+#                   and must is simply called once event info is parsed)  
 # 
 # @Return: 
 # the energy weighting for the event
@@ -63,11 +63,15 @@ def defaultWeighter(weightingParam):
 # @Param:
 # mcpeList:         The list of hits the DOM registered   
 # hitThresh:        The number of hits required in the window for the DOM to
-#                   be passed    
+#                   be passed   
+# maxResidual:      Maximum time residual allowed for a hit to be considered
+# position:         an I3Position object representing the DOMs position
+# track:            An I3Particle object representing the muon track for the 
+#                   event. NOTE: muon.shape must be I3Particle.InfiniteTrack 
 # 
 # @Return: 
 # A boolean variable indicating whether the DOM passed or not
-def passDOM(mcpeList, hitThresh, minResidual, position, track):
+def passDOM(mcpeList, hitThresh, maxResidual, position, track):
     # length has to be at least equal to hitThresh
     if len(mcpeList) < hitThresh:
         return False
@@ -76,20 +80,21 @@ def passDOM(mcpeList, hitThresh, minResidual, position, track):
     timeList.sort()
 
     # if entire list is within 20ns and smallest time has small enough residual, pass the DOM
-    if timeList[len(timeList) - 1] - timeList[0] < 20 and I3Calculator.time_residual(track, position, timeList[0]) < minResidual:
+    if timeList[len(timeList) - 1] - timeList[0] < 20 and I3Calculator.time_residual(track, position, timeList[0]) < maxResidual:
         return True
 
     # check if any sequence matches criteria
     for i in range(len(timeList) - hitThresh):
         residual = I3Calculator.time_residual(track, position, timeList[i])
-        if timeList[i+hitThresh-1] - timeList[i] < 20 and residual < minResidual:
+        if timeList[i+hitThresh-1] - timeList[i] < 20 and residual < maxResidual:
             return True 
         
     return False
 
 # A function that determines whether a frame passes the cut or not. The
 # function checks whether a threshold number of DOMs passed given a 
-# threshold number of hits needed in the 20ns window
+# threshold number of hits needed in the 20ns window and a threshold
+# residual to count the hits 
 # 
 # @Param:
 # frame:            The frame in question   
@@ -97,12 +102,16 @@ def passDOM(mcpeList, hitThresh, minResidual, position, track):
 #                   at smaller geometries from a larger geometry sim file
 # hitThresh:        Hit threshold for a single DOM
 # domThresh:        Number of passed DOMs needed to pass the frame 
+# maxResidual:      Maximum time residual allowed for a DOM to be considered
+# GeoMap:           An I3OMGeoMap object that maps the omkeys in the
+#                   geometries to their I3OMGeo objects 
 # 
 # @Return: 
 # A boolean variable indicating whether the frame passed or not
-def passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
+def passFrame(frame, domsUsed, hitThresh, domThresh, maxResidual, geoMap):
     if frame.Stop != I3Frame.DAQ:
         return False
+    
     primary = frame["NuGPrimary"]
     mctree = frame["I3MCTree"]
     track = dataclasses.I3MCTree.first_child(mctree, primary)
@@ -114,7 +123,7 @@ def passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
         position = geoMap[dom].position
         if dom not in mcpeMap:
             continue
-        if passDOM(mcpeMap[dom], hitThresh, minResidual, position, track):
+        if passDOM(mcpeMap[dom], hitThresh, maxResidual, position, track):
             domCount += 1
         
         if domCount >= domThresh:
@@ -136,6 +145,9 @@ def passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
 #                   at smaller geometries from a larger geometry sim file
 # hitThresh:        Hit threshold for a single DOM
 # domThresh:        Number of passed DOMs needed to pass the frame
+# maxResidual:      Maximum time residual allowed for a hit to be considered
+# GeoMap:           An I3OMGeoMap object that maps the omkeys in the
+#                   geometries to their I3OMGeo objects 
 # energyWeighting:  A function (or functor) that returns the energy weighting
 #                   given the particle's energy. Requires a callable object 
 #                   that only a single parameter (particle's energy)  
@@ -147,12 +159,12 @@ def passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
 # 
 # @Return: 
 # A number representing the weighted frame total
-def calculateRetainedFrames(infileList, domsUsed, hitThresh, domThresh, minResidual, geoMap, energyWeighting = defaultWeighter, zenithWeighting = defaultWeighter):
+def calculateRetainedFrames(infileList, domsUsed, hitThresh, domThresh, maxResidual, geoMap, energyWeighting = defaultWeighter, zenithWeighting = defaultWeighter):
     retainedFrames = 0
     for infile in infileList:
         infile.rewind()
         for frame in infile:
-            if passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
+            if passFrame(frame, domsUsed, hitThresh, domThresh, maxResidual, geoMap):
                 retainedFrames += 1 * weightE(frame, energyWeighting) * weightZenith(frame, zenithWeighting)
 
     return retainedFrames
@@ -237,11 +249,14 @@ def getSignificantMCPEs(mcpeList, hitThresh):
 # hitThresh:        Hit threshold for a single DOM
 # domThresh:        Number of DOMs passing the hit threshold to pass the
 #                   frame  
+# maxResidual:      Maximum time residual allowed for a hit to be considered
+# GeoMap:           An I3OMGeoMap object that maps the omkeys in the
+#                   geometries to their I3OMGeo objects 
 # 
 # @Return: 
 # The frame inputted to the function after the significant MCPESeriesMap object
 # was appended to it with the key word "MCPESerieMap_significant_hits" 
-def writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
+def writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh, maxResidual, geoMap):
 
     primary = frame["NuGPrimary"]
     mctree = frame["I3MCTree"]
@@ -253,7 +268,7 @@ def writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh, minResidual, g
         position = geoMap[omkey].position
         if omkey not in mcpeMap:
             continue
-        if passDOM(mcpeMap[omkey], hitThresh, minResidual, position, track):
+        if passDOM(mcpeMap[omkey], hitThresh, maxResidual, position, track):
             significantMCPEMap[omkey] = getSignificantMCPEs(mcpeMap[omkey], hitThresh)  
     
     # sanity check
@@ -362,6 +377,9 @@ def linefitParticleParams(datapoints):
 #                   at smaller geometries from a larger geometry sim file
 # hitThresh:        Hit threshold for a single DOM
 # domThresh:        Number of passed DOMs needed to pass the frame
+# maxResidual:      Maximum time residual allowed for a hit to be considered
+# GeoMap:           An I3OMGeoMap object that maps the omkeys in the
+#                   geometries to their I3OMGeo objects 
 # binNum:           Number of bins intended for the histogram 
 # 
 # @Return: 
@@ -376,7 +394,7 @@ def linefitParticleParams(datapoints):
 #                       of particles with cos(zenith) between (-0.1,0.1)
 #       - "2Variable":  only in weight dictionary, weighting data for a 
 #                       2D histogram of cos(zenith) and log(E/GeV) 
-def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, minResidual, geoMap, binNum):
+def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, maxResidual, geoMap, binNum):
     logEnergy = []
     weights = []
     cosZenith = []
@@ -388,7 +406,7 @@ def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, minResidual
     binsDict = {}
     for infile in infileList:
         for frame in infile:
-            if passFrame(frame, domsUsed, hitThresh, domThresh, minResidual, geoMap):
+            if passFrame(frame, domsUsed, hitThresh, domThresh, maxResidual, geoMap):
                 primary = frame["NuGPrimary"]
                 logEnergy.append(np.log10(primary.energy))
                 cosZenith.append(np.cos(primary.dir.zenith))
@@ -453,3 +471,64 @@ def getEffectiveAreaData(infileList, domsUsed, hitThresh, domThresh, minResidual
     binsDict["cosZenith"] = binsZenith
 
     return dataDict, areaWeightDict, binsDict
+
+# Given twp sets of input data, the function returns a histogram of their
+# ratios. If a division by 0 is bound to happen in the ratio, a value of
+# 0 is assigned to the ratio histogram. Ratio is data1Hist / data2Hist 
+# 
+# @Param:
+# data1:            First set of input data
+# data2:            Second set of input data
+# weights1:         weighting applied to the first set of data
+# weights2:         weighting applied to the second set of data
+# bins:             The bins to histogram the data in. Same possible inputes
+#                   as bins setting for matplotlib.pyplot.hist  
+# 
+# @Return: 
+# A tuple containing the ratio histogram and edges. Example code for use:
+# 
+# plt.figure()
+# ratioHist, edges = SimAnalysis.makeRatioHist(data1, data2, weights1, weights2, bins)
+# plt.step(edges[:-1], ratioHist, where = 'post')
+def makeRatioHist(data1, data2, weights1, weights2, bins):
+    h1, edges= np.histogram(data1, bins = bins, weights = weights1)
+    h2, edges = np.histogram(data2, bins = bins, weights = weights2)
+    for i in range(len(edges)-1):
+        if h2[i] <=0.0000001:
+            h2[i] = 1.0
+            h1[i] = 0
+
+    return h1*1.0/h2, edges
+
+# Given twp sets of x,y input data, the function returns a 2D histogram of 
+# their ratios. If a division by 0 is bound to happen in the ratio, a value 
+# of 0 is assigned to the ratio histogram. Ratio is Hist2D1 / Hist2D2 
+# 
+# @Param:
+# datax1:           First set of x input data
+# datay1:           First set of y input data
+# datax2:           Second set of x input data
+# datay2:           Second set of y input data
+# weights1:         weighting applied to the first set of data
+# weights2:         weighting applied to the second set of data
+# bins:             The bins to histogram the data in. Same possible inputes
+#                   as bins setting for matplotlib.pyplot.hist2d  
+# 
+# @Return: 
+# A tuple containing the ratio 2D histogram, xedges, and yedges. Example code 
+# for use:
+# 
+# plt.figure()
+# ratioHist, xedges, yedges = makeRatioHist2D(datax1, datay1, datax2, datay2, weights1, weights2, bins)
+# pc = plt.pcolor(xedges, yedges, ratioHist, norm = matplotlib.colors.LogNorm())
+# plt.colorbar(pc)
+def makeRatioHist2D(datax1, datay1, datax2, datay2, weights1, weights2, bins):
+    h1, xedges, yedges = np.histogram2d(datax1, datay1, bins = bins, weights = weights1)
+    h2, xedges, yedges = np.histogram2d(datax2, datay2, bins = bins, weights = weights2)
+    for i in range(len(xedges)-1):
+        for j in range(len(yedges)-1):
+            if h1[j][i] <=0.0000001:
+                h1[j][i] = 1.0
+                h2[j][i] = 0
+
+    return (h1*1.0/h2).T, xedges, yedges

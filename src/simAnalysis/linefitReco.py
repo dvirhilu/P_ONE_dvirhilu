@@ -10,13 +10,14 @@ from simAnalysis import SimAnalysis
 import argparse
 
 parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
-parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
-parser.add_argument( '-N', '--maxFileNum', help = "largest file number used")
+#parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
+#parser.add_argument( '-N', '--maxFileNum', help = "largest file number used")
 parser.add_argument( '-H', '--hitThresh', help = "threshold of hits for the DOM to be considered")
-parser.add_argument( '-d', '--domThresh', help = "threshold of hit DOMs for the frame to be considered")
+parser.add_argument( '-D', '--domThresh', help = "threshold of hit DOMs for the frame to be considered")
+parser.add_argument( '-R', '--maxResidual', default = 100 , help = "maximum time residual allowed for the hit to be considered")
 parser.add_argument( '-g', '--GCDType', help = "type of geometry used for the simulation set")
 args = parser.parse_args()
-
+'''
 if args.GCDType == 'testString':
     gcdPath = '/home/dvir/workFolder/I3Files/gcd/testStrings/HorizTestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
 elif args.GCDType == 'HorizGeo':
@@ -27,21 +28,24 @@ elif args.GCDType == 'cube':
     gcdPath = '/home/dvir/workFolder/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz'
 else:
     raise RuntimeError("Invalid GCD Type")
-
+'''
+gcdPath = '/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_5LineGeometry.i3.gz'
+'''
 infileList = []
 for i in range(int(args.minFileNum), int(args.maxFileNum)+1):
     infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + str(args.GCDType) + '_' + str(i) + '.i3.gz')
     infileList.append(infile)
-
-outfile = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/'+ str(args.GCDType) + '/NuGen_linefitReco_' + str(args.GCDType) + '_testNewAlgorithm.i3.gz', 'w')
+'''
+infileList = [dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/partialDenseGeo/NuGen_step3_partialDenseGeo_5LineGeometry.i3.gz')]
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/'+ str(args.GCDType) + '/NuGen_linefitReco_' + str(args.GCDType) + '_5LineGeo.i3.gz', 'w')
 gcdfile = dataio.I3File(gcdPath)
 geometry = gcdfile.pop_frame()["I3Geometry"]
 
 for infile in infileList:
     for frame in infile:
-        if SimAnalysis.passFrame(frame, geometry.omgeo.keys(), int(args.hitThresh), int(args.domThresh)):
-            frame = SimAnalysis.writeSigHitsMapToFrame(frame, geometry.omgeo.keys(), int(args.hitThresh), int(args.domThresh))
-            datapoints = SimAnalysis.getLineFitDataPoints(frame, geometry)
+        if SimAnalysis.passFrame(frame, geometry.omgeo.keys(), int(args.hitThresh), int(args.domThresh), float(args.maxResidual), geometry.omgeo):
+            frame = SimAnalysis.writeSigHitsMapToFrame(frame, geometry.omgeo.keys(), int(args.hitThresh), int(args.domThresh), float(args.maxResidual), geometry.omgeo)
+            datapoints = SimAnalysis.getLinefitDataPoints(frame, geometry)
             direction, speed, vertex = SimAnalysis.linefitParticleParams(datapoints)
 
             recoParticle = I3Particle()

@@ -6,11 +6,10 @@ from icecube.dataclasses import ModuleKey
 import matplotlib.pyplot as plt
 import numpy as np
 
-step3infile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/muongun_step3/MuonGun_step3_139005_000000.i3.bz2')
-custominfile = dataio.I3File('/home/dvir/workFolder/P_ONE_dvirhilu/I3Files/muongun/customGenHitsMuongun/MuonGun_customGenHits_0.i3.gz')
-gcdFile = dataio.I3File('/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
+step3infile = dataio.I3File('/home/dvir/workFolder/I3Files/muongun/muongun_step3/MuonGun_step3_139005_000000.i3.bz2')
+custominfile = dataio.I3File('/home/dvir/workFolder/I3Files/muongun/customGenHitsMuongun/MuonGun_customGenHits_0.i3.gz')
+gcdFile = dataio.I3File('/home/dvir/workFolder/I3Files/gcd/IceCube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz')
 geometry = gcdFile.pop_frame(I3Frame.Geometry)["I3Geometry"]
-missingHitsFile = open("MissingHits.txt", 'w')
 
 # get all Q frames
 step3qframes = []
@@ -31,7 +30,7 @@ evtFrameMap = {}
 for frame in customqframes:
     header = frame["I3EventHeader"]
     evtFrameMap[header.event_id] = frame
-
+    
 def getNumHitsInFrame(frame):
     mcpeSeriesMap = frame["MCPESeriesMap"]
     numHits = 0
@@ -96,16 +95,6 @@ for frame in step3qframes:
 
     else:
         hits = getNumHitsInFrame(frame)
-        missingHitsFile.write("Event only in step3 file: \nEventID: " + str(evt_id) + ", Number of Hits: " + str(hits) + "\n\n")
-
-
-for evt_id in evtFrameMap.keys():
-    if not evt_id in event_id:
-        hits = getNumHitsInFrame(evtFrameMap[evt_id])
-        missingHitsFile.write("Event only in custom file: \nEventID: " + str(evt_id) + ", Number of Hits: " + str(hits) + "\n\n" )
-
-missingHitsFile.close()
-
 # analysis of how different the frames are
 
 print(len(largeRatioFrames))
@@ -194,17 +183,17 @@ plt.xlabel("Number of DOMs with hits")
 plt.ylabel("# of occurences")
 plt.legend()
 #plt.show()
-
+'''
 
 plt.figure()
-plt.hist(numDOMsSRstep3, bins = 20, histtype = 'step', color = 'skyblue', label = "step3")
-plt.hist(numDOMsSRcust, bins = 20, histtype = 'step', color = 'red', label = "custom")
-plt.title("Distribution of the number of DOMs that saw light in SR frames")
+plt.hist(numDOMsTFstep3, bins = 20, histtype = 'step', color = 'skyblue', label = "IceCube Package")
+plt.hist(numDOMsTFcust, bins = 20, histtype = 'step', color = 'red', label = "Custom Script")
+plt.title("Distribution of the number of DOMs that saw light")
 plt.xlabel("Number of DOMs with hits")
 plt.ylabel("# of occurences")
 plt.legend()
 #plt.show()
-'''
+
 
 from scipy.stats import norm
 import matplotlib.mlab as mlab
@@ -232,8 +221,8 @@ plt.legend()
 #plt.show()
 
 plt.figure()
-plt.hist(step3Hits, bins = 20, histtype = 'step', color = 'skyblue', label = "step3, total hits: " + str(sum(step3Hits)))
-plt.hist(customHits, bins = 20, histtype = 'step', color = 'red', label = "custom, total hits: " + str(sum(customHits)))
+plt.hist(step3Hits, bins = 20, histtype = 'step', color = 'skyblue', label = "IceCube Package, total hits: " + str(sum(step3Hits)))
+plt.hist(customHits, bins = 20, histtype = 'step', color = 'red', label = "Custom Script, total hits: " + str(sum(customHits)))
 plt.title("Amount of Hits Per Event")
 plt.xlabel("Number of Hits")
 plt.ylabel("# of occurences")

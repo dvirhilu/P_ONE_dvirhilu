@@ -6,10 +6,12 @@ from icecube.dataclasses import I3Particle
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import numpy as np
+from simAnalysis.SimAnalysis import makeRatioHist
 
-
-infileImproved = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/HorizGeo/NuGen_improvedReco_HorizGeo_improvedRecoTest.i3.gz')
-infileLineFit = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/HorizGeo/NuGen_linefitReco_HorizGeo_testNewAlgorithm.i3.gz')
+infile5LineGeoLineFit = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/partialDenseGeo/NuGen_linefitReco_partialDenseGeo_5LineGeo.i3.gz')
+infile10LineGeoLineFit = dataio.I3File('/home/dvir/workFolder/I3Files/linefitReco/partialDenseGeo/NuGen_linefitReco_partialDenseGeo_10LineGeo.i3.gz')
+infile5LineGeoImproved = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/partialDenseGeo/NuGen_improvedReco_partialDenseGeo_5LineGeo.i3.gz')
+infile10LineGeoImproved = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/partialDenseGeo/NuGen_improvedReco_partialDenseGeo_10LineGeo.i3.gz')
 
 def findIndex(energy, bins):
     logE = np.log10(energy)
@@ -70,58 +72,47 @@ def fitanalysis(infile, binsE, fitType):
     return percent50Error, percent90Error, alpha, cosAlpha, unsuccessfulRecoEnergy, successfulRecoEnergy
 
 binsE = np.linspace(3,7,11)
-fitanalysisImproved = fitanalysis(infileImproved, binsE, "improved")
-fitAnalysisLinefit = fitanalysis(infileLineFit, binsE, "linefit")
+fitanalysis5LineLF = fitanalysis(infile5LineGeoLineFit, binsE, "linefit")
+fitAnalysis10LineLF = fitanalysis(infile10LineGeoLineFit, binsE, "linefit")
+fitanalysis5LineIF = fitanalysis(infile5LineGeoImproved, binsE, "improved")
+fitAnalysis10LineIF = fitanalysis(infile10LineGeoImproved, binsE, "improved")
 
-plt.hist(fitanalysisImproved[3], histtype = 'step', bins = 20)
-plt.xlabel(r'$\cos{\alpha}$')
-plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
-
-plt.figure()
-plt.hist(fitanalysisImproved[3], histtype = 'step', bins = 20, log = True)
-plt.xlabel(r'$\cos{\alpha}$')
-plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
-
-plt.figure()
-plt.hist(fitanalysisImproved[2], histtype = 'step', bins = 20)
+plt.hist(fitanalysis5LineLF[2], log = True, histtype = 'step', bins = 20, label = '5 line, linefit')
+plt.hist(fitAnalysis10LineLF[2], log = True, histtype = 'step', bins = 20, label = '10 line, linefit')
+plt.hist(fitanalysis5LineIF[2], log = True, histtype = 'step', bins = 20, label = '5 line, chi-squared')
+plt.hist(fitAnalysis10LineIF[2], log = True, histtype = 'step', bins = 20, label = '10 line, chi-squared')
 plt.xlabel(r'$\alpha$')
 plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
-
-plt.figure()
-plt.hist(fitanalysisImproved[2], histtype = 'step', bins = 20, log = True)
-plt.xlabel(r'$\alpha}$')
-plt.title('Distribution of Relative Angle of Muon and its Reconstruction')
-
-plt.figure()
-plt.step(binsE[:-1], fitAnalysisLinefit[0], where = 'post', label = "50th percentile, linefit")
-plt.step(binsE[:-1], fitanalysisImproved[0], where = 'post', label = "50th percentile, improved")
-plt.xlabel(r'$log_{10}\, E/GeV$')
-plt.ylabel("Angular Difference (degrees)")
-plt.title("Reconstuction Error - Successful Reco Only")
 plt.legend()
 
 plt.figure()
-plt.step(binsE[:-1], fitAnalysisLinefit[1], where = 'post', label = "90th percentile, linefit")
-plt.step(binsE[:-1], fitanalysisImproved[1], where = 'post', label = "90th percentile, improved")
+plt.step(binsE[:-1], fitanalysis5LineLF[0], where = 'post', label = "5line, linefit")
+plt.step(binsE[:-1], fitAnalysis10LineLF[0], where = 'post', label = "10line, linefit")
+plt.step(binsE[:-1], fitanalysis5LineIF[0], where = 'post', label = " 5line, chi-squared")
+plt.step(binsE[:-1], fitAnalysis10LineIF[0], where = 'post', label = "10line, chi-squared")
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel("Angular Difference (degrees)")
-plt.title("Reconstuction Error - Successful Reco Only")
+plt.title("Reconstuction Error - Successful Reco Only, 50th Percentile")
 plt.legend()
 
+plt.figure()
+plt.step(binsE[:-1], fitanalysis5LineLF[1], where = 'post', label = "5line, linefit")
+plt.step(binsE[:-1], fitAnalysis10LineLF[1], where = 'post', label = "10line, linefit")
+plt.step(binsE[:-1], fitanalysis5LineIF[1], where = 'post', label = " 5line, chi-squared")
+plt.step(binsE[:-1], fitAnalysis10LineIF[1], where = 'post', label = "10line, chi-squared")
+plt.xlabel(r'$log_{10}\, E/GeV$')
+plt.ylabel("Angular Difference (degrees)")
+plt.title("Reconstuction Error - Successful Reco Only, 90th Percentile")
+plt.legend()
+
+'''
 binsE = np.linspace(3,7,10)
 
-h1, edges= np.histogram(fitanalysisImproved[4], bins = binsE)
-h2, edges = np.histogram(fitanalysisImproved[5], bins = binsE)
-for i in range(len(edges)-1):
-    if h2[i] <=0.0000001:
-        h2[i] = 1.0
-        h1[i] = 0
-
 plt.figure()
-ratioHist = h1*1.0 / h2
+ratioHist, edges = makeRatioHist(fitanalysisImproved[4], fitanalysisImproved[5], weights1 = np.ones(len(fitanalysisImproved[4])), weights2 = np.ones(len(fitanalysisImproved[5])), bins = binsE)
 plt.step(edges[:-1], ratioHist, where = 'post')
 plt.xlabel(r'$log_{10}\, E/GeV$')
 plt.ylabel("Fraction")
 plt.title("Fraction of Failed Reconstructions")
-
+'''
 plt.show()

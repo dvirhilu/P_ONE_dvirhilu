@@ -43,40 +43,44 @@ For convenience, t_0 is chosen to be 0 (linefit implementation uses t_0 = 0)
 # constants
 c = 2.99792458e8 * I3Units.m / I3Units.second   # speed of light 
 n = 1.34                                        # refractive index of water
-a_0 = 0                                         # satruation charge (for correction function) (not used for now)
+a_0 = np.nan                                    # satruation charge (for correction function) (not used for now)
 d_1 = 0.25                                      # minimal distance (for correction function) (set to just above radius of detector)
 d_0 = 26.53 * I3Units.m                         # normalization distance (set to the eff. attenuation length)
 sigma_i = 20 * I3Units.nanosecond               # timing uncertainty (window used is 20 ns)
 
 parser = argparse.ArgumentParser(description = "Creates a reconstruction of the muon track using a linear least squares fit on the pulses")
-parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
-parser.add_argument( '-N', '--maxFileNum', help = "largest file number used")
+#parser.add_argument( '-n', '--minFileNum', help = "smallest file number used" )
+#parser.add_argument( '-N', '--maxFileNum', help = "largest file number used")
 parser.add_argument( '-H', '--hitThresh', help = "threshold of hits for the DOM to be considered")
 parser.add_argument( '-D', '--domThresh', help = "threshold of hit DOMs for the frame to be considered")
+parser.add_argument( '-R', '--maxResidual', default = 100 , help = "maximum time residual allowed for the hit to be considered")
 parser.add_argument( '-g', '--GCDType', help = "type of geometry used for the simulation set")
 parser.add_argument( '-d', '--DOMType', help = "the type of DOM used in the simulation")
 parser.add_argument( '-c', '--useMaxCharge', action = 'store_true', help = "whether to use the maximum charge saturating function")
 args = parser.parse_args()
-
+'''
 if args.GCDType == 'testString':
     gcdPath = '/home/dvir/workFolder/I3Files/gcd/testStrings/HorizTestString_n15_b100.0_v50.0_l1_simple_spacing.i3.gz'
 elif args.GCDType == 'HorizGeo':
     gcdPath = '/home/dvir/workFolder/I3Files/gcd/corHorizgeo/CorrHorizGeo_n15_b100.0_a18.0_l3_rise_fall_offset_simple_spacing.i3.gz'
 elif args.GCDType == 'IceCube':
-    gcdPath = '/home/dvir/workFolder/I3Files/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz'
+    gcdPath = '/home/dvir/workFolder/I3Files/IceCube/GeoCalibDetectorStatus_AVG_55697-57531_PASS2_SPE_withScaledNoise.i3.gz'
 elif args.GCDType == 'cube':
     gcdPath = '/home/dvir/workFolder/I3Files/gcd/cube/cubeGeometry_1600_15_50.i3.gz'
 else:
     raise RuntimeError("Invalid GCD Type")
+'''
 
+gcdPath = '/home/dvir/workFolder/I3Files/gcd/partialDenseGeo/partialDenseGeo_l3_n12_filledGaps8.i3.gz'
+'''
 infileList = []
 for i in range(int(args.minFileNum), int(args.maxFileNum)+1):
     infile = dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/' + str(args.GCDType) + '/NuGen_step3_' + 
                         str(args.GCDType) + '_' + str(i) + '.i3.gz')
     infileList.append(infile)
-
-outfile = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/'+ str(args.GCDType) + '/NuGen_improvedReco_' + 
-                        str(args.GCDType) + '_improvedRecoTest.i3.gz', 'w')
+'''
+infileList = [dataio.I3File('/home/dvir/workFolder/I3Files/nugen/nugenStep3/partialDenseGeo/NuGen_step3_partialDenseGeo_5LineGeometry.i3.gz')]
+outfile = dataio.I3File('/home/dvir/workFolder/I3Files/improvedReco/'+ str(args.GCDType) + '/NuGen_improvedReco_' + str(args.GCDType) + '_10LineGeo.i3.gz', 'w')
 gcdfile = dataio.I3File(gcdPath)
 geometry = gcdfile.pop_frame()["I3Geometry"]
 
@@ -90,6 +94,7 @@ angAcc = FunctionClasses.Polynomial(np.loadtxt(inFolder + filenameAngAcc, ndmin 
 domsUsed = geometry.omgeo.keys()
 hitThresh = int(args.hitThresh)
 domThresh = int(args.domThresh)
+maxResidual = float(args.maxResidual)
 
 def get_z_c(q, u, L_x, L_y):
 
@@ -242,8 +247,8 @@ class QualityFunctor():
 
 for infile in infileList:
     for frame in infile:
-        if SimAnalysis.passFrame(frame, domsUsed, hitThresh, domThresh):
-            frame = SimAnalysis.writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh)
+        if SimAnalysis.passFrame(frame, domsUsed, hitThresh, domThresh, maxResidual, geometry.omgeo):
+            frame = SimAnalysis.writeSigHitsMapToFrame(frame, domsUsed, hitThresh, domThresh, maxResidual, geometry.omgeo)
             t_0 = get_t_0(frame)
             initialGuess = calculateInitialGuess(frame, domsUsed, t_0)
 
